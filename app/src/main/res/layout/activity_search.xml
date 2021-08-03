@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    tools:context=".activity.SearchActivity">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/sp_24"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:text="一键扫描设备内的歌曲文件"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        tools:context=".activity.SearchActivity">
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="不扫描60s以下的歌曲"/>
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="不扫描100k以下的歌曲"/>
+
+    </LinearLayout>
+    <cn.demomaster.huan.quickdeveloplibrary.widget.button.QDButton
+        android:id="@+id/btn_scan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:qd_backgroundColor="@color/green"
+        android:padding="@dimen/dp_5"
+        android:textSize="@dimen/sp_18"
+        android:textColor="@color/white"
+        android:text="开始扫描"/>
+</LinearLayout>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.demomaster.weimusic">
+    <!-- 访问网络和操作SD卡 加入的两个权限配置 -->
+    <!-- This is used for Last.fm and Google Music -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Used to check for a data connection -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Used to keep the service running when the phone sleeps -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Stick Broadcast -->
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" /> <!-- Incoming calls -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- Used to set ringtone -->
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission
+        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <application
+        android:name=".WeiApplication"
+        android:allowBackup="true"
+        android:allowTaskReparenting="true"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher_pp"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:process=":main"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@drawable/ic_launcher_pp"
+        android:supportsRtl="true"
+        android:theme="@style/StartAppTheme_Light">
+        <activity android:name=".activity.SearchActivity"></activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/StartAppTheme_Light_Main">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="content" />
+                <!-- <data android:host="media"/> -->
+                <data android:scheme="file" />
+                <!-- <data android:scheme="http"/> -->
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+                <data android:mimeType="application/x-ogg" />
+                <data android:mimeType="application/itunes" />
+            </intent-filter>
+            <!--
+            <intent-filter>
+                <action android:name="com.example.ppmusic.PLAYBACK_VIEWER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".activity.SettingActivity" />
+        <activity android:name=".activity.ThemeActivity" /> <!-- Music service -->
+        <service
+            android:name=".player.service.MusicService"
+            android:enabled="true"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:process=":main" /> <!-- Media button receiver -->
+        <receiver android:name=".player.service.MediaButtonIntentReceiver" android:enabled="true" android:exported="true" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.intent.ACTION_HEADSET_PLUG" />
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_path" />
+        </provider>
+    </application>
+
+</manifest>

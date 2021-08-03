@@ -1,0 +1,33 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:fitsSystemWindows="true">
+
+    <ImageView
+        android:id="@+id/v_collapse_mask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent_light_33"/>
+    <EditText
+        android:id="@+id/tv_search_collapse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="@drawable/shape_bg"
+        android:drawableLeft="@drawable/search"
+        android:drawablePadding="10dp"
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical"
+        android:layout_gravity = "center"
+        android:hint="搜索"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

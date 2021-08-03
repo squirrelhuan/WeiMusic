@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/textLight">
+
+    <cn.demomaster.huan.quickdeveloplibrary.widget.square.SquareImageView
+        android:id="@+id/iv_cover"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/bg_001"
+        android:gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@+id/iv_cover"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="10dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Title"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textColor="?attr/textNight"
+            android:textSize="18sp" />
+        <TextView
+            android:id="@+id/artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollHorizontally="true"
+            android:gravity="left"
+            android:textColor="?attr/textNight2"
+            android:textSize="14sp"
+            android:singleLine="true"
+            android:text="Artist" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_ani"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toLeftOf="@+id/iv_more"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/peak_one"
+            style="@style/PeakMeter"
+            android:layout_centerVertical="true" />
+
+        <ImageView
+            android:id="@+id/peak_two"
+            style="@style/PeakMeter"
+            android:layout_centerVertical="true" />
+
+        <ImageView
+            android:id="@+id/peak_three"
+            style="@style/PeakMeter"
+            android:layout_centerVertical="true" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

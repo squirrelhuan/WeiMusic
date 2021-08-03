@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="btn_bottom_last" format="reference" />
+    <attr name="btn_bottom_paly" format="reference" />
+    <attr name="btn_bottom_next" format="reference" />
+    <attr name="btn_bottom_info" format="reference" />
+    <attr name="btn_bottom_recent" format="reference" />
+    <attr name="seekbar_bottom_bg" format="reference" />
+    <attr name="seekbar_bottom_thum" format="reference" />
+    <attr name="record_card_more" format="reference" />
+    <attr name="record_card_like_h" format="reference" />
+    <attr name="record_card_share" format="reference" />
+    <attr name="line_item_bg" format="reference" />
+    <attr name="button_back_activity" format="reference" />
+
+    <attr name="textLight" format="reference" />
+    <attr name="textLight2" format="reference" />
+    <attr name="textNight" format="reference" />
+    <attr name="textNight2" format="reference" />
+    <attr name="appBg" format="reference" />
+    <attr name="activityBg" format="reference" />
+
+    <declare-styleable name="CustomAudioIcon">
+        <attr name="type">
+            <enum name="start" value="0" />
+            <enum name="forward" value="1" />
+            <enum name="backward" value="2" />
+            <enum name="exit" value="3" />
+            <enum name="mode" value="4" />
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="EditView_withDeleteButton">
+        <attr name="text" format="string" />
+        <attr name="hint" format="string" />
+        <attr name="inputType" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="PullScrollView">
+        <attr name="header" format="reference" />
+        <attr name="headerHeight" format="dimension" />
+        <attr name="headerVisibleHeight" format="dimension" />
+    </declare-styleable>
+
+    <string-array name="tab_titles">
+        <item>@string/tab_recent</item>
+        <item>@string/tab_artists</item>
+        <item>@string/tab_albums</item>
+        <item>@string/tab_songs</item>
+        <item>@string/tab_playlists</item>
+        <item>@string/tab_genres</item>
+    </string-array>
+
+    <string-array name="tab_themt_titles">
+        <item>@string/tab_theme_welcome</item>
+        <item>@string/tab_theme_wallpager</item>
+        <item>@string/tab_theme_cover</item>
+        <item>@string/tab_theme_font</item>
+    </string-array>
+
+    <string-array name="visualization_types">
+        <item>@string/visual_none</item>
+        <item>@string/visual_bargraph</item>
+        <item>@string/visual_solidbargraph</item>
+        <item>@string/visual_waveform</item>
+    </string-array>
+    <string-array name="widget_style_types">
+        <item>@string/widget_style_dark</item>
+        <item>@string/widget_style_light</item>
+    </string-array>
+    
+    <string-array name="menuitems">
+        <item>桌面设置</item>
+        <item>桌面设置</item>
+        <item>桌面设置</item>
+        <item>桌面设置</item>
+        <item>桌面设置</item>
+        <item>桌面设置</item>
+    </string-array>
+    <string-array name="main_setting_01">
+        <item>wlan</item>
+        <item>移动网络</item>
+        <item>蓝牙</item>
+        <item>更多</item>
+        <item>安全服务</item>
+        <item>GPS定位</item>
+        <item>账户同步</item>
+        <item>个人中心</item>
+        <item>存储</item>
+        <item>应用程序</item>
+        <item>手势体感</item>
+        <item>电量管理</item>
+        <item>日期和时间</item>
+        <item>语言和输入法</item>
+        <item>关于手机</item>
+        <item>更多</item>
+    </string-array>
+    <string-array name="main_setting_02">
+        <item>音量</item>
+        <item>静音模式</item>
+        <item>来电铃声</item>
+        <item>信息铃声</item>
+        <item>其他通知</item>
+        <item>响铃时震动</item>
+        <item>拨号按键音</item>
+        <item>触摸提示音</item>
+        <item>锁屏提示音</item>
+        <item>开机提示音</item>
+        <item>触摸时震动</item>
+    </string-array>
+    <string-array name="main_setting_03">
+        <item>亮度</item>
+        <item>壁纸和锁屏样式</item>
+        <item>背光时间</item>
+        <item>自动旋转屏幕</item>
+        <item>电量百分比</item>
+        <item>按键背光</item>
+        <item>字体</item>
+        <item>节日壁纸</item>
+    </string-array>
+    <string-array name="date">
+        <item>阿妹</item>
+        <item>阿郎</item>
+        <item>陈奕迅</item>
+        <item>周杰伦</item>
+        <item>曾一鸣</item>
+        <item>成龙</item>
+        <item>王力宏</item>
+        <item>汪峰</item>
+        <item>王菲</item>
+        <item>那英</item>
+        <item>张伟</item>
+        <item>张学友</item>
+        <item>李德华</item>
+        <item>郑源</item>
+        <item>白水水</item>
+        <item>白天不亮</item>
+        <item>陈龙</item>
+        <item>陈丽丽</item>
+        <item>哈林</item>
+        <item>高进</item>
+        <item>高雷</item>
+        <item>阮今天</item>
+        <item>龚琳娜</item>
+        <item>苏醒</item>
+        <item>苏永康</item>
+        <item>陶喆</item>
+        <item>沙宝亮</item>
+        <item>宋冬野</item>
+        <item>宋伟</item>
+        <item>袁成杰</item>
+        <item>戚薇</item>
+        <item>齐大友</item>
+        <item>齐天大圣</item>
+        <item>品冠</item>
+        <item>吴克群</item>
+        <item>BOBO</item>
+        <item>Jobs</item>
+        <item>动力火车</item>
+        <item>伍佰</item>
+        <item>#蔡依林</item>
+        <item>$797835344$</item>
+        <item>Jack</item>
+        <item>~夏先生</item>
+    </string-array>
+
+</resources>

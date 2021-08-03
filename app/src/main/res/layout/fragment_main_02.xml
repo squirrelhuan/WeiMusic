@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:id="@+id/rel_music"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+
+<com.demomaster.weimusic.view.SurroundMenuLayout
+    android:id="@+id/sml_menu"
+    android:layout_width="@dimen/dp_320"
+    android:layout_height="@dimen/dp_320"
+    android:layout_centerVertical="true"
+    android:rotationY="0">
+
+    <Button
+        android:id="@+id/button_composer_music"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="?attr/record_card_more"
+        android:padding="5dp"/>
+
+    <Button
+        android:id="@+id/button_composer_place"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="?attr/record_card_like_h"/>
+
+    <Button
+        android:id="@+id/button_composer_with"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="?attr/record_card_share"/>
+</com.demomaster.weimusic.view.SurroundMenuLayout>
+
+<com.demomaster.weimusic.lrc.LrcView
+    android:id="@+id/lrcView"
+    android:layout_width="match_parent"
+    android:layout_height="155dp"
+    android:layout_toRightOf="@+id/cl_001"
+    android:layout_centerVertical="true"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"/>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/cl_001"
+    android:layout_width="@dimen/dp_320"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:rotationY="0">
+
+    <com.demomaster.weimusic.view.AudioPlayerView
+        android:id="@+id/iv_music_bar3"
+        android:layout_width="@dimen/dp_260"
+        android:layout_height="@dimen/dp_260"
+        android:layout_centerHorizontal="true"
+        android:scaleType="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.demomaster.weimusic.view.AudioBarShield
+        android:layout_width="32dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="65dp"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintLeft_toLeftOf="@+id/iv_music_model"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="1"/>
+    <!--android:src="@drawable/music_bar2"-->
+
+    <com.demomaster.weimusic.view.AudioPlayerBar
+        android:id="@+id/audio_player_bar"
+        android:layout_width="55dp"
+        android:layout_height="175dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintLeft_toLeftOf="@+id/iv_music_model"
+        app:layout_constraintRight_toRightOf="@+id/iv_music_model"
+        app:layout_constraintTop_toTopOf="@+id/iv_music_model" />
+    <!-- android:src="@drawable/music_bar1"-->
+
+    <com.demomaster.weimusic.view.AudioPlayerOrderBar
+        android:id="@+id/iv_music_model"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="-30dp"
+        android:button="@null"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/iv_music_bar3"
+        app:layout_constraintRight_toRightOf="@+id/iv_music_bar3"
+        app:layout_constraintHorizontal_bias="1.18" />
+
+    <LinearLayout
+        android:id="@+id/ll_cd_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.85"
+        android:rotationY="0"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_music_name"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:singleLine="true"
+            android:scrollHorizontally="true"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:text="歌曲名称"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/tv_singer_name"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tv_music_name"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:gravity="center_horizontal"
+            android:maxEms="10"
+            android:singleLine="true"
+            android:text="歌手名"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--
+   <musicplayer.WordView
+   android:id="@+id/text"
+   android:layout_width="match_parent"
+   android:layout_height="240dp"
+   android:layout_below="@+id/music_name" />
+-->
+
+</RelativeLayout>

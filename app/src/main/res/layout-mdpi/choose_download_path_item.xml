@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent_light_cc"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:textSize="18sp"
+            android:text="设置下载目录" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:background="@color/transparent_dark_cc"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/download_path_sdcard_interen" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:paddingRight="10dp"
+                    android:text="手机内存"
+                    android:singleLine="true" 
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_storage_phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:textSize="14sp" 
+                    android:singleLine="true" 
+                    android:text="SD卡内存" />
+            </LinearLayout>
+            
+            <RadioButton 
+                android:id="@+id/rb_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        
+         <LinearLayout
+             android:id="@+id/ll_has_sdcard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:background="@color/transparent_dark_cc"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/download_path_sdcard_extern" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:singleLine="true" 
+                    android:text="存储到SD卡内存"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_storage_extra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:textSize="14sp" 
+                    android:singleLine="true" 
+                    android:text="设置下载目录" />
+            </LinearLayout>
+            
+            <RadioButton 
+                android:id="@+id/rb_extra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+       
+         <LinearLayout
+             android:id="@+id/ll_no_sdcard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:background="@color/transparent_dark_cc"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/download_path_sdcard_extern" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:singleLine="true" 
+                    android:text="SD卡不存在"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+            
+            <RadioButton 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

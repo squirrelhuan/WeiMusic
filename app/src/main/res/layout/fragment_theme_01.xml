@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.demomaster.huan.quickdeveloplibrary.widget.QDScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            style="@style/LinearLayoutItem">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="系统"
+                android:textColor="?attr/textNight" />
+        </LinearLayout>
+
+        <com.demomaster.weimusic.view.CustomGridView
+            android:id="@+id/grid_01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="4"
+            android:scrollbars="none"
+            android:verticalSpacing="5dp" />
+
+        <LinearLayout
+            style="@style/LinearLayoutItem">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="自定义"
+                android:textColor="?attr/textNight" />
+
+            <TextView
+                android:id="@+id/tv_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="添加"
+                android:textColor="?attr/textNight2" />
+        </LinearLayout>
+
+        <com.demomaster.weimusic.view.CustomGridView
+            android:id="@+id/grid_02"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:numColumns="4"
+            android:scrollbars="none"
+            android:verticalSpacing="5dp" />
+    </LinearLayout>
+</cn.demomaster.huan.quickdeveloplibrary.widget.QDScrollView>

@@ -1,0 +1,402 @@
+<cn.demomaster.huan.quickdeveloplibrary.widget.QDScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:background="?attr/activityBg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="?attr/line_item_bg"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="网络"
+                    android:textColor="?attr/textNight2"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:id="@+id/ll_only_wifi"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_only_wifi"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="仅Wi-Fi下联网"
+                            android:textColor="?attr/textNight" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2G/3G/4G网络下不耗流量"
+                            android:textColor="?attr/textNight2"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <cn.demomaster.huan.quickdeveloplibrary.widget.button.ToggleButton
+                        android:id="@+id/button_only_wifi"
+                        style="@style/ToggleButton"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_net_play"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp">
+
+                    <TextView
+                        android:id="@+id/tv_net_play"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="使用2G/3G/4G网络播放"
+                        android:textColor="?attr/textNight" />
+
+                    <cn.demomaster.huan.quickdeveloplibrary.widget.button.ToggleButton
+                        android:id="@+id/button_net_play"
+                        style="@style/ToggleButton"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_net_download"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp">
+
+                    <TextView
+                        android:id="@+id/tv_net_download"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="使用2G/3G/4G网络下载"
+                        android:textColor="?attr/textNight" />
+
+                    <cn.demomaster.huan.quickdeveloplibrary.widget.button.ToggleButton
+                        android:id="@+id/button_net_download"
+                        style="@style/ToggleButton"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="?attr/line_item_bg"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="播放和下载"
+                    android:textColor="?attr/textNight2"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:id="@+id/ll_music_quality_play"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="在线播放音质"
+                        android:textColor="?attr/textNight" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="自动"
+                        android:textColor="?attr/textNight2" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_music_quality_download"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="下载音质"
+                        android:textColor="?attr/textNight" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="较高"
+                        android:textColor="?attr/textNight2" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_download_path"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="设置下载目录"
+                        android:textColor="?attr/textNight" />
+
+                    <TextView
+                        android:id="@+id/tv_download_storage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="存储卡1"
+                        android:textColor="?attr/textNight2" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="?attr/line_item_bg"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="个性化"
+                    android:textColor="?attr/textNight2"
+                    android:textSize="12sp" />
+
+                <!--<LinearLayout
+                    android:id="@+id/ll_custom_welcomepager"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="?attr/line_item_bg"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="自定义欢迎页"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/tv_welcomepage_path"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="默认"
+                        android:textColor="@color/gray" />
+
+                </LinearLayout>
+
+               <LinearLayout
+                   android:id="@+id/ll_custom_wallpager"
+                   android:layout_width="match_parent"
+                   android:layout_height="45dp"
+                   android:layout_marginBottom="1dp"
+                   android:background="?attr/line_item_bg"
+                   android:gravity="center_vertical"
+                   android:paddingLeft="15dp"
+                   android:paddingRight="15dp" >
+
+                   <TextView
+                       android:layout_width="0dp"
+                       android:layout_height="wrap_content"
+                       android:layout_weight="1"
+                       android:text="自定义壁纸"
+                       android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/tv_wallpage_path"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_marginLeft="5dp"
+                       android:text="默认"
+                       android:textColor="@color/gray" />
+
+               </LinearLayout>-->
+
+                <TextView
+                    android:id="@+id/tv_theme"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="主题"
+                    android:textColor="?attr/textNight" />
+
+                <LinearLayout
+                    android:id="@+id/ll_automatic_play"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="自动播放"
+                            android:textColor="?attr/textNight" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="打开软件继续之前的播放"
+                            android:textColor="?attr/textNight2"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <cn.demomaster.huan.quickdeveloplibrary.widget.button.ToggleButton
+                        style="@style/ToggleButton"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_automatic_pause"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="自动暂停"
+                            android:textColor="?attr/textNight" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="耳机插拔状态改变暂停播放"
+                            android:textColor="?attr/textNight2"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <cn.demomaster.huan.quickdeveloplibrary.widget.button.ToggleButton
+                        style="@style/ToggleButton"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="?attr/line_item_bg"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="关于"
+                    android:textColor="?attr/textNight2"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_help_and_suggest"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="帮助与建议"
+                    android:textColor="?attr/textNight" />
+
+                <TextView
+                    android:id="@+id/tv_about_player"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="关于播放器"
+                    android:textColor="?attr/textNight" />
+            </LinearLayout>
+        </LinearLayout>
+</cn.demomaster.huan.quickdeveloplibrary.widget.QDScrollView>

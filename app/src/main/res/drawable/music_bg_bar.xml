@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- 背景图 android:drawable="@drawable/seekbar_process_bg_gray"-->
+	<item android:id="@android:id/background"  android:height="@dimen/dp_2" android:gravity="center">
+		<shape>
+			<corners android:radius="5dp" />
+			<solid android:color="@color/transparent_light_44" />
+		</shape>
+		</item>
+	<!-- 第二进度图 android:drawable="@drawable/seekbar_process_bg_gray" -->
+	<item android:id="@+id/SecondaryProgress" android:height="@dimen/dp_2" android:gravity="center">
+		<clip>
+			<shape>
+				<corners android:radius="5dp" />
+				<solid android:color="@color/white" />
+			</shape>
+		</clip>
+	</item>
+	<!-- 进度度 android:drawable="@drawable/seekbar_process_bg_green" -->
+	<item android:id="@android:id/progress" android:height="@dimen/dp_2" android:gravity="center">
+		<clip>
+		<shape>
+			<corners android:radius="5dp" />
+			<solid android:color="@color/white" />
+		</shape>
+		</clip>
+	</item>
+</layer-list>

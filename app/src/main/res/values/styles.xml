@@ -1,0 +1,434 @@
+<resources  xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme_NotitleBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item><!--
+        <item name="android:windowBackground">@color/white</item>
+        <item name="textLight">@color/white</item>
+        <item name="textLight2">@color/transparent_white_cc</item>
+        <item name="appBg">@color/transparent_cc</item>
+        <item name="textNight">@color/black</item>
+        <item name="textNight2">@color/transparent_cc</item>-->
+        <!--<item name="android:windowBackground">@drawable/layout_list_start_pic</item>-->
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="StartAppTheme_Light_Main" parent="StartAppTheme_Light">
+        <item name="android:windowBackground">@drawable/main_bitmap_splash_bg</item>
+    </style>
+    <!--日间模式-->
+    <style name="StartAppTheme_Light" parent="StartAppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/main_bitmap_splash_bg</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/transparent</item>
+
+        <item name="textLight">@color/white</item>
+        <item name="textLight2">@color/transparent_light_cc</item>
+        <item name="appBg">@color/transparent_dark_cc</item>
+        <item name="activityBg">@color/white</item>
+        <item name="textNight">@color/black</item>
+        <item name="textNight2">@color/transparent_dark_cc</item>
+
+
+        <item name="btn_bottom_paly">@drawable/button_music_play_white</item>
+        <item name="btn_bottom_last">@drawable/button_music_play_last</item>
+        <item name="btn_bottom_next">@drawable/button_music_play_next</item>
+        <item name="btn_bottom_info">@drawable/no_art_small</item>
+        <item name="btn_bottom_recent">@drawable/record_card_more02</item>
+        <item name="seekbar_bottom_bg">@drawable/music_bg_bar</item>
+        <item name="seekbar_bottom_thum">@drawable/thumb_bar</item>
+
+        <item name="record_card_more">@drawable/record_card_more</item>
+        <item name="record_card_like_h">@drawable/record_card_like_h</item>
+        <item name="record_card_share">@drawable/record_card_share</item>
+
+        <item name="line_item_bg">@drawable/btn_bg_search2</item>
+
+        <!--<item name="android:windowBackground">@drawable/layout_list_start_pic</item>-->
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+    <!--夜间模式-->
+    <style name="StartAppTheme_Night" parent="AppTheme_NotitleBar">
+        <item name="android:windowNoTitle">true</item>
+        <!--<item name="android:windowBackground">@color/white</item>-->
+        <item name="android:windowBackground">@drawable/main_bitmap_splash_bg</item>
+        <item name="textLight">@color/black</item>
+        <item name="textLight2">@color/transparent_dark_cc</item>
+        <item name="appBg">@color/transparent_light_cc</item>
+        <item name="activityBg">@color/black</item>
+        <item name="textNight">@color/white</item>
+        <item name="textNight2">@color/transparent_light_cc</item>
+
+
+        <item name="btn_bottom_paly">@drawable/button_music_play_black</item>
+        <item name="btn_bottom_last">@drawable/button_music_play_black_last</item>
+        <item name="btn_bottom_next">@drawable/button_music_play_black_next</item>
+        <item name="btn_bottom_info">@drawable/no_art_small_black</item>
+        <item name="btn_bottom_recent">@drawable/record_card_more02_black</item>
+        <item name="seekbar_bottom_bg">@drawable/music_bg_black_bar</item>
+        <item name="seekbar_bottom_thum">@drawable/thumb_black_bar</item>
+
+        <item name="record_card_more">@drawable/record_card_black_more</item>
+        <item name="record_card_like_h">@drawable/record_card_like_black_h</item>
+        <item name="record_card_share">@drawable/record_card_black_share</item>
+
+
+        <item name="line_item_bg">@drawable/btn_bg_search2_black</item>
+
+        <!--<item name="android:windowBackground">@drawable/layout_list_start_pic</item>-->
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+
+    <style name="Theme.notAnimation" parent="android:Theme.Light.NoTitleBar.Fullscreen">
+        <item name="android:windowAnimationStyle">@style/notAnimation</item>
+    </style>
+
+    <!-- Application theme. -->
+    <!--<style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:windowBackground">@color/transparent</item>
+        &lt;!&ndash; All customizations that are NOT specific to a particular API-level can go here. &ndash;&gt;
+    </style>-->
+
+    <style name="dialog_anim_slide_left" mce_bogus="1" parent="android:Animation">
+        <item name="android:windowExitAnimation">@anim/dialog_exit_slide_left</item>
+    </style>
+
+    <style name="dialog_anim_slide_up" mce_bogus="1" parent="android:Animation">
+        <item name="android:windowExitAnimation">@anim/dialog_exit_slide_up</item>
+    </style>
+
+    <style name="dialog_anim_fade_out" mce_bogus="1" parent="android:Animation">
+        <item name="android:windowExitAnimation">@anim/dialog_exit_fade_out</item>
+    </style>
+
+    <style name="NotificationTitle">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <!-- <item name="android:textStyle">bold</item> -->
+    </style>
+
+    <style name="NotificationContent">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="notification_btn_custom_style">
+        <item name="android:layout_width">48dip</item>
+        <item name="android:layout_height">48dip</item>
+        <item name="android:layout_gravity">center|right</item>
+        <item name="android:background">?android:listChoiceBackgroundIndicator</item>
+    </style>
+
+    <!-- Now playing indicator -->
+    <style name="PeakMeter">
+        <item name="android:layout_width">6dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginRight">2dp</item>
+    </style>
+
+    <!-- List separator with a blue underline -->
+    <style name="SeparatorTextViewStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/list_separator_min_height</item>
+        <item name="android:background">@drawable/list_section_divider_holo_custom</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/holo_blue_dark</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/list_separator_padding_left_right</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- ContextMenu header text -->
+    <style name="HeaderText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center|left</item>
+        <item name="android:paddingTop">@dimen/header_text_padding</item>
+        <item name="android:paddingLeft">@dimen/header_text_padding_left</item>
+        <item name="android:paddingBottom">@dimen/header_text_padding</item>
+        <item name="android:paddingRight">@dimen/header_text_padding</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_large</item>
+    </style>
+
+
+    <!-- App Widget 4x2 -->
+    <style name="FourByTwoMediaButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/holo_selector</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_margin">5dp</item>
+    </style>
+
+    <!-- App Widget 4x4-->
+    <style name="FourByFourMediaButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/holo_selector</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:scaleType">center</item>
+    </style>
+
+    <style name="progressbar_style1">
+        <item name="android:maxWidth">50.0dip</item>
+        <item name="android:maxHeight">50.0dip</item>
+        <item name="android:indeterminateDrawable">@drawable/progressbar_paopao</item>
+        <item name="android:minWidth">50.0dip</item>
+        <item name="android:minHeight">50.0dip</item>
+    </style>
+
+    <!-- TextView in shown over the images in the GridView -->
+    <style name="GridViewTextItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:shadowColor">@color/white</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+    </style>
+
+
+    <!--  Black top border  -->
+    <style name="Topborderline">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">2dp</item>
+        <item name="android:background">@color/black</item>
+    </style>
+
+    <!--  TextView with drop-shadow and white text -->
+    <style name="GridviewShadowedText" parent="GridViewTextItem">
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1.5</item>
+    </style>
+
+    <!-- Custom tabs -->
+    <style name="Tabs">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">@dimen/tab_height</item>
+        <item name="android:background">@drawable/tab</item>
+        <item name="android:button">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingBottom">@dimen/tab_padding_top_bottom</item>
+        <item name="android:paddingLeft">@dimen/tab_padding_left_right</item>
+        <item name="android:paddingRight">@dimen/tab_padding_left_right</item>
+        <item name="android:paddingTop">@dimen/tab_padding_top_bottom</item>
+        <item name="android:textColor">@color/tab_text_color</item>
+        <item name="android:textSize">@dimen/text_size_micro</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:selectAllOnFocus">false</item>
+    </style>
+
+    <style name="Theme.Light.Translucent.Dialog" parent="@android:style/Theme.Holo.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <!-- Overflow Holo theme -->
+    <style name="Apollo.Holo" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionOverflowButtonStyle">@style/OverFlowHolo</item>
+    </style>
+
+    <!-- Overflow Holo.Light theme -->
+    <style name="Apollo.Holo.Light" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionOverflowButtonStyle">@style/OverFlowHolo.Light</item>
+    </style>
+
+    <!-- Overflow Holo.Dark -->
+    <style name="OverFlowHolo" parent="@android:style/Widget.Holo.ActionButton.Overflow">
+        <item name="android:src">@drawable/apollo_holo_dark_overflow2</item>
+    </style>
+
+    <!-- Overflow Holo.Light -->
+    <style name="OverFlowHolo.Light" parent="@android:style/Widget.Holo.ActionButton.Overflow">
+        <item name="android:src">@drawable/apollo_holo_dark_overflow2</item>
+    </style>
+
+    <!-- TextView in the audio player -->
+    <style name="AudioPlayerText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:scrollHorizontally">true</item>
+    </style>
+
+    <!--  TextView with drop-shadow and white text -->
+    <style name="ShadowedText" parent="AudioPlayerText">
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1.5</item>
+    </style>
+
+    <!-- ImageButton in the audio player controls -->
+    <style name="AudioPlayerButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/holo_selector</item>
+    </style>
+
+    <!-- Notification bar text -->
+    <style name="StatusBarText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">left</item>
+        <item name="android:textColor">@color/transparent_light_cc</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <!-- Notification bar button -->
+    <style name="StatusBarButton">
+        <item name="android:layout_width">@dimen/status_bar_button_width_height</item>
+        <item name="android:layout_height">@dimen/status_bar_button_width_height</item>
+        <item name="android:layout_gravity">center|right</item>
+        <item name="android:background">?android:listChoiceBackgroundIndicator</item>
+    </style>
+
+
+    <!-- TextView in the bottom bar -->
+    <style name="BottomActionBarText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">top|left|center</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">@dimen/text_size_extra_micro</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- ImageButton in the bottom bar -->
+    <style name="BottomActionBarItem">
+        <item name="android:layout_width">@dimen/bottom_action_bar_item_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingLeft">@dimen/bottom_action_bar_item_padding_left_right</item>
+        <item name="android:paddingRight">@dimen/bottom_action_bar_item_padding_left_right</item>
+        <item name="android:background">@drawable/holo_selector</item>
+        <item name="android:gravity">center|right</item>
+    </style>
+
+
+    <!-- Translucent dialog (for @PlayExternal) -->
+    <style name="Theme.Light.Translucent" parent="android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="Theme.QuickQueue" parent="android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:activityOpenEnterAnimation">@null</item>
+        <item name="android:activityOpenExitAnimation">@null</item>
+        <item name="android:activityCloseEnterAnimation">@null</item>
+        <item name="android:activityCloseExitAnimation">@null</item>
+        <item name="android:taskOpenEnterAnimation">@null</item>
+        <item name="android:taskOpenExitAnimation">@null</item>
+        <item name="android:taskCloseEnterAnimation">@null</item>
+        <item name="android:taskCloseExitAnimation">@null</item>
+        <item name="android:taskToFrontEnterAnimation">@null</item>
+        <item name="android:taskToFrontExitAnimation">@null</item>
+        <item name="android:taskToBackEnterAnimation">@null</item>
+        <item name="android:taskToBackExitAnimation">@null</item>
+    </style>
+
+    <style name="notAnimation">
+        <item name="android:activityOpenEnterAnimation">@null</item>
+        <item name="android:activityOpenExitAnimation">@null</item>
+        <item name="android:activityCloseEnterAnimation">@null</item>
+        <item name="android:activityCloseExitAnimation">@null</item>
+        <item name="android:taskOpenEnterAnimation">@null</item>
+        <item name="android:taskOpenExitAnimation">@null</item>
+        <item name="android:taskCloseEnterAnimation">@null</item>
+        <item name="android:taskCloseExitAnimation">@null</item>
+        <item name="android:taskToFrontEnterAnimation">@null</item>
+        <item name="android:taskToFrontExitAnimation">@null</item>
+        <item name="android:taskToBackEnterAnimation">@null</item>
+        <item name="android:taskToBackExitAnimation">@null</item>
+    </style>
+
+
+    <style name="TextAppearance_List_Title">
+        <item name="android:textColor">@color/selector_list_title_text</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextAppearance_List_Hint">
+        <item name="android:textColor">@color/selector_list_hint_text</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="StartAppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="StartAppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="SurroundMenuButton">
+        <item name="android:layout_width">@dimen/dp_38</item>
+        <item name="android:layout_height">@dimen/dp_38</item>
+    </style>
+
+    <style name="ToggleButton">
+        <item name="android:layout_width">@dimen/dp_45</item>
+        <item name="android:layout_height">@dimen/dp_24</item>
+    </style>
+
+    <style name="LinearLayoutItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/dp_5</item>
+        <item name="android:layout_marginTop">@dimen/dp_5</item>
+        <item name="android:layout_marginBottom">@dimen/dp_5</item>
+        <item name="android:background">?attr/textLight2</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+</resources>
