@@ -11,14 +11,10 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.model.MusicInfo;
+import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.player.service.MC;
 
 import java.util.List;
-import java.util.Map;
-
-import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.SimplePictureAdapter;
-import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.Image;
 
 /**
  * Created by Squirrel桓 on 2018/11/11.
@@ -27,10 +23,10 @@ public class MusicRecycleViewAdapter extends RecyclerView.Adapter<MusicRecycleVi
     // 帧动画
     private AnimationDrawable mPeakOneAnimation, mPeakTwoAnimation,
             mPeakThreeAnimation;
-    private List<MusicInfo> musicList;
+    private List<AudioInfo> musicList;
     private Context context;
 
-    public MusicRecycleViewAdapter(Context context, List<MusicInfo> lists) {
+    public MusicRecycleViewAdapter(Context context, List<AudioInfo> lists) {
         this.context = context;
         this.musicList = lists;
     }

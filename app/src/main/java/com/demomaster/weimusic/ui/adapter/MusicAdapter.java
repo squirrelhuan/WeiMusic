@@ -2,7 +2,6 @@ package com.demomaster.weimusic.ui.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
-import android.os.RemoteException;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +15,7 @@ import android.widget.TextView;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.interfaces.FilterListener;
-import com.demomaster.weimusic.model.MusicInfo;
-import com.demomaster.weimusic.player.helpers.MusicHelper;
+import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.player.service.MC;
 
 import java.util.ArrayList;
@@ -27,12 +25,12 @@ public class MusicAdapter extends BaseAdapter implements Filterable {
     // 帧动画
     private AnimationDrawable mPeakOneAnimation, mPeakTwoAnimation,
             mPeakThreeAnimation;
-    private List<MusicInfo> musicList;
+    private List<AudioInfo> musicList;
     private Context mContext;
     private MyFilter filter = null;// 创建MyFilter对象
     private FilterListener listener = null;// 接口对象
 
-    public MusicAdapter(List<MusicInfo> musicList, Context mContext, FilterListener filterListener) {
+    public MusicAdapter(List<AudioInfo> musicList, Context mContext, FilterListener filterListener) {
         this.mContext = mContext;
         this.musicList = musicList;
         this.listener = filterListener;
@@ -151,9 +149,9 @@ public class MusicAdapter extends BaseAdapter implements Filterable {
      */
     class MyFilter extends Filter {
         // 创建集合保存原始数据
-        private List<MusicInfo> original = new ArrayList<MusicInfo>();
+        private List<AudioInfo> original = new ArrayList<AudioInfo>();
 
-        public MyFilter(List<MusicInfo> list) {
+        public MyFilter(List<AudioInfo> list) {
             this.original = list;
         }
 
@@ -175,9 +173,9 @@ public class MusicAdapter extends BaseAdapter implements Filterable {
                 results.count = original.size();
             } else {
                 // 创建集合保存过滤后的数据
-                List<MusicInfo> mList = new ArrayList<MusicInfo>();
+                List<AudioInfo> mList = new ArrayList<AudioInfo>();
                 // 遍历原始数据集合，根据搜索的规则过滤数据
-                for (MusicInfo s : original) {
+                for (AudioInfo s : original) {
                     // 这里就是过滤规则的具体实现【规则有很多，大家可以自己决定怎么实现】
                     if (s.getTitle().trim().toLowerCase().contains(constraint.toString().trim().toLowerCase())) {
                         // 规则匹配的话就往集合中添加该数据
@@ -199,7 +197,7 @@ public class MusicAdapter extends BaseAdapter implements Filterable {
         protected void publishResults(CharSequence constraint,
                                       FilterResults results) {
             // 获取过滤后的数据
-            musicList = (List<MusicInfo>) results.values;
+            musicList = (List<AudioInfo>) results.values;
             // 如果接口对象不为空，那么调用接口中的方法获取过滤后的数据，具体的实现在new这个接口的时候重写的方法里执行
             if (listener != null) {
                 listener.getFilterData(musicList);

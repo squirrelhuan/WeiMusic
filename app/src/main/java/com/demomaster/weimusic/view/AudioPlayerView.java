@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Shader;
 
 import androidx.annotation.Nullable;
@@ -23,6 +24,7 @@ import android.view.animation.LinearInterpolator;
 
 import com.demomaster.weimusic.constant.Constants;
 import com.demomaster.weimusic.constant.ThemeConstants;
+import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.util.ThemeUtil;
@@ -40,7 +42,6 @@ import static cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil.getBitmap
  */
 public class AudioPlayerView extends View {
     public ThemeConstants.CoverType coverType;
-    Bitmap bitmap;//自定义的图片
     QDValueAnimator anim;
     float rotionProgress;
     OnAnimationListener onAnimationListener;
@@ -53,7 +54,6 @@ public class AudioPlayerView extends View {
     ActionEnum actionEnum = ActionEnum.isPaused;
     private PointF pointf_center = new PointF();//圆心
     private float radius = 0f;//半径
-    private float radius_tmp = 0f;//半径
     //半透明边框
     private Paint paint_boun = new Paint();
     private int paint_boun_color = 0x33000000;
@@ -93,12 +93,13 @@ public class AudioPlayerView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec);
+        initSize();
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        init();
+        //init();
     }
 
     public int getContenWidth() {
@@ -110,12 +111,18 @@ public class AudioPlayerView extends View {
     }
 
     public void initSize() {
-        pointf_center = new PointF(getContenWidth() / 2f + getPaddingLeft(), getContenHeight() / 2f + getPaddingTop());
+        int contentWidth = getContenWidth();
+        int paddingLeft = getPaddingLeft();
+        int centerX = (int) (contentWidth / 2f + paddingLeft);
+        int centerY = (int) (getContenHeight() / 2f + getPaddingTop());
+        pointf_center = new PointF(centerX, centerY);
         radius = Math.min(getContenWidth(), getContenHeight()) / 2f;
+       // QDLogger.e("getMeasuredWidth=" + getMeasuredWidth() + ",getMeasuredHeight=" + getMeasuredHeight() +",centerX=" + centerX + ",centerY=" + centerY);
     }
 
     /**
      * 设置转盘颜色
+     *
      * @param colorStyle
      */
     public void setColorStyle(int colorStyle) {
@@ -127,6 +134,7 @@ public class AudioPlayerView extends View {
 
     /**
      * 设置转盘图片
+     *
      * @param bitmapPath
      */
     public void setBitmapPath(String bitmapPath) {
@@ -137,29 +145,30 @@ public class AudioPlayerView extends View {
     }
 
     public void init() {
-        initSize();
+        //initSize();
         if (colorStyle != 0) {
             this.paint_circle_center_color = colorStyle;
             return;
         }
         if (bitmapPath != null) {
-            setBitmap(getBitmapFromPath(bitmapPath));
+            setAudioBitmap(getBitmapFromPath(bitmapPath));
             return;
         }
         reSeat();
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        initSize();
-
+    protected void onDraw(Canvas canvas1) {
+        viewBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(viewBitmap);
+        Paint paint = new Paint();
+        //paint.setColor(Color.YELLOW);
+        //canvas.drawRect(new Rect(0,0,getMeasuredWidth(),getMeasuredHeight()),paint);
         float scale = 1;
         if (actionEnum == ActionEnum.isChangeToNext || actionEnum == ActionEnum.isChangeToPrev) {
             scale = 0.6f + changeSongProgress * 0.4f;
         }
-        radius_tmp = radius * scale;
-        canvas.save();
+
         //绘制唱盘
         if (Build.VERSION.SDK_INT > 23) {
             Matrix matrix = new Matrix();
@@ -169,12 +178,11 @@ public class AudioPlayerView extends View {
         } else {
             canvas.rotate(rotionProgress, pointf_center.x, pointf_center.y);
         }
-        drawCover(canvas,  scale);
+        drawCover(canvas, scale, actionEnum,0);
 
         //绘制切换cd 动画
         if (actionEnum == ActionEnum.isChangeToNext || actionEnum == ActionEnum.isChangeToPrev) {
             float dy = -changeSongProgress * getHeight();
-            radius_tmp = radius;
             //绘制唱盘
             if (Build.VERSION.SDK_INT > 23) {
                 Matrix matrix = new Matrix();
@@ -187,37 +195,96 @@ public class AudioPlayerView extends View {
                 canvas.translate(0, dy);
             }
             float scale2 = 1f - changeSongProgress * 0.4f;
-            drawCover(canvas,  scale2);
+            drawCover(canvas, scale2, actionEnum,1);
         }
+        canvas1.drawBitmap(viewBitmap, 0, 0, paint);
+        super.onDraw(canvas1);
     }
 
-    //绘制唱盘
-    public void drawCover(Canvas canvas, float scale) {
-        if (coverType == ThemeConstants.CoverType.withSystem || bitmap == null || bitmap.isRecycled()) {
+    Bitmap viewBitmap;
+
+    Bitmap audioBitmap;//自定义的图片
+    Bitmap fromCoverBitmap;//上一曲封面图片
+    Bitmap toCoverBitmap;//上一曲封面图片
+    /**
+     * 绘制唱盘
+     *
+     * @param canvas
+     * @param scale
+     * @param audionIndex -1是上一首歌曲的封面 0 是当前 1是下一曲
+     */
+    public void drawCover(Canvas canvas, float scale, ActionEnum actionEnum,int audionIndex) {
+        Bitmap bitmap = null;
+        if (coverType == ThemeConstants.CoverType.withSystem ) {
+            bitmap = generateCDBitmap();
+        }else {
+            if (actionEnum == ActionEnum.isChangeToNext) {
+                if (audionIndex == 0) {
+                    if(toCoverBitmap==null||toCoverBitmap.isRecycled()) {
+                        AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(), playAudioId);
+                        toCoverBitmap = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), audioInfo);
+                    }
+                    bitmap = toCoverBitmap;
+                } else {
+                    if(fromCoverBitmap==null||fromCoverBitmap.isRecycled()) {
+                        AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(), lastAudioId);
+                        fromCoverBitmap = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), audioInfo);
+                    }
+                    bitmap = fromCoverBitmap;
+                }
+            } else if (actionEnum == ActionEnum.isChangeToPrev) {
+                if (audionIndex == 0) {
+                    if(toCoverBitmap==null||toCoverBitmap.isRecycled()) {
+                        AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(),lastAudioId);
+                        toCoverBitmap = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), audioInfo);
+                    }
+                    bitmap = toCoverBitmap;
+                } else {
+                    if(fromCoverBitmap==null||fromCoverBitmap.isRecycled()) {
+                        AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(), playAudioId);
+                        fromCoverBitmap = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), audioInfo);
+                    }
+                    bitmap = fromCoverBitmap;
+                }
+             }else {
+                fromCoverBitmap = null;
+                toCoverBitmap = null;
+                if (audioBitmap == null||audioBitmap.isRecycled()) {
+                    AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(), playAudioId);
+                    audioBitmap = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), audioInfo);
+                }
+                bitmap = audioBitmap;
+            }
+        }
+        if (bitmap == null || bitmap.isRecycled()) {
             bitmap = generateCDBitmap();
         }
+        bitmap = dealBitmap(bitmap);
        /* Path path = new Path();
         //按照逆时针方向添加一个圆
         path.addCircle(pointf_center.x, pointf_center.y, (radius_tmp - 10) * scale, Path.Direction.CCW);
         //设置为在圆形区域内绘制
         canvas.clipPath(path);*/
         //canvas.drawBitmap(bitmap, pointf_center.x - radius_tmp, pointf_center.y - radius_tmp, new Paint());
-
-        if(bitmap==null){
+        if (bitmap == null) {
             return;
         }
         int left = 0;
         int top = 0;
         int right = bitmap.getWidth();
         int bottom = bitmap.getHeight();
-        Rect rect = new Rect(left,top,right,bottom);
+        Rect srcRect = new Rect(left, top, right, bottom);
 
-        int left2 = (int)(pointf_center.x-radius*scale);
-        int top2 = (int)(pointf_center.y - radius*scale);
-        int right2 = (int)(pointf_center.x+radius*scale);
-        int bottom2 = (int)(pointf_center.y + radius*scale);
-        Rect rect2 = new Rect(left2,top2,right2,bottom2);
-        canvas.drawBitmap(bitmap,rect,rect2,new Paint());
+        int left2 = (int) (pointf_center.x - radius * scale);
+        int top2 = (int) (pointf_center.y - radius * scale);
+        int right2 = (int) (pointf_center.x + radius * scale);
+        int bottom2 = (int) (pointf_center.y + radius * scale);
+        //  QDLogger.e("scale="+scale+",left2="+left2+",top2="+top2+",right2="+right2+",bottom2="+bottom2);
+        Rect dstRect = new Rect(left2, top2, right2, bottom2);
+        /*Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        canvas.drawRect(dstRect,paint);*/
+        canvas.drawBitmap(bitmap, srcRect, dstRect, new Paint());
     }
 
     private Bitmap generateCDBitmap() {
@@ -278,19 +345,34 @@ public class AudioPlayerView extends View {
         return bitmap;
     }
 
+    @Override
+    public Bitmap getDrawingCache(boolean autoScale) {
+        // return super.getDrawingCache(autoScale);
+        return viewBitmap;
+    }
+
+    @Override
+    public Bitmap getDrawingCache() {
+        // return super.getDrawingCache();
+        return viewBitmap;
+    }
+
     /**
      * 获取自定义的图片
+     *
      * @return
      */
     private Bitmap getCustomBitmap() {
-        Bitmap bitmap1 = null;
         String path = QDSharedPreferences.getInstance().getString(Constants.Key_Theme_Cover_Custom, null);
-        bitmap1 = getBitmapFromPath(path);
+        Bitmap bitmap1 = getBitmapFromPath(path);
         return bitmap1;
     }
 
     //处理图片
-    public Bitmap dealBitmap(Bitmap bitmap){
+    public Bitmap dealBitmap(Bitmap bitmap) {
+        if(bitmap==null){
+            return null;
+        }
         //图片裁剪成正方形
         Bitmap cropBitmap = QDBitmapUtil.cropBitmap(bitmap);
         cropBitmap = QDBitmapUtil.scaleBitmap(cropBitmap, (int) (radius * 2), (int) (radius * 2));
@@ -299,17 +381,25 @@ public class AudioPlayerView extends View {
         Canvas canvas = new Canvas(bitmap1);
         Path path = new Path();
         //按照逆时针方向添加一个圆
-        path.addCircle(bitmap1.getWidth()/2, bitmap1.getWidth()/2, bitmap1.getWidth()/2, Path.Direction.CCW);
+        path.addCircle(bitmap1.getWidth() / 2, bitmap1.getWidth() / 2, bitmap1.getWidth() / 2, Path.Direction.CCW);
         //设置为在圆形区域内绘制
         canvas.clipPath(path);
-        canvas.drawBitmap(cropBitmap,0,0,new Paint());
+        canvas.drawBitmap(cropBitmap, 0, 0, new Paint());
         return bitmap1;
     }
-    public void setBitmap(Bitmap bitmap) {
+
+    /**
+     * 设置音频图片
+     *
+     * @param bitmap
+     */
+    public void setAudioBitmap(Bitmap bitmap) {
+        toCoverBitmap = null;
+        fromCoverBitmap = null;
         if (bitmap != null) {
-            this.bitmap=dealBitmap(bitmap);
+            this.audioBitmap = dealBitmap(bitmap);
         } else {
-            this.bitmap = null;
+            this.audioBitmap = null;
         }
         postInvalidate();
     }
@@ -320,7 +410,7 @@ public class AudioPlayerView extends View {
         if (anim != null && anim.isRunning()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 if (!anim.isPaused()) {
-                    QDLogger.println("唱盘 正在转动");
+                    //QDLogger.println("唱盘 正在转动");
                     return;
                 }
             }
@@ -425,39 +515,30 @@ public class AudioPlayerView extends View {
     }
 
     public void reSeat() {
-        bitmap = null;
+        this.paint_circle_center_color = QDSharedPreferences.getInstance().getInt(Constants.Key_Theme_Cover_System, Color.RED);
         Bitmap bitmap1 = null;
         coverType = ThemeUtil.getCoverType();
         if (coverType == ThemeConstants.CoverType.withMusic) {//跟随歌曲图片
-            bitmap1 = MusicDataManager.getInstance().getAlbumPicture(getContext(), MC.getInstance(getContext()).getCurrentInfo(), true);
+            bitmap1 = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), MC.getInstance(getContext()).getCurrentInfo());
             //QDLogger.println("bitmap1=" + bitmap1);
-            if (bitmap1 != null) {
-                setBitmap(bitmap1);
-                return;
-            }
         } else if (coverType == ThemeConstants.CoverType.withSystem) {
-            int c = QDSharedPreferences.getInstance().getInt(Constants.Key_Theme_Cover_System, 0);
-            if (c == 0) {
-                this.paint_circle_center_color = Color.RED;
-            } else {
-                this.paint_circle_center_color = c;
-            }
-            postInvalidate();
-            return;
+
         } else if (coverType == ThemeConstants.CoverType.customPicture) {
             bitmap1 = getCustomBitmap();
-            if (bitmap1 != null) {
-                setBitmap(bitmap1);
-                return;
-            }
         }
-        int c = QDSharedPreferences.getInstance().getInt(Constants.Key_Theme_Cover_System, 0);
-        if (c == 0) {
-            this.paint_circle_center_color = Color.RED;
-        } else {
-            this.paint_circle_center_color = c;
-        }
-        postInvalidate();
+        setAudioBitmap(bitmap1);
+    }
+
+    long lastAudioId=0;//之前的音频
+    long playAudioId=0;//要播放的音频
+    public void changeAudio(long id1,long id2) {
+        fromCoverBitmap = null;
+        toCoverBitmap = null;
+        lastAudioId = id1;
+        playAudioId = id2;
+        AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(), lastAudioId);
+        AudioInfo audioInfo1 = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(), playAudioId);
+        QDLogger.i("changeAudio:"+audioInfo.title+"-"+audioInfo1.title);
     }
 
     public void setOnClickActionListener(OnClickActionListener onClickActionListener) {
@@ -501,7 +582,7 @@ public class AudioPlayerView extends View {
                 isClicked = false;
             }*/
             if (Math.abs(lastX - event.getX()) > 10 || Math.abs(lastY - event.getY()) > 10) {
-                QDLogger.d("event gawX=" + Math.abs(lastX - event.getX()) + ",gawY=" + Math.abs(lastY - event.getY()));
+                QDLogger.println("event gawX=" + Math.abs(lastX - event.getX()) + ",gawY=" + Math.abs(lastY - event.getY()));
                 isClicked = false;
             }
         } else if (event.getAction() == MotionEvent.ACTION_UP) { //抬起

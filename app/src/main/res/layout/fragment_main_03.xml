@@ -9,6 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:orientation="horizontal">
 
     <androidx.appcompat.widget.SearchView
@@ -31,9 +33,9 @@
             android:id="@+id/iv_search"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
-            android:padding="@dimen/dp_4"
-            android:tint="@color/transparent_light_77"
-            android:src="@drawable/ic_scan_2_line"/>
+            android:padding="@dimen/dp_10"
+            app:tint="@color/transparent_light_33"
+            android:src="@drawable/ic_search_local"/>
 
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.demomaster.weimusic.constant.Constants;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.ThemeActivity;
@@ -25,6 +29,8 @@ import com.demomaster.weimusic.ui.adapter.GridAdapter_Theme_Cover;
 import com.demomaster.weimusic.util.ImageUtils;
 import com.demomaster.weimusic.util.ThemeUtil;
 import com.demomaster.weimusic.view.CustomGridView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +45,7 @@ import cn.demomaster.huan.quickdeveloplibrary.widget.button.ToggleButton;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDMulSheetDialog;
 import cn.demomaster.huan.quickdeveloplibrary.widget.popup.QDPopup;
 import cn.demomaster.qdlogger_library.QDLogger;
+import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 
 import static com.demomaster.weimusic.constant.Constants.Action_WallBackGround;
 import static com.demomaster.weimusic.constant.Constants.Action_WellComeBackGround;
@@ -47,7 +54,7 @@ import static com.demomaster.weimusic.constant.Constants.Action_WellComeBackGrou
  * Created by huan on 2018/1/21.
  */
 
-public class Fragment_Theme_Cover extends BaseFragment implements onSelcetPictureResult {
+public class Fragment_Theme_Cover extends QuickFragment implements onSelcetPictureResult {
 
     @BindView(R.id.grid_01)
     CustomGridView grid_01;
@@ -65,7 +72,7 @@ public class Fragment_Theme_Cover extends BaseFragment implements onSelcetPictur
     List<String> data2 = new ArrayList<String>();
 
     @Override
-    public View setContentUI(LayoutInflater inflater, ViewGroup container) {
+    public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_theme_cover, container, false);
     }
 

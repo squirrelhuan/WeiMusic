@@ -1,6 +1,7 @@
 package com.demomaster.weimusic.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,8 +16,10 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.constant.AudioStation;
+import com.demomaster.weimusic.dialog.SheetDialog;
 import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.ui.adapter.MyChildAdapter;
+import com.demomaster.weimusic.ui.fragment.SheetFragment;
 import com.demomaster.weimusic.view.MainLayout;
 import com.demomaster.weimusic.view.Wallpaper;
 
@@ -24,7 +27,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import cn.demomaster.huan.quickdeveloplibrary.helper.toast.QdToast;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
+import cn.demomaster.huan.quickdeveloplibrary.util.GroundGlassUtil;
+import cn.demomaster.huan.quickdeveloplibrary.util.ScreenShotUitl;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDDialog;
 import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.qdrouter_library.actionbar.ACTIONBAR_TYPE;
@@ -71,6 +77,14 @@ public class MainActivity extends BaseActivity {
         handAudioUri(intent);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(sheetDialog!=null&&sheetDialog.isShowing()){
+            sheetDialog.updateUI();
+        }
+    }
+
     private void handAudioUri(Intent intent) {
         if(intent!=null){
             if(intent.getAction().equals(android.content.Intent.ACTION_VIEW)){
@@ -92,7 +106,7 @@ public class MainActivity extends BaseActivity {
                 .setBackgroundColor(Color.TRANSPARENT)
                 .create();
         qdDialog.setCancelable(false);
-        TextView tv_left = qdDialog.getContentView().findViewById(R.id.tv_left);
+        TextView tv_left = qdDialog.findViewById(R.id.tv_left);
         tv_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,7 +114,7 @@ public class MainActivity extends BaseActivity {
                 finish();
             }
         });
-        TextView tv_right = qdDialog.getContentView().findViewById(R.id.tv_right);
+        TextView tv_right = qdDialog.findViewById(R.id.tv_right);
         tv_right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,6 +229,12 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (fragmentHelper != null) {
+            if(fragmentHelper.onKeyDown(mContext, keyCode, event)) {
+                QDLogger.d("点击事件已被fragment"+getClass().getName()+"消费 keyCode=" + keyCode + ",event=" + event);
+                return true;
+            }
+        }
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if (viewPager.getCurrentItem() != 1) {
                 viewPager.setCurrentItem(1, true);
@@ -239,8 +259,6 @@ public class MainActivity extends BaseActivity {
         //iv_wallpager.postInvalidate();
         recreate();
     } */
-
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EventMessage message) {
         AudioStation station = AudioStation.getEnum(message.getCode());
@@ -262,6 +280,9 @@ public class MainActivity extends BaseActivity {
                 case song_changed:
                     iv_wallpager.updateDrawable();
                     break;
+                case DOWNLOAD_SUCCESS:
+                    QdToast.show(mContext,"下载成功");
+                    break;
             }
         }
     }
@@ -275,5 +296,16 @@ public class MainActivity extends BaseActivity {
         if (fragmentAdapter != null) {
             fragmentAdapter.destroy();
         }
+    }
+    SheetDialog sheetDialog;
+    public void showSheetFragment(){
+        startFragment(new SheetFragment(),R.id.main_layout,null);
+        //Bitmap bitmap = ScreenShotUitl.getCacheBitmapFromView(findViewById(R.id.main_layout));
+        //GroundGlassUtil glassUtil = new GroundGlassUtil(mContext);
+        /*if(sheetDialog!=null){
+            sheetDialog.dismiss();
+        }
+        sheetDialog = new SheetDialog(mContext);
+        sheetDialog.show();*/
     }
 }

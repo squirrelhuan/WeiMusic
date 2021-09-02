@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/dp_5"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <cn.demomaster.huan.quickdeveloplibrary.widget.square.SquareImageView
+        android:id="@+id/iv_menu_icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dp_10"
+        android:layout_margin="@dimen/dp_4"
+        android:background="@drawable/folder_bg"
+        android:src="@drawable/ic_add_1"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/sp_10"
+        android:text="重命名"
+        android:textColor="@color/black" />
+
+</LinearLayout>

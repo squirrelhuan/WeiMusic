@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.model.MusicCollection;
+import com.demomaster.weimusic.model.AudioSheet;
 
 import java.util.List;
 
@@ -19,10 +19,10 @@ public class MusicCollectAdapter extends BaseAdapter {
 	// 帧动画
 	private AnimationDrawable mPeakOneAnimation, mPeakTwoAnimation,
 			mPeakThreeAnimation;
-	private List<MusicCollection> musicList;
+	private List<AudioSheet> musicList;
 	private Context mContext;
 
-	public MusicCollectAdapter(List<MusicCollection> musicList, Context mContext){
+	public MusicCollectAdapter(List<AudioSheet> musicList, Context mContext){
 		this.mContext = mContext;
 		this.musicList = musicList;
 	}
@@ -48,11 +48,11 @@ public class MusicCollectAdapter extends BaseAdapter {
 		if (convertView == null) {
 			convertView = LayoutInflater.from(mContext).inflate(
 					R.layout.item_song_sheet_01, null);
-			ImageView pImageView = (ImageView) convertView
+			ImageView pImageView = convertView
 					.findViewById(R.id.iv_head);
-			TextView pTitle = (TextView) convertView
+			TextView pTitle = convertView
 					.findViewById(R.id.tv_name);
-			TextView pArtist = (TextView) convertView
+			TextView pArtist = convertView
 					.findViewById(R.id.tv_count);
 
 			viewHolder = new ViewHolder(pImageView, pTitle,pArtist);

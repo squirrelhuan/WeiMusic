@@ -96,7 +96,7 @@
 				android:layout_width="0.0dip"
 				android:layout_height="@dimen/play_controls_notification"
 				android:src="@drawable/button_music_play"
-				android:tint="@color/black"
+				app:tint="@color/black"
 				android:scaleType="fitCenter"
 				android:layout_weight="1.0" />
 			<ImageButton android:id="@+id/status_bar_next"
@@ -105,7 +105,7 @@
 				android:layout_width="0.0dip"
 				android:layout_height="@dimen/play_controls_notification"
 				app:srcCompat="@drawable/button_notify_next"
-				android:tint="@color/black"
+				app:tint="@color/black"
 				android:scaleType="fitCenter"
 				android:layout_weight="1.0" />
 		</LinearLayout>

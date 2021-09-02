@@ -10,22 +10,37 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import com.bumptech.glide.Glide;
 import com.demomaster.weimusic.R;
+import com.demomaster.weimusic.WeiApplication;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.constant.SequenceType;
-import com.demomaster.weimusic.model.MusicInfo;
-import com.demomaster.weimusic.model.MusicRecord;
+import com.demomaster.weimusic.model.AudioSheet;
+import com.demomaster.weimusic.model.AudioInfo;
+import com.demomaster.weimusic.model.AudioRecord;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.audio.mp3.MP3File;
+import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.id3.AbstractID3v2Tag;
+import org.jaudiotagger.tag.images.Artwork;
+import org.jaudiotagger.tag.images.ArtworkFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
 import java.util.List;
 
+import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.Image;
+import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.UrlType;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.helper.QDSharedPreferences;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
@@ -38,28 +53,37 @@ public class MusicDataManager {
 
     private static MusicDataManager instance;
 
-    public static MusicDataManager getInstance() {
+    public static MusicDataManager getInstance(Context context) {
         if (instance == null) {
-            instance = new MusicDataManager();
+            instance = new MusicDataManager(context);
         }
         return instance;
     }
 
-    public MusicDataManager() {
+    public MusicDataManager(Context context) {
+        AudioRecord record = getPlayRecord();
+        AudioInfo audioInfo = null;
+        int seek = 0;
+        if (record != null) {
+            setSheetId(context, record.getSheetId());
+        }else {
 
+        }
     }
 
     public static String playRecord = "playRecord";
-    public void savePlayRecord(MusicRecord record) {
+
+    public void savePlayRecord(AudioRecord record) {
         QDSharedPreferences.getInstance().putObject(playRecord, record);
     }
 
     /**
      * 获取播放记录
+     *
      * @return
      */
-    public MusicRecord getPlayRecord() {
-        MusicRecord record = QDSharedPreferences.getInstance().getObject(playRecord, MusicRecord.class);
+    public AudioRecord getPlayRecord() {
+        AudioRecord record = QDSharedPreferences.getInstance().getObject(playRecord, AudioRecord.class);
         return record;
     }
 
@@ -68,29 +92,45 @@ public class MusicDataManager {
      *
      * @return
      */
-    public List<MusicInfo> getBlacklist() {
+    public List<AudioInfo> getBlacklist() {
         return null;
     }
 
     /**
      * 添加到黑名单
      */
-    public void addToBlacklist(MusicInfo musicInfo) {
+    public void addToBlacklist(AudioInfo audioInfo) {
 
     }
 
     /**
      * 从黑名单移除
      *
-     * @param musicInfo
+     * @param audioInfo
      */
-    public void removeFromBlacklist(MusicInfo musicInfo) {
+    public void removeFromBlacklist(AudioInfo audioInfo) {
 
+    }
+
+    long currentSheetId = -1;
+
+    public long getCurrentSheetId() {
+        return currentSheetId;
+    }
+
+    public void setCurrentSheetList(List<AudioInfo> currentSheetList) {
+        this.currentSheetList = currentSheetList;
+    }
+
+    public void setSheetId(Context context, long sheetId) {
+        this.currentSheetId = sheetId;
+        currentSheetList = getSongSheetListById(context, sheetId);
     }
 
     // 写一个异步查询类
     private final class QueryHandler extends AsyncQueryHandler {
         OnQueryListener mOnQueryListener;
+
         public QueryHandler(ContentResolver cr, OnQueryListener onQueryListener) {
             super(cr);
             mOnQueryListener = onQueryListener;
@@ -99,7 +139,7 @@ public class MusicDataManager {
         @Override
         protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
             super.onQueryComplete(token, cookie, cursor);
-            System.out.println("onQueryComplete ["+token+"]  count=" + (cursor==null?"null":cursor.getCount()));
+            System.out.println("onQueryComplete [" + token + "]  count=" + (cursor == null ? "null" : cursor.getCount()));
             if (mOnQueryListener != null) {
                 mOnQueryListener.onQueryComplete(token, cookie, cursor);
             }
@@ -112,8 +152,9 @@ public class MusicDataManager {
 
     public void loadData(Context context, OnLoadDataListener loadDataListener) {
         long duration = 30000;//30s
-        loadData(context,duration,loadDataListener);
+        loadData(context, duration, loadDataListener);
     }
+
     /**
      * 获取播放队列
      *
@@ -126,25 +167,26 @@ public class MusicDataManager {
         QueryHandler queryHandler = new QueryHandler(context.getContentResolver(), new OnQueryListener() {
             @Override
             public void onQueryComplete(int token, Object cookie, Cursor cursor) {
-                List<MusicInfo> list = null;
+                List<AudioInfo> list = null;
                 boolean equs = false;
                 // 更新mAdapter的Cursor
                 if (cursor != null) {
                     list = new ArrayList<>();
                     while (cursor.moveToNext()) {
-                        MusicInfo musicInfo = new MusicInfo();
-                        musicInfo.id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                        AudioInfo audioInfo = new AudioInfo();
+                        audioInfo.id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                        audioInfo.audioId = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
                         //歌名
-                        musicInfo.title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+                        audioInfo.title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
                         //歌手
-                        musicInfo.artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-                        musicInfo.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-                        musicInfo.duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-                        musicInfo.size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
+                        audioInfo.artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+                        //audioInfo.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                        audioInfo.duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+                        audioInfo.size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
                         //文件路径
-                        musicInfo.data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                        audioInfo.data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
                         //专辑id
-                        musicInfo.albumId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+                        audioInfo.albumId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
                        /* musicInfo.song = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
 
                         //把歌曲名字和歌手切割开
@@ -155,17 +197,17 @@ public class MusicDataManager {
                                 musicInfo.song = str[1];
                             }
                         }*/
-                        list.add(musicInfo);
+                        list.add(audioInfo);
                     }
                     //System.out.println("songlist=" + Arrays.toString(list.toArray()));
-                    equs =(songlist.size() != list.size());
+                    equs = (localSonglist.size() != list.size());
                 }
                 cursor.close();
-                songlist.clear();
+                localSonglist.clear();
                 if (list != null) {
-                    songlist.addAll(list);
+                    localSonglist.addAll(list);
                 }
-                if(loadDataListener!=null) {
+                if (loadDataListener != null) {
                     loadDataListener.loadComplete(1, list);
                 }
                 if (equs) {
@@ -177,47 +219,53 @@ public class MusicDataManager {
                 , null, MediaStore.Audio.AudioColumns.DURATION + ">" + minDuration, null, MediaStore.Audio.AudioColumns.IS_MUSIC);
     }
 
-    public MusicInfo loadDataByUri(Context context, Uri uri) {
+    public AudioInfo loadDataByUri(Context context, Uri uri) {
         ContentResolver resolver = context.getContentResolver();
-        String path = QDFileUtil.getFilePathByUri(context,uri);
-        String str = MediaStore.Audio.AudioColumns.DATA+"='"+path+"'";
-        QDLogger.e(",uri.getQuerystr="+uri.getQuery()+",str="+str);
-        Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null,str, null, null);
-        if (cursor != null){
-            while (cursor.moveToNext()){
+        String path = QDFileUtil.getFilePathByUri(context, uri);
+        String str = MediaStore.Audio.AudioColumns.DATA + "='" + path + "'";
+        QDLogger.e(",uri.getQuerystr=" + uri.getQuery() + ",str=" + str);
+        Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, str, null, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
                 String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
-                QDLogger.i("找到title="+title);
-                MusicInfo musicInfo = new MusicInfo();
-                musicInfo.id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                QDLogger.i("找到title=" + title);
+                AudioInfo audioInfo = new AudioInfo();
+                audioInfo.id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                audioInfo.audioId = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
                 //歌名
-                musicInfo.title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+                audioInfo.title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
                 //歌手
-                musicInfo.artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-                musicInfo.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-                musicInfo.duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-                musicInfo.size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
+                audioInfo.artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+                //audioInfo.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                audioInfo.duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+                audioInfo.size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
                 //文件路径
-                musicInfo.data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                audioInfo.data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
                 //专辑id
-                musicInfo.albumId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
-                return musicInfo;
+                audioInfo.albumId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+                return audioInfo;
             }
-        }else {
+        } else {
             QDLogger.e("未找到歌曲 cursor=null");
         }
         return null;
     }
 
     /**********获取歌曲专辑图片*************/
-    public Bitmap getAlbumPicture(Context context,MusicInfo musicInfo,boolean canEmpty) {
-        if(musicInfo==null||TextUtils.isEmpty(musicInfo.getData())){
+    public Bitmap getAlbumPicture(Context context, AudioInfo audioInfo) {
+        if (audioInfo == null || TextUtils.isEmpty(audioInfo.getData())) {
             return null;
         }
-        String dataPath = musicInfo.getData();
+        String dataPath = audioInfo.getData();
         android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         try {
             mmr.setDataSource(dataPath);
-        }catch (Exception e){
+            String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+            String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); // 播放时长单位为毫秒
+            QDLogger.println( "title:" + title+",album:" + album+",artist:" + artist+",duration:"+duration);
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -241,36 +289,26 @@ public class MusicDataManager {
             albumPicture = Bitmap.createBitmap(albumPicture, 0, 0, width, height, matrix, false);
             return albumPicture;
         } else {
-            if(canEmpty){
-                return null;
-            }
-            albumPicture = BitmapFactory.decodeResource(context.getResources(), R.drawable.bg_001);
-            //music1是从歌曲文件读取不出来专辑图片时用来代替的默认专辑图片
-            int width = albumPicture.getWidth();
-            int height = albumPicture.getHeight();
-            //Log.w("DisplayActivity","width = "+width+" height = "+height);
-            // 创建操作图片用的Matrix对象
-            Matrix matrix = new Matrix();
-            // 计算缩放比例
-            /*float sx = ((float) 120 / width);
-            float sy = ((float) 120 / height);
-            // 设置缩放比例
-            matrix.postScale(sx, sy);*/
-            // 建立新的bitmap，其内容是对原bitmap的缩放后的图
-            albumPicture = Bitmap.createBitmap(albumPicture, 0, 0, width, height, matrix, false);
-            return albumPicture;
+            return null;
+            /*albumPicture = BitmapFactory.decodeResource(context.getResources(), R.drawable.bg_001);
+            return albumPicture;*/
         }
     }
 
-    public List<MusicInfo> getQueue(Context context) {
-        return songlist;
+    public List<AudioInfo> getCurrentSheet() {
+        return currentSheetList;
+    }
+
+    public List<AudioInfo> getLocalSheet() {
+        return localSonglist;
     }
 
     public static interface OnLoadDataListener {
-        void loadComplete(int ret, List<MusicInfo> musicInfoList);
+        void loadComplete(int ret, List<AudioInfo> audioInfoList);
     }
 
-    List<MusicInfo> songlist = new ArrayList<>();
+    List<AudioInfo> localSonglist = new ArrayList<>();
+    List<AudioInfo> currentSheetList = new ArrayList<>();
 
     /**
      * 获取上一首歌曲信息，默认列表顺序
@@ -278,12 +316,11 @@ public class MusicDataManager {
      * @param id
      * @return
      */
-    public MusicInfo getPrevMusicInfo(long id) {
-        if (songlist != null) {
-            int index = indexOfArray(songlist, id);
-            QDLogger.i("getNextMusicInfo index=" + index);
+    public AudioInfo getPrevMusicInfo(long id) {
+        if (currentSheetList != null) {
+            int index = indexOfArray(currentSheetList, id);
             if (index - 1 >= 0) {
-                return songlist.get(index - 1);
+                return currentSheetList.get(index - 1);
             }
         }
         return null;
@@ -295,47 +332,36 @@ public class MusicDataManager {
      * @param id
      * @return
      */
-    public MusicInfo getNextMusicInfo(long id) {
-        if (songlist != null) {
-            int index = indexOfArray(songlist, id);
-            QDLogger.println("getNextMusicInfo songlist=" + songlist.size() + ", index=" + index);
-            if (index + 1 <= songlist.size() - 1) {
-                return songlist.get(index + 1);
+    public AudioInfo getNextMusicInfo(long id) {
+        if (currentSheetList != null) {
+            int index = indexOfArray(currentSheetList, id);
+            if (index + 1 <= currentSheetList.size() - 1) {
+                return currentSheetList.get(index + 1);
             }
         }
         return null;
     }
 
-    /**
-     * 获取在列表中的百分比位置，默认列表顺序
-     *
-     * @param id
-     * @return
-     */
-    public float getIndexInList(long id) {
-        int index = 0;
-        if (songlist != null) {
-            index = indexOfArray(songlist, id);
-        } else {
-            return 0;
-        }
-        return (float) (index + 1) / (float) songlist.size();
-    }
+    //从歌曲队列中获取歌曲播放序号
     public int getIndexInQueue(long id) {
-        if (songlist != null) {
-            return indexOfArray(songlist, id);
+        if (currentSheetList != null) {
+            return indexOfArray(currentSheetList, id);
         }
         return 0;
     }
 
     /**
      * 获取在列表中的索引位置，默认列表顺序
-     *
      * @param id
      * @return
      */
     public int indexOfArray(long id) {
-        return indexOfArray(songlist, id);
+        if(currentSheetList==null){
+            if(localSonglist!=null){
+                currentSheetList = localSonglist;
+            }
+        }
+        return indexOfArray(currentSheetList, id);
     }
 
     /**
@@ -344,11 +370,12 @@ public class MusicDataManager {
      * @param id
      * @return
      */
-    public int indexOfArray(List<MusicInfo> list, long id) {
-        for (int i = 0; i < list.size(); i++) {
-            //QDLogger.i("indexOfArray:"+i+", id="+id+",c="+list.get(i).id);
-            if (list.get(i).id == id) {
-                return i;
+    public int indexOfArray(List<AudioInfo> list, long id) {
+        if(list!=null) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).id == id) {
+                    return i;
+                }
             }
         }
         return -1;
@@ -359,20 +386,21 @@ public class MusicDataManager {
      *
      * @return
      */
-    public MusicInfo getFirstMusicInfo() {
-        if (songlist != null && songlist.size() > 0) {
-            return songlist.get(0);
+    public AudioInfo getFirstMusicInfo() {
+        if (currentSheetList != null && currentSheetList.size() > 0) {
+            return currentSheetList.get(0);
         }
         return null;
     }
+
     /**
      * 获取第一首歌曲信息
      *
      * @return
      */
-    public MusicInfo getLastMusicInfo() {
-        if (songlist != null && songlist.size() > 0) {
-            return songlist.get(songlist.size()-1);
+    public AudioInfo getLastMusicInfo() {
+        if (currentSheetList != null && currentSheetList.size() > 0) {
+            return currentSheetList.get(currentSheetList.size() - 1);
         }
         return null;
     }
@@ -382,13 +410,43 @@ public class MusicDataManager {
      *
      * @return
      */
-    public MusicInfo getMusicInfoById(long songId) {
-        for (int i = 0; i < songlist.size(); i++) {
-            //QDLogger.i("getMusicInfoById index=" + i + "," + songlist.get(i));
-            if (songId == songlist.get(i).getId()) {
-                //QDLogger.i("getMusicInfoById id=" + songId + "," + songlist.get(i));
-                return songlist.get(i);
+    public AudioInfo getMusicInfoByData(Context context, String data) {
+        String str = MediaStore.Audio.Media.DATA + "='" + data + "'";
+       return queryMusicInfo(context,MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,str);
+    }
+    public AudioInfo getMusicInfoById(Context context, long audioId) {
+        String str = MediaStore.Audio.Media._ID + "='" + audioId + "'";
+        return queryMusicInfo(context,MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,str);
+    }
+
+    public AudioInfo queryMusicInfo(Context context, Uri uri, String selection) {
+        ContentResolver resolver = context.getContentResolver();
+        //QDLogger.e(",uri.getQuerystr = " + selection);
+        Cursor cursor = resolver.query(uri, null, selection, null, null);
+        if (cursor != null) {
+            AudioInfo audioInfo = null;
+            while (cursor.moveToNext()) {
+                String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+                QDLogger.println("找到title=" + title);
+                audioInfo = new AudioInfo();
+                audioInfo.id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                //歌名
+                audioInfo.title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+                //歌手
+                audioInfo.artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+                //audioInfo.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                audioInfo.duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+                audioInfo.size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
+                //文件路径
+                audioInfo.data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                //专辑id
+                audioInfo.albumId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+                break;
             }
+            cursor.close();
+            return audioInfo;
+        } else {
+            QDLogger.e("未找到歌曲 cursor=null");
         }
         return null;
     }
@@ -409,133 +467,189 @@ public class MusicDataManager {
         QDSharedPreferences.getInstance().putInt(RepeatMode, sequenceType.value());
     }
 
+    public boolean isFarorite(Context context, long audioId) {
+        AudioSheet audioSheet = new AudioSheet();
+        audioSheet.setName(PLAYLIST_NAME_FAVORITES);
+        audioSheet.setSystem(true);
+        long favorites_id = createSheet(context, audioSheet);
+        AudioInfo audioInfo = ((WeiApplication) context.getApplicationContext()).getDbHelper().findOne("select * from AudioInfo where sheetId='" + favorites_id+"' and audioId="+audioId, AudioInfo.class);
+        return audioInfo!=null;
+    }
+
+    public void addFavorite(Context context, Long audioId) {
+        AudioSheet audioSheet = new AudioSheet();
+        audioSheet.setName(PLAYLIST_NAME_FAVORITES);
+        long table_favorites_id = createSheet(context, audioSheet);
+        if (table_favorites_id != -1) {
+            AudioInfo audioInfo = new AudioInfo();
+                    audioInfo.setAudioId(audioId);
+                    audioInfo.setSheetId(table_favorites_id);
+                    ((WeiApplication) context.getApplicationContext()).getDbHelper().insert(audioInfo);
+                    QDLogger.i("添加到收藏列表：audioId=" + audioId);
+            }
+    }
+
+    public void addToSheet(Context context, long sheetId, long audioId) {
+        //判断音频文件是否存在
+        AudioInfo audioInfo = getMusicInfoById(context,audioId);
+        if(audioInfo!=null){
+            //判断歌单是否存在
+            audioInfo = ((WeiApplication) context.getApplicationContext()).getDbHelper()
+                    .findOne("select * from AudioInfo where sheetId='" + sheetId+"' and audioId="+audioId, AudioInfo.class);
+            if(audioInfo==null) {
+                audioInfo = new AudioInfo();
+                audioInfo.setAudioId(audioId);
+                audioInfo.setSheetId(sheetId);
+                ((WeiApplication) context.getApplicationContext()).getDbHelper().insert(audioInfo);
+                QDLogger.i("添加到歌单：" + sheetId + ",audioId=" + audioId);
+            }else {
+                QDLogger.e("已经添加到歌单");
+            }
+        }else {
+            QDLogger.e("要添加的音频文件不存在");
+        }
+    }
+
+    public void removeFromSheet(Context context,long sheetId, long audioId) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("audioId",audioId);
+        contentValues.put("sheetId",sheetId);
+        QDLogger.e("从歌单移除"+sheetId+",audioId="+audioId);
+        //((WeiApplication) context.getApplicationContext()).getDbHelper().getDb().delete("AudioInfo",
+        //        "audioId=? and sheetId=?", new String[]{String.valueOf(audioId),String.valueOf(sheetId)});
+        ((WeiApplication) context.getApplicationContext()).getDbHelper().delete("AudioInfo",contentValues);
+        //((WeiApplication) context.getApplicationContext()).getDbHelper().execDeleteSQL("delete from AudioInfo where audioId='"+audioId+"' and sheetId='"+sheetId+"'");
+    }
+
+    public void removeFavorite(Context context, Long audioId) {
+        AudioSheet audioSheet = new AudioSheet();
+        audioSheet.setName(PLAYLIST_NAME_FAVORITES);
+        long favorites_id = createSheet(context, audioSheet);
+        ((WeiApplication) context.getApplicationContext()).getDbHelper().execDeleteSQL("delete from AudioInfo where sheetId='" + favorites_id+"' and audioId="+audioId);
+    }
+
     /**
-     * 收藏列表是否存在
+     * 创建歌单
+     *
+     * @param context
      * @return
      */
-    public long initFaroriteTable(Context context) {
-        long favorites_id = -1;
-        ContentResolver resolver = context.getContentResolver();
-        String favorites_where = MediaStore.Audio.PlaylistsColumns.NAME + "='" + PLAYLIST_NAME_FAVORITES + "'";
-        String[] favorites_cols = new String[]{
-                MediaStore.Audio.Media._ID
-        };
-        Uri favorites_uri = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
-        Cursor cursor = resolver.query(favorites_uri, favorites_cols, favorites_where, null,
-                null);
-        if (cursor.getCount() <= 0) {
-            favorites_id = createPlaylist(context, PLAYLIST_NAME_FAVORITES);
-        } else {
-            cursor.moveToFirst();
-            favorites_id = cursor.getLong(0);
+    public static long createSheet(Context context, AudioSheet audioSheet1) {
+        String name = audioSheet1.getName();
+        AudioSheet audioSheet = ((WeiApplication) context.getApplicationContext()).getDbHelper().findOne("select * from AudioSheet where name='" + name+"'", AudioSheet.class);
+        if (audioSheet != null) {
+            return audioSheet.getId();
         }
-        cursor.close();
-        QDLogger.i("favorites_id=" + favorites_id);
-
-        String[] cols = new String[]{
-                MediaStore.Audio.Playlists.Members.AUDIO_ID
-        };
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri(EXTERNAL, favorites_id);
-        Cursor cur = resolver.query(uri, cols, null, null, null);
-        while (cur.moveToNext()) {//添加收藏列表
-            long id = cur.getLong(0);
-            faroriteMap = new LinkedHashMap<>();
-            faroriteMap.put(id, id);
-        }
-        cur.close();
-        return favorites_id;
+        ((WeiApplication) context.getApplicationContext()).getDbHelper().insert(audioSheet1);
+        return ((WeiApplication) context.getApplicationContext()).getDbHelper().getLastIndex();
     }
 
-    LinkedHashMap<Long, Long> faroriteMap = new LinkedHashMap<>();
-    public boolean isFarorite(Context context, long id) {
-        if (faroriteMap != null) {
-            return faroriteMap.containsValue(id);
-        }
-        long favorites_id;
-        favorites_id = initFaroriteTable(context);
-        if (favorites_id == -1) {
-            return false;
-        }
-        ContentResolver resolver = context.getContentResolver();
-        String[] cols = new String[]{
-                MediaStore.Audio.Playlists.Members.AUDIO_ID
-        };
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri(EXTERNAL, favorites_id);
-        Cursor cur = resolver.query(uri, cols, " " + MediaStore.Audio.Playlists.Members.AUDIO_ID + "=" + id, null, null);
-
-        int count = cur.getCount();
-        cur.close();
-        QDLogger.i("cur.getCount() =" + count);
-        return count >= 1;
-    }
-
-    public void addFavorite(Context context, Long id) {
-        long table_favorites_id;
-        table_favorites_id = initFaroriteTable(context);
-        if (table_favorites_id == -1) {
-            return;
-        }
-        ContentResolver resolver = context.getContentResolver();
-
-        String[] cols = new String[]{
-                MediaStore.Audio.Playlists.Members.AUDIO_ID
-        };
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri(EXTERNAL, table_favorites_id);
-        Cursor cur = resolver.query(uri, cols, null, null, null);
-        int base = cur.getCount();
-        cur.moveToFirst();
-        while (!cur.isAfterLast()) {
-            if (cur.getLong(0) == id)
-                return;
-            cur.moveToNext();
-        }
-        cur.close();
-
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, id);
-        values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, base + 1);
-        Uri uri1 = resolver.insert(uri, values);
-        if (faroriteMap != null) {
-            faroriteMap.put(id, id);
-        }
-        QDLogger.i("uri1 =" + uri1.getPath());
-    }
-
-    public void removeFavorite(Context context, Long id) {
-        long table_favorites_id;
-        ContentResolver resolver = context.getContentResolver();
-        table_favorites_id = initFaroriteTable(context);
-
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri(EXTERNAL, table_favorites_id);
-        resolver.delete(uri, MediaStore.Audio.Playlists.Members.AUDIO_ID + "=" + id, null);
-        if (faroriteMap != null) {
-            faroriteMap.remove(id);
+    public void modifySheet(Context context,AudioSheet audioSheet1) {
+        AudioSheet audioSheet = ((WeiApplication) context.getApplicationContext()).getDbHelper().findOne("select * from AudioSheet where id=" + audioSheet1.getId(), AudioSheet.class);
+        if (audioSheet != null) {
+            if(!audioSheet.isSystem()){//系统歌单不允许改名
+                audioSheet.setName(audioSheet1.getName());
+            }
+            if (!TextUtils.isEmpty(audioSheet1.getImgSrc())) {
+                audioSheet.setImgSrc(audioSheet1.getImgSrc());
+            }
+            audioSheet.setThemeColor(audioSheet1.getThemeColor());
+            ((WeiApplication) context.getApplicationContext()).getDbHelper().modify(audioSheet);
         }
     }
 
+    public static List<AudioSheet> getSongSheet(Context context) {
+        return ((WeiApplication) context.getApplicationContext()).getDbHelper().findArray("select * from AudioSheet", AudioSheet.class);
+    }
+
+    public static AudioSheet getSongSheetById(Context context, long sheetId) {
+        return ((WeiApplication) context.getApplicationContext()).getDbHelper().findOne("select * from AudioSheet where id=" + sheetId, AudioSheet.class);
+    }
 
     /**
      * @param context
-     * @param name
+     * @param sheetId
      * @return
      */
-    public static long createPlaylist(Context context, String name) {
-        if (!TextUtils.isEmpty(name)) {
-            ContentResolver resolver = context.getContentResolver();
-            String[] cols = new String[]{
-                    MediaStore.Audio.PlaylistsColumns.NAME
-            };
-            String whereclause = MediaStore.Audio.PlaylistsColumns.NAME + " = '" + name + "'";
-            Cursor cur = resolver.query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, cols, whereclause,
-                    null, null);
-            if (cur.getCount() <= 0) {
-                ContentValues values = new ContentValues(1);
-                values.put(MediaStore.Audio.PlaylistsColumns.NAME, name);
-                Uri uri = resolver.insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values);
-                return Long.parseLong(uri.getLastPathSegment());
+    public static List<AudioInfo> getSongSheetListById(Context context, long sheetId) {
+        List<AudioInfo> audioInfoList = ((WeiApplication) context.getApplicationContext()).getDbHelper().findArray("select * from AudioInfo where sheetId='"+sheetId+"'", AudioInfo.class);
+        if(audioInfoList!=null){
+            List<Long> ids = new ArrayList<>();
+            for(int i=0;i<audioInfoList.size();i++){
+                ids.add(audioInfoList.get(i).getAudioId());
             }
-            return -1;
+            if (ids.size() > 0) {
+                StringBuilder where = new StringBuilder();
+                //where.append(MediaStore.Audio.AudioColumns.IS_MUSIC + "=1").append(" AND " + MediaStore.MediaColumns.TITLE + " != ''");
+                where = new StringBuilder();
+                where.append(MediaStore.Audio.AudioColumns.IS_MUSIC + "=1");
+                where.append(" AND " + MediaStore.MediaColumns.TITLE + " != ''");
+                where = new StringBuilder();
+                where.append(MediaStore.Audio.AudioColumns.IS_MUSIC + "=1");
+                where.append(" AND " + MediaStore.MediaColumns.TITLE + " != ''");
+                where.append(" AND " + BaseColumns._ID + " IN (");
+                for (long queue_id : ids) {
+                    where.append(queue_id + ",");
+                }
+                where.deleteCharAt(where.length() - 1);
+                where.append(")");
+
+                Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                ContentResolver resolver = context.getContentResolver();
+                //QDLogger.i("where.toString()="+where.toString());
+                Cursor cursor = resolver.query(uri, null, where.toString(), null, null);
+                if (cursor != null) {
+                    audioInfoList = new ArrayList<>();
+                    while (cursor.moveToNext()) {//添加收藏列表
+                        AudioInfo audioInfo = new AudioInfo();
+                        audioInfo.id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                        audioInfo.audioId = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+
+                        //QDLogger.i("musicInfo.id="+musicInfo.id);
+                        //歌名
+                        audioInfo.title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+
+                        QDLogger.i(sheetId+","+audioInfo.title+","+ audioInfo.id);
+                        //歌手
+                        audioInfo.artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+                        //audioInfo.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+
+                        audioInfo.duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+                        audioInfo.size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
+                        //文件路径
+                        audioInfo.data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                        //专辑id
+                        audioInfo.albumId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+                        audioInfo.setSheetId(sheetId);
+                        // musicInfo.setAlbum(data.getString(mAlbumIndex));
+                        audioInfoList.add(audioInfo);
+                    }
+                    cursor.close();
+                    return audioInfoList;
+                }
+            }
         }
-        return -1;
+        return null;
+    }
+
+    public static Cursor query(Context context, Uri uri, String[] projection, String selection,
+                               String[] selectionArgs, String sortOrder) {
+        return query(context, uri, projection, selection, selectionArgs, sortOrder, 0);
+    }
+
+    public static Cursor query(Context context, Uri uri, String[] projection, String selection,
+                               String[] selectionArgs, String sortOrder, int limit) {
+        try {
+            ContentResolver resolver = context.getContentResolver();
+            if (resolver != null) {
+                if (limit > 0) {
+                    uri = uri.buildUpon().appendQueryParameter("limit", "" + limit).build();
+                }
+                return resolver.query(uri, projection, selection, selectionArgs, sortOrder);
+            }
+        } catch (UnsupportedOperationException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }

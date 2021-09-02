@@ -17,7 +17,7 @@
         android:thumb="?attr/seekbar_bottom_thum"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></SeekBar>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/audio_player_current_time"

@@ -3,15 +3,21 @@ package com.demomaster.weimusic.ui.fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.demomaster.weimusic.R;
+import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.player.helpers.MusicHelper;
 import com.demomaster.weimusic.player.service.MC;
@@ -19,13 +25,19 @@ import com.demomaster.weimusic.player.service.MC;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
+import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDMulSheetDialog;
 import cn.demomaster.huan.quickdeveloplibrary.widget.square.SquareImageView;
 import cn.demomaster.qdlogger_library.QDLogger;
+import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 
-public class PPBottomActionBarFragment extends BaseFragment {
+public class PPBottomActionBarFragment extends QuickFragment {
 
     @BindView(R.id.audio_player_total_time)
     TextView mTotalTime;
@@ -39,6 +51,10 @@ public class PPBottomActionBarFragment extends BaseFragment {
     SquareImageView mNext;
     @BindView(R.id.sb_music_process)
     SeekBar mProgress;
+    @BindView(R.id.bottom_select_cd_open)
+    SquareImageView bottom_select_cd_open;
+    @BindView(R.id.iv_info)
+    ImageView iv_info;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -47,7 +63,11 @@ public class PPBottomActionBarFragment extends BaseFragment {
     }
 
     @Override
-    public View setContentUI(LayoutInflater inflater, ViewGroup container) {
+    public boolean isUseActionBarLayout() {
+        return false;
+    }
+    @Override
+    public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             return inflater.inflate(R.layout.layout_bottom_portrait,
                     container);
@@ -59,10 +79,19 @@ public class PPBottomActionBarFragment extends BaseFragment {
 
     @Override
     public void initView(View view) {
+        ButterKnife.bind(this, view);
+        iv_info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMulMenuDialog();
+            }
+        });
         mPrev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getDefault().post(new EventMessage(AudioStation.preToPlayLast.value()));//准备播放下一首
+                long id1 = MC.getInstance(getContext()).getCurrentAudioId();
+                long id2 = MC.getInstance(getContext()).getNextMusicInfo(true).getAudioId();
+                EventBus.getDefault().post(new EventMessage(AudioStation.preToPlayLast.value(),new long[]{id1,id2}));//准备播放下一首
                 // MC.getInstance(getContext()).playPrev();
             }
         });
@@ -86,7 +115,15 @@ public class PPBottomActionBarFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 // MC.getInstance(getContext()).playNext();
-                EventBus.getDefault().post(new EventMessage(AudioStation.preToPlayNext.value()));//准备播放下一首
+                long id1 = MC.getInstance(getContext()).getCurrentAudioId();
+                long id2 = MC.getInstance(getContext()).getNextMusicInfo(false).audioId;
+                EventBus.getDefault().post(new EventMessage(AudioStation.preToPlayNext.value(),new long[]{id1,id2}));//准备播放下一首
+            }
+        });
+        bottom_select_cd_open.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).showSheetFragment();
             }
         });
 
@@ -108,6 +145,17 @@ public class PPBottomActionBarFragment extends BaseFragment {
             }
         });
         mProgress.setMax(1000);
+    }
+    private void showMulMenuDialog() {
+        String[] menus = {"不开启", "播放完当前歌曲", "10分钟", "20分钟", "30分钟", "60分钟", "90分钟", "120分钟", "自定义"};
+        new QDMulSheetDialog.MenuBuilder(getContext()).setData(menus).setOnDialogActionListener(new QDMulSheetDialog.OnDialogActionListener() {
+            @Override
+            public void onItemClick(QDMulSheetDialog dialog, int position, List<String> data) {
+                dialog.dismiss();
+            }
+        })
+        .create()
+        .show();
     }
 
     public void refreshUI() {
@@ -189,5 +237,10 @@ public class PPBottomActionBarFragment extends BaseFragment {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return false;
     }
 }

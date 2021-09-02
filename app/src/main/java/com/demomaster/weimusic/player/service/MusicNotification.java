@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.provider.SyncStateContract;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -20,6 +21,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.MainActivity;
+import com.demomaster.weimusic.constant.Constants;
 
 import cn.demomaster.huan.quickdeveloplibrary.helper.NotificationHelper;
 import cn.demomaster.qdlogger_library.QDLogger;
@@ -59,6 +61,8 @@ public class MusicNotification {
         
         ComponentName componentName = new ComponentName(mContext.getPackageName(),
                 MediaButtonIntentReceiver.class.getName());
+
+        //暂停/播放
         Intent intent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         intent.putExtra(CMDNOTIF, 1);
         intent.setComponent(componentName);
@@ -75,6 +79,7 @@ public class MusicNotification {
         views.setOnClickPendingIntent(R.id.status_bar_play, mediaPendingIntent);
         bigViews.setOnClickPendingIntent(R.id.status_bar_play, mediaPendingIntent);
 
+        //播放下一首
         intent.putExtra(CMDNOTIF, 2);
         mediaKey = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
         intent.putExtra(Intent.EXTRA_KEY_EVENT, mediaKey);
@@ -84,6 +89,7 @@ public class MusicNotification {
         views.setOnClickPendingIntent(R.id.status_bar_next, mediaPendingIntent);
         bigViews.setOnClickPendingIntent(R.id.status_bar_next, mediaPendingIntent);
 
+        //播放上一首
         intent.putExtra(CMDNOTIF, 4);
         mediaKey = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
         intent.putExtra(Intent.EXTRA_KEY_EVENT, mediaKey);
@@ -92,6 +98,7 @@ public class MusicNotification {
 
         bigViews.setOnClickPendingIntent(R.id.status_bar_prev, mediaPendingIntent);
 
+        //停止
         intent.putExtra(CMDNOTIF, 3);
         mediaKey = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_STOP);
         intent.putExtra(Intent.EXTRA_KEY_EVENT, mediaKey);
@@ -125,16 +132,21 @@ public class MusicNotification {
         if(notification==null){
             return;
         }
+        notification.tickerText = getTrackName();
         notification.contentView = views;
         notification.bigContentView = bigViews;
-       // notification.flags = Notification.FLAG_ONGOING_EVENT;
-        notification.flags = Notification.FLAG_NO_CLEAR;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notification.visibility = (Notification.VISIBILITY_PUBLIC);
+        }
+        //notification.priority = Notification.PRIORITY_MAX;
+        // notification.flags = Notification.FLAG_ONGOING_EVENT;
+        notification.flags = FLAG_NO_CLEAR;
         notification.icon = R.drawable.stat_notify_music;
         notification.contentIntent = PendingIntent.getActivity(mContext, 0,
                 new Intent(mContext, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 0);
         //service.startForeground(1, notification);
-        NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
         mNotificationManager.notify(1, notification);
     }
 
@@ -143,7 +155,7 @@ public class MusicNotification {
     }
 
     private Bitmap getAlbumBitmap() {
-        Bitmap bitmap = MusicDataManager.getInstance().getAlbumPicture(mContext, MC.getInstance(mContext).getCurrentInfo(), true);
+        Bitmap bitmap = MusicDataManager.getInstance(mContext).getAlbumPicture(mContext, MC.getInstance(mContext).getCurrentInfo());
         if(bitmap==null){
             bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_launcher_pp);
         }return bitmap;
@@ -174,6 +186,7 @@ public class MusicNotification {
                 .setEnableVibration(false)
                 .setEnableSound(false)
                 .setContentText("")
+                .setOngoing(true)
                 .send();
         updateNotification();
         service.startForeground(1, notification);

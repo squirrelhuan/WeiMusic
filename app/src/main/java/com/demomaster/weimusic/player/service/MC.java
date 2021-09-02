@@ -1,7 +1,9 @@
 package com.demomaster.weimusic.player.service;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
@@ -10,26 +12,29 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.os.PowerManager;
+import android.telephony.TelephonyManager;
 
-import androidx.annotation.RequiresApi;
-
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.constant.SequenceType;
-import com.demomaster.weimusic.model.MusicInfo;
-import com.demomaster.weimusic.model.MusicRecord;
+import com.demomaster.weimusic.model.AudioInfo;
+import com.demomaster.weimusic.model.AudioRecord;
+import com.demomaster.weimusic.player.proxy.QuickProxy;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 
+import cn.demomaster.huan.quickdeveloplibrary.constant.AppConfig;
+import cn.demomaster.huan.quickdeveloplibrary.helper.toast.QdToast;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.quickpermission_library.PermissionHelper;
@@ -55,7 +60,7 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
     private static QdMediaPlayer mPlayer;
     private static MusicDataManager dataManager;
     private static MC instance;
-    private List<MusicInfo> mPlayList;
+    private List<AudioInfo> mPlayList;
 
     public static MC getInstance(Context context) {
         if (instance == null) {
@@ -66,6 +71,7 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
 
     private MC(Context context) {
         mContext = context.getApplicationContext();
+        recovery();
     }
 
     public void init() {
@@ -115,10 +121,8 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
     AudioAttributes playbackAttributes;
     AudioFocusRequest focusRequest;
 
-    final Object focusLock = new Object();
-    boolean playbackDelayed = false;
-    boolean playbackNowAuthorized = false;
-    boolean resumeOnFocusGain = false;
+    boolean loss_transient = false;//音频焦点临时丢失
+    boolean isLoss_transient_isplaying;//丢失焦点时是否在播放音频
 
     private void request() {
         int res = 0;
@@ -130,19 +134,13 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
                     AudioManager.AUDIOFOCUS_GAIN);
         }
         //QDLogger.i("request="+res);
-        synchronized (focusLock) {
-            if (res == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
-                QDLogger.e("音频焦点获取失败");
-                playbackNowAuthorized = false;
-            } else if (res == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                QDLogger.i("音频焦点获取成功");
-                playbackNowAuthorized = true;
-                //playbackNow();
-            } else if (res == AudioManager.AUDIOFOCUS_REQUEST_DELAYED) {
-                QDLogger.i("音频焦点延迟授权");
-                playbackDelayed = true;
-                playbackNowAuthorized = false;
-            }
+        loss_transient = false;
+        if (res == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
+            QDLogger.e("音频焦点获取失败");
+        } else if (res == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            QDLogger.i("音频焦点获取成功");
+        } else if (res == AudioManager.AUDIOFOCUS_REQUEST_DELAYED) {
+            QDLogger.i("音频焦点延迟授权");
         }
     }
 
@@ -152,41 +150,64 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN:
                 //用于指示持续时间未知的音频聚焦增益或音频聚焦请求。
-                if (playbackDelayed || resumeOnFocusGain) {
-                    synchronized (focusLock) {
-                        playbackDelayed = false;
-                        resumeOnFocusGain = false;
+                if (loss_transient) {
+                    QDLogger.w("音频焦点临时丢失后恢复了");
+                    loss_transient = false;
+                    if (isLoss_transient_isplaying) {//如果丢失焦点前是播放状态，是被打断意外终止的。则继续播放
+                        play();
                     }
-                    // playbackNow();
                 }
                 break;
             case AudioManager.AUDIOFOCUS_LOSS://音频失去焦点
                 QDLogger.w("音频焦点丢失时间未知长期");
-                synchronized (focusLock) {
-                    resumeOnFocusGain = false;
-                    playbackDelayed = false;
-                }
+                loss_transient = false;
                 pause();
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 QDLogger.w("音频焦点暂时丢失");
-                synchronized (focusLock) {
-                    resumeOnFocusGain = true;
-                    playbackDelayed = false;
-                }
-                //pause();
+                loss_transient = true;
+                isLoss_transient_isplaying = isPlaying();
+                pause();
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 //用于指示音频焦点暂时丢失，此时音频焦点丢失者可能
                 //*如果要继续播放（也称为“闪避”），请降低其输出音量，如下所示：
                 //*新的焦点所有者不要求其他人保持沉默。
-                playDependsYourDear();
                 break;
         }
     }
 
-    private void playDependsYourDear() {
-        QDLogger.w("playDependsYourDear");
+    TelephonyManager mTelephonyManager;
+
+    private void telephony() {
+        if (mTelephonyManager == null)
+            mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        BroadcastReceiver mPanelBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (TelephonyManager.ACTION_PHONE_STATE_CHANGED.equals(action)) {
+                    int state = mTelephonyManager.getCallState();
+                    switch (state) {
+                        case TelephonyManager.CALL_STATE_IDLE:// 电话挂断
+                            QDLogger.w("电话挂断...");
+                            break;
+                        case TelephonyManager.CALL_STATE_OFFHOOK: //电话通话的状态
+                            QDLogger.w("正在通话...");
+                            break;
+                        case TelephonyManager.CALL_STATE_RINGING: //电话响铃的状态
+                            QDLogger.w("电话响铃...");
+                            break;
+                    }
+                    //sendMessage(jsonObject.toString());
+                }
+            }
+        };
+
+        IntentFilter panelFilter = new IntentFilter();
+        panelFilter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
+        panelFilter.setPriority(Integer.MAX_VALUE);
+        mContext.registerReceiver(mPanelBroadcastReceiver, panelFilter, null, null);
     }
 
     /**
@@ -199,16 +220,16 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
 
     //获取播放列表
     public void loadMusicList() {
-        dataManager = MusicDataManager.getInstance();
+        dataManager = MusicDataManager.getInstance(mContext);
         boolean b = PermissionHelper.getInstance().getPermissionStatus(mContext, PERMISSIONS);
         if (b) {
             dataManager.loadData(mContext, new MusicDataManager.OnLoadDataListener() {
                 @Override
-                public void loadComplete(int ret, List<MusicInfo> musicInfoList) {
+                public void loadComplete(int ret, List<AudioInfo> audioInfoList) {
                     if (ret == 1) {
-                        if (musicInfoList != null) {
+                        if (audioInfoList != null) {
                             mPlayList = new ArrayList<>();
-                            mPlayList.addAll(musicInfoList);
+                            mPlayList.addAll(audioInfoList);
                         }
                         recovery();
                         QDLogger.e("播放列表加載完成");
@@ -260,7 +281,6 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
         @Override
         public void onPrepared(MediaPlayer mp) {
             QDLogger.println("音频准备完成");
-
             request();
             savePlayState();
             EventBus.getDefault().post(new EventMessage(audio_ready.value()));
@@ -319,21 +339,21 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
     }
 
     public boolean isPlaying() {
-        if (mPlayer == null) {
+        if (mPlayer == null || !mPlayer.hasPrepared) {
             return false;
         }
         return mPlayer.isPlaying();
     }
 
-    MusicInfo currentMusicInfo;
+    AudioInfo currentAudioInfo;
 
     /**
      * 获取当前播放歌曲信息
      *
      * @return
      */
-    public MusicInfo getCurrentInfo() {
-        return currentMusicInfo;
+    public AudioInfo getCurrentInfo() {
+        return currentAudioInfo;
     }
 
     public long Position() {
@@ -369,49 +389,61 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
     //恢复播放状态
     public void recovery() {
         //恢复播放模式
-        SequenceType sequenceType = MusicDataManager.getInstance().getRepeatMode();
+        SequenceType sequenceType = MusicDataManager.getInstance(mContext).getRepeatMode();
         setRepeatMode(sequenceType);
         //恢复上次播放的歌单，索引&id，进度
-        MusicRecord record = MusicDataManager.getInstance().getPlayRecord();
-        MusicInfo musicInfo = null;
+        AudioRecord record = MusicDataManager.getInstance(mContext).getPlayRecord();
+        AudioInfo audioInfo = null;
         int seek = 0;
         if (record != null) {
-            musicInfo = MusicDataManager.getInstance().getMusicInfoById(record.getSongId());
-            QDLogger.println("恢复上次播放的歌单索引:" + record);
-            if (musicInfo != null) {
-                seek = (int) (record.getProgress() * musicInfo.duration);
+            MusicDataManager.getInstance(mContext).setSheetId(mContext, record.getSheetId());
+            if(record.getSheetId()==-1){
+                MusicDataManager.getInstance(mContext).setCurrentSheetList(mPlayList);
             }
+            audioInfo = MusicDataManager.getInstance(mContext).getMusicInfoByData(mContext, record.getData());
+            if (record.getSongId() != -1) {
+                audioInfo = MusicDataManager.getInstance(mContext).getMusicInfoById(mContext, record.getSongId());
+            }
+            QDLogger.println("恢复上次播放的歌单索引:" + record);
+            if (audioInfo != null) {
+                seek = (int) (record.getProgress() * audioInfo.duration);
+            }
+        }else {
+            MusicDataManager.getInstance(mContext).setCurrentSheetList(mPlayList);
         }
-        if (musicInfo == null) {
-            musicInfo = MusicDataManager.getInstance().getFirstMusicInfo();
+        if (audioInfo == null) {
+            audioInfo = MusicDataManager.getInstance(mContext).getFirstMusicInfo();
         }
 
-        if (musicInfo != null) {
-            currentMusicInfo = musicInfo;
-            currentMusicInfo.setPosition(seek);
+        if (audioInfo != null) {
+            if (record.getSheetId() != -1) {
+                audioInfo.setSheetId(record.getSheetId());
+            }
+            currentAudioInfo = audioInfo;
+            currentAudioInfo.setPosition(seek);
             EventBus.getDefault().post(new EventMessage(PLAYSTATE_CHANGED.value()));
         }
     }
 
     public long getCurrentAudioId() {
-        if (currentMusicInfo == null) {
+        if (currentAudioInfo == null) {
             return -1;
         }
-        return currentMusicInfo.id;
+        return currentAudioInfo.id;
     }
 
     public boolean isFavorite(Long id) {
-        return MusicDataManager.getInstance().isFarorite(mContext, id);
+        return MusicDataManager.getInstance(mContext).isFarorite(mContext, id);
     }
 
     public void toggleFavorite() {
-        if (mPlayer != null && currentMusicInfo != null) {
-            Long id = currentMusicInfo.getId();
+        if (mPlayer != null && currentAudioInfo != null) {
+            Long id = currentAudioInfo.getId();
             boolean b = isFavorite(id);
             if (!b) {
-                MusicDataManager.getInstance().addFavorite(mContext, id);
+                MusicDataManager.getInstance(mContext).addFavorite(mContext, id);
             } else {
-                MusicDataManager.getInstance().removeFavorite(mContext, id);
+                MusicDataManager.getInstance(mContext).removeFavorite(mContext, id);
             }
         }
     }
@@ -438,16 +470,17 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
      * 保存播放进度
      */
     public void savePlayState() {
-        MusicDataManager.getInstance().saveRepeatMode(mRepeatMode);
-        if (currentMusicInfo != null) {
-            MusicRecord record = new MusicRecord();
-            record.setIndex(MusicDataManager.getInstance().indexOfArray(currentMusicInfo.id));
+        MusicDataManager.getInstance(mContext).saveRepeatMode(mRepeatMode);
+        if (currentAudioInfo != null) {
+            AudioRecord record = new AudioRecord();
+            record.setIndex(MusicDataManager.getInstance(mContext).indexOfArray(currentAudioInfo.id));
             if (mPlayer.getDuration() > 0) {
                 record.setProgress((float) mPlayer.getCurrentPosition() / (float) mPlayer.getDuration());
             }
-            record.setSheetId(1234);
-            record.setSongId(currentMusicInfo.id);
-            MusicDataManager.getInstance().savePlayRecord(record);
+            record.setSheetId(currentAudioInfo.sheetId);
+            record.setSongId(currentAudioInfo.id);
+            record.setData(currentAudioInfo.getData());
+            MusicDataManager.getInstance(mContext).savePlayRecord(record);
         }
     }
 
@@ -464,26 +497,28 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
     }
 
     //播放指定歌曲
-    public void playByAudioId(long aLong) {
-        QDLogger.println("播放歌曲id=" + aLong);
-        if (currentMusicInfo != null && currentMusicInfo.getId() != aLong) {
-            MusicInfo info = MusicDataManager.getInstance().getMusicInfoById(aLong);
+    public void playByAudioByData(String data) {
+        QDLogger.println("播放歌曲id=" + data);
+        if (currentAudioInfo == null || currentAudioInfo.getData() != data) {
+            AudioInfo info = MusicDataManager.getInstance(mContext).getMusicInfoByData(mContext, data);
             if (info != null) {
                 setDataSourceImpl(info);
+            } else {
+                QDLogger.e("播放歌曲" + data + "不存在");
             }
         }
     }
 
     //设置音频源
-    private boolean setDataSourceImpl(MusicInfo info) {
+    private boolean setDataSourceImpl(AudioInfo info) {
         try {
             mPlayer.reset();
-            currentMusicInfo = info;
+            currentAudioInfo = info;
             if (info == null) {
                 QDLogger.e("设置音频路径 爲空");
                 return false;
             }
-            String path = info.getPath();
+            String path = info.getData();
             QDLogger.println("设置音频路径 path=" + path + ",info.position=" + info.position);
             if (path.startsWith("content://")) {
                 mPlayer.setDataSource(mContext, Uri.parse(path));
@@ -496,7 +531,11 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
             mPlayer.prepare();
             mPlayer.seekTo(info.position);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if (ex instanceof FileNotFoundException) {
+                QdToast.show("音频文件不存在");
+            } else {
+                ex.printStackTrace();
+            }
             return false;
         }
        /* Intent i = new Intent(
@@ -530,7 +569,7 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
 
     //播放上一首
     public void playPrev() {
-        QDLogger.println("MC", "播放上一首:" + (currentMusicInfo == null ? "" : currentMusicInfo.title));
+        QDLogger.println("MC", "播放上一首:" + (currentAudioInfo == null ? "" : currentAudioInfo.title));
         loadLast();
         play();
     }
@@ -544,7 +583,7 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
     //播放下一首
     public void playNext() {
         loadNext();
-        QDLogger.println("播放下一首:" + (currentMusicInfo == null ? "" : currentMusicInfo.title));
+        QDLogger.println("播放下一首:" + (currentAudioInfo == null ? "" : currentAudioInfo.title));
         play();
     }
 
@@ -555,9 +594,9 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
      */
     public void loadAudioSource(boolean isLast) {
         QDLogger.e("切换音频源 到 上一首/下一首");
-        MusicInfo musicInfo = getNextMusicInfo(isLast);
-        if (musicInfo != null) {
-            setDataSourceImpl(musicInfo);
+        AudioInfo audioInfo = getNextMusicInfo(isLast);
+        if (audioInfo != null) {
+            setDataSourceImpl(audioInfo);
         } else {
             QDLogger.e("歌曲列表为空");
         }
@@ -569,110 +608,110 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
      * @param isLast true上一曲，false下一曲
      * @return
      */
-    private MusicInfo getNextMusicInfo(boolean isLast) {
-        MusicInfo musicInfo = null;
+    public AudioInfo getNextMusicInfo(boolean isLast) {
+        AudioInfo audioInfo = null;
         if (mPlayList != null && mPlayList.size() > 0) {
-            if (currentMusicInfo == null) {
-                return MusicDataManager.getInstance().getFirstMusicInfo();
+            if (currentAudioInfo == null) {
+                return MusicDataManager.getInstance(mContext).getFirstMusicInfo();
             }
-            if (MusicDataManager.getInstance().getQueue(mContext) == null || MusicDataManager.getInstance().getQueue(mContext).size() < 1) {
+            if (MusicDataManager.getInstance(mContext).getCurrentSheet() == null || MusicDataManager.getInstance(mContext).getCurrentSheet().size() < 1) {
                 return null;
             }
-            int songCount = MusicDataManager.getInstance().getQueue(mContext).size();
-            int playIndex = MusicDataManager.getInstance().getIndexInQueue(currentMusicInfo.id);
+            int songCount = MusicDataManager.getInstance(mContext).getCurrentSheet().size();
+            int playIndex = MusicDataManager.getInstance(mContext).getIndexInQueue(currentAudioInfo.id);
             //QDLogger.i("gotoNext progress=" + playIndex + ",mRepeatMode=" + mRepeatMode);
             switch (mRepeatMode) {
                 case Normal:
                     if (playIndex == 0) {
                         if (isLast) {//true上一曲，false下一曲
-                            musicInfo = MusicDataManager.getInstance().getLastMusicInfo();
+                            audioInfo = MusicDataManager.getInstance(mContext).getLastMusicInfo();
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getNextMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getNextMusicInfo(currentAudioInfo.id);
                         }
                     } else if (playIndex == songCount - 1) {
                         if (isLast) {//true上一曲，false下一曲
-                            musicInfo = MusicDataManager.getInstance().getPrevMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getPrevMusicInfo(currentAudioInfo.id);
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getFirstMusicInfo();
+                            audioInfo = MusicDataManager.getInstance(mContext).getFirstMusicInfo();
                         }
                     } else {
                         if (isLast) {
-                            musicInfo = MusicDataManager.getInstance().getPrevMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getPrevMusicInfo(currentAudioInfo.id);
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getNextMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getNextMusicInfo(currentAudioInfo.id);
                         }
                     }
                     break;
                 case REPEAT_ALL:
                     if (playIndex == 0) {
                         if (isLast) {//true上一曲，false下一曲
-                            musicInfo = MusicDataManager.getInstance().getLastMusicInfo();
+                            audioInfo = MusicDataManager.getInstance(mContext).getLastMusicInfo();
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getNextMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getNextMusicInfo(currentAudioInfo.id);
                         }
                     } else if (playIndex == songCount - 1) {
                         if (isLast) {//true上一曲，false下一曲
-                            musicInfo = MusicDataManager.getInstance().getPrevMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getPrevMusicInfo(currentAudioInfo.id);
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getFirstMusicInfo();
+                            audioInfo = MusicDataManager.getInstance(mContext).getFirstMusicInfo();
                         }
                     } else {
                         if (isLast) {
-                            musicInfo = MusicDataManager.getInstance().getPrevMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getPrevMusicInfo(currentAudioInfo.id);
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getNextMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getNextMusicInfo(currentAudioInfo.id);
                         }
                     }
                     break;
                 case Shuffle:
                     if (playIndex == 0) {
                         if (isLast) {//true上一曲，false下一曲
-                            musicInfo = MusicDataManager.getInstance().getLastMusicInfo();
+                            audioInfo = MusicDataManager.getInstance(mContext).getLastMusicInfo();
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getNextMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getNextMusicInfo(currentAudioInfo.id);
                         }
                     } else if (playIndex == songCount - 1) {
                         if (isLast) {//true上一曲，false下一曲
-                            musicInfo = MusicDataManager.getInstance().getPrevMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getPrevMusicInfo(currentAudioInfo.id);
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getFirstMusicInfo();
+                            audioInfo = MusicDataManager.getInstance(mContext).getFirstMusicInfo();
                         }
                     } else {
                         if (isLast) {
-                            musicInfo = MusicDataManager.getInstance().getPrevMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getPrevMusicInfo(currentAudioInfo.id);
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getNextMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getNextMusicInfo(currentAudioInfo.id);
                         }
                     }
                     break;
                 case REPEAT_CURRENT:
-                    musicInfo = currentMusicInfo;
+                    audioInfo = currentAudioInfo;
                     break;
                 case Unknow:
                     if (playIndex == 0) {
                         if (isLast) {//true上一曲，false下一曲
-                            musicInfo = MusicDataManager.getInstance().getLastMusicInfo();
+                            audioInfo = MusicDataManager.getInstance(mContext).getLastMusicInfo();
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getNextMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getNextMusicInfo(currentAudioInfo.id);
                         }
                     } else if (playIndex == songCount) {
                         if (isLast) {//true上一曲，false下一曲
-                            musicInfo = MusicDataManager.getInstance().getPrevMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getPrevMusicInfo(currentAudioInfo.id);
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getFirstMusicInfo();
+                            audioInfo = MusicDataManager.getInstance(mContext).getFirstMusicInfo();
                         }
                     } else {
                         if (isLast) {
-                            musicInfo = MusicDataManager.getInstance().getPrevMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getPrevMusicInfo(currentAudioInfo.id);
                         } else {
-                            musicInfo = MusicDataManager.getInstance().getNextMusicInfo(currentMusicInfo.id);
+                            audioInfo = MusicDataManager.getInstance(mContext).getNextMusicInfo(currentAudioInfo.id);
                         }
                     }
                     break;
             }
             // int pos = getNextPosition(force);
         }
-        return musicInfo;
+        return audioInfo;
     }
 
 
@@ -688,8 +727,8 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
         if (mPlayer != null && mPlayer.hasPrepared) {
             savePlayState();
             return mPlayer.getCurrentPosition();
-        } else if (currentMusicInfo != null) {
-            return currentMusicInfo.getPosition();
+        } else if (currentAudioInfo != null) {
+            return currentAudioInfo.getPosition();
         }
         return 0;
     }
@@ -752,9 +791,9 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
         return mPlayer != null && mPlayer.hasPrepared;
     }*/
     public void playUri(Uri uri) {
-        MusicInfo musicInfo = MusicDataManager.getInstance().loadDataByUri(mContext, uri);
-        if (musicInfo != null) {
-            currentMusicInfo = musicInfo;
+        AudioInfo audioInfo = MusicDataManager.getInstance(mContext).loadDataByUri(mContext, uri);
+        if (audioInfo != null) {
+            currentAudioInfo = audioInfo;
             payCurrent();
         }
     }
@@ -771,7 +810,7 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
             } else {
                 initMediaPlayer();
             }
-            String path = currentMusicInfo.getPath();
+            String path = currentAudioInfo.getData();
             if (path.startsWith("content://")) {
                 mPlayer.setDataSource(mContext, Uri.parse(path));
             } else {
@@ -783,4 +822,83 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
         }
     }
 
+    public void playOnline(String url) {
+        String localProxyUrl = null;
+        try {
+            String savePath = (String) AppConfig.getInstance().getConfigMap().get("DownloadFilePath");
+            QuickProxy quickProxy = new QuickProxy(mContext, url, savePath);
+            localProxyUrl = quickProxy.getProxyUrl();
+            quickProxy.pre();
+            quickProxy.start();
+            QDLogger.e("playUrl=" + localProxyUrl);
+
+            currentAudioInfo = new AudioInfo();
+            currentAudioInfo.setData(localProxyUrl);
+            currentAudioInfo.setResourceType(1);
+            currentAudioInfo.setTitle("获取中");
+            if (mPlayer != null) {
+                mPlayer.setOnCompletionListener(null);
+                mPlayer.setOnErrorListener(null);
+                mPlayer.reset();
+                mPlayer.setOnErrorListener(errorListener);
+                mPlayer.setOnCompletionListener(onCompletionListener);
+            } else {
+                initMediaPlayer();
+            }
+            mPlayer.setDataSource(mContext, Uri.parse(localProxyUrl));
+            QDLogger.i("playOnline prepare");
+            mPlayer.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void playSheet(long sheetId) {
+        pause();
+        if (mPlayer != null) {
+            mPlayer.setOnCompletionListener(null);
+            mPlayer.setOnErrorListener(null);
+            mPlayer.reset();
+            mPlayer.setOnErrorListener(errorListener);
+            mPlayer.setOnCompletionListener(onCompletionListener);
+        } else {
+            initMediaPlayer();
+        }
+        AudioRecord record = new AudioRecord();
+        if (mPlayer.getDuration() > 0) {
+            record.setProgress((float) mPlayer.getCurrentPosition() / (float) mPlayer.getDuration());
+        }
+        record.setSheetId(sheetId);
+        record.setSongId(-1);
+        MusicDataManager.getInstance(mContext).savePlayRecord(record);
+        recovery();
+        play();
+    }
+
+    public void playAudio(AudioInfo audioInfo) {
+        if (MusicDataManager.getInstance(mContext).currentSheetId != audioInfo.getSheetId()) {
+            pause();
+            if (mPlayer != null) {
+                mPlayer.setOnCompletionListener(null);
+                mPlayer.setOnErrorListener(null);
+                mPlayer.reset();
+                mPlayer.setOnErrorListener(errorListener);
+                mPlayer.setOnCompletionListener(onCompletionListener);
+            } else {
+                initMediaPlayer();
+            }
+            AudioRecord record = new AudioRecord();
+            if (mPlayer.getDuration() > 0) {
+                record.setProgress((float) mPlayer.getCurrentPosition() / (float) mPlayer.getDuration());
+            }
+            record.setSheetId(audioInfo.getSheetId());
+            record.setSongId(audioInfo.getId());
+            record.setData(audioInfo.getData());
+            MusicDataManager.getInstance(mContext).savePlayRecord(record);
+            recovery();
+            play();
+        } else {
+            playByAudioByData(audioInfo.getData());
+        }
+    }
 }

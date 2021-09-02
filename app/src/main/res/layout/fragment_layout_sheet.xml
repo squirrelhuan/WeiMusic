@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.demomaster.huan.quickdeveloplibrary.widget.slidingpanellayout.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:sothree="http://schemas.android.com/apk/res-auto"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:id="@+id/sliding_layout"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:gravity="bottom"
+android:background="@color/transparent"
+sothree:umanoInitialState="expanded"
+sothree:umanoPanelHeight="0dp"
+sothree:umanoShadowHeight="0dp"
+sothree:umanoParallaxOffset="0dp"
+sothree:umanoDragView="@+id/dragView"
+sothree:umanoOverlay="true"
+sothree:umanoScrollableView="@+id/rv_songs">
+
+<!-- MAIN CONTENT -->
+<FrameLayout
+    android:id="@+id/fl_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+</FrameLayout>
+
+<!-- SLIDING LAYOUT -->
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="false"
+    android:id="@+id/dragView">
+    <RelativeLayout
+        android:id="@+id/rl_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dp_150"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/dp_0"
+            android:layout_marginBottom="@dimen/dp_80"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/rl_header_bg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_35"
+                android:layout_marginRight="@dimen/dp_35"
+                android:paddingTop="@dimen/dp_8"
+                android:clipChildren="false"
+                android:background="@drawable/background_wall_001">
+
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/viewpager"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dp_220"
+                    android:layout_marginLeft="@dimen/dp_60"
+                    android:layout_marginRight="@dimen/dp_60"
+                    android:gravity="bottom"
+                    android:clipChildren="false"
+                    android:fadingEdge="none"
+                    android:overScrollMode="never" />
+
+                <ImageView
+                    android:id="@+id/iv_edit"
+                    android:layout_width="@dimen/dp_40"
+                    android:layout_height="@dimen/dp_40"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/dp_12"
+                    android:src="@drawable/ic_edit"
+                    app:tint="@color/transparent_light_cc" />
+
+                <com.demomaster.weimusic.view.SheetLableView
+                    android:id="@+id/tv_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_below="@+id/viewpager"
+                    android:gravity="center"
+                    android:layout_marginTop="-40dp"
+                    android:text="1234565554"
+                    android:textSize="@dimen/sp_16"
+                    android:textColor="@color/black"/>
+            </RelativeLayout>
+
+           <!-- <cn.demomaster.huan.quickdeveloplibrary.view.banner.BannerCursorView
+                android:id="@+id/cursorView"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_15"
+                android:layout_marginBottom="@dimen/dp_15"
+                android:visibility="gone"/>
+-->
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewpager2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:clipChildren="false"
+                android:fadingEdge="none"
+                android:overScrollMode="never" />
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>
+</cn.demomaster.huan.quickdeveloplibrary.widget.slidingpanellayout.SlidingUpPanelLayout>

@@ -10,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 
+import androidx.core.content.res.ResourcesCompat;
+
 import com.bumptech.glide.Glide;
 import com.demomaster.weimusic.constant.Constants;
 import com.demomaster.weimusic.R;
@@ -79,7 +81,7 @@ public class GridAdapter_Theme_WallPager extends BaseAdapter {
             } else {
                 viewHolder.iv_select.setVisibility(View.GONE);
             }
-            viewHolder.iv_thumbnail.setBackgroundDrawable(mContext.getResources().getDrawable(id));
+            viewHolder.iv_thumbnail.setBackgroundDrawable(ResourcesCompat.getDrawable(mContext.getResources(),id,null));
         } else {
             String file = (String) datas.get(position);
             try {

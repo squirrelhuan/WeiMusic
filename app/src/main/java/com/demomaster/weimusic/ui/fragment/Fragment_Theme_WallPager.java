@@ -3,6 +3,7 @@ package com.demomaster.weimusic.ui.fragment;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.demomaster.weimusic.constant.Constants;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.ThemeActivity;
@@ -25,6 +29,8 @@ import com.demomaster.weimusic.ui.adapter.GridAdapter_Theme_WallPager;
 import com.demomaster.weimusic.util.ImageUtils;
 import com.demomaster.weimusic.util.ThemeUtil;
 import com.demomaster.weimusic.view.CustomGridView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,18 +43,14 @@ import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
 import cn.demomaster.huan.quickdeveloplibrary.widget.button.ToggleButton;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDMulSheetDialog;
 import cn.demomaster.qdlogger_library.QDLogger;
+import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 
 
 /**
  * Created by huan on 2018/1/21.
  */
 
-public class Fragment_Theme_WallPager extends BaseFragment implements onSelcetPictureResult {
-
-    @Override
-    public View setContentUI(LayoutInflater inflater, ViewGroup container) {
-        return inflater.inflate(R.layout.fragment_theme_wall, container, false);
-    }
+public class Fragment_Theme_WallPager extends QuickFragment implements onSelcetPictureResult {
 
     @BindView(R.id.grid_01)
     CustomGridView grid_01;
@@ -61,6 +63,11 @@ public class Fragment_Theme_WallPager extends BaseFragment implements onSelcetPi
 
     List<Integer> data = new ArrayList<>();
     List<String> data2 = new ArrayList<String>();
+
+    @Override
+    public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_theme_wall, container, false);
+    }
 
     @Override
     public void initView(View view) {

@@ -7,8 +7,8 @@ android {
         applicationId "com.demomaster.weimusic"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 5
-        versionName "1.0.5"
+        versionCode 7
+        versionName "1.0.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         //支持矢量图动画
         vectorDrawables.useSupportLibrary = true
@@ -42,6 +42,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation project(path: ':jaudiotagger_library')
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -57,4 +58,12 @@ dependencies {
     annotationProcessor project(':quicksticker-compiler')
     api project(path: ':quicksticker_lib')
     api project(':quicksticker-annotations')
+
+    //implementation "com.huawei.hms:avpipelinesdk:$huaweiVersion"
+    //implementation "com.huawei.hms:avpipeline-aidl:$huaweiVersion"
+    //implementation "com.huawei.hms:avpipeline-fallback-base:$huaweiVersion"
+    //implementation "com.huawei.hms:avpipeline-fallback-cvfoundry:$huaweiVersion"
+    //implementation "com.huawei.hms:avpipeline-fallback-sounddetect:$huaweiVersion"
+
+    //implementation 'com.huawei.agconnect:agconnect-appmessaging:1.6.0.300'
 }

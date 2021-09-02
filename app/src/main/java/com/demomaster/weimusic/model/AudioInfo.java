@@ -2,25 +2,40 @@ package com.demomaster.weimusic.model;
 
 import androidx.annotation.NonNull;
 
-public class MusicInfo /*implements Parcelable*/{
+import cn.demomaster.quickdatabaselibrary.annotation.Constraints;
+import cn.demomaster.quickdatabaselibrary.annotation.DBTable;
+import cn.demomaster.quickdatabaselibrary.annotation.SQLObj;
+
+
+@DBTable(name = "AudioInfo")
+public class AudioInfo /*implements Parcelable*/{
+	@SQLObj(name = "id",constraints = @Constraints(autoincrement = true,primaryKey = true))
 	public long id;
+	@SQLObj(name = "audioId")
+	public long audioId;
+	@SQLObj(name = "title")
 	public String title;
 	public String album;
+	@SQLObj(name = "duration")
 	public int duration;
 	public int position;
 	public long size;
 	public long albumId;
+	@SQLObj(name = "is_favorite")
 	public boolean favourite;
 	public String artist;
 	public String url;
-	public String path;
+	//public String path;
 	public String data;
+	@SQLObj(name = "sheetId")
+	public long sheetId=-1;
+	private int resourceType=0;//资源类型 0 file 1url网络资源
 	
-	public MusicInfo(){
+	public AudioInfo(){
 		
 	}
 	
-	public MusicInfo(long pId){
+	public AudioInfo(long pId){
 		id = pId;
 	}
 	
@@ -126,13 +141,21 @@ public class MusicInfo /*implements Parcelable*/{
 		}
 	};*/
 
-	public String getPath() {
-		return path;
+	public long getSheetId() {
+		return sheetId;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setSheetId(long sheetId) {
+		this.sheetId = sheetId;
 	}
+
+	/*public String getPath() {
+		return "";
+	}*/
+
+	/*public void setPath(String path) {
+		this.path = path;
+	}*/
 
 	public String getTitle() {
 		return title;
@@ -145,7 +168,7 @@ public class MusicInfo /*implements Parcelable*/{
 	@NonNull
 	@Override
 	public String toString() {
-		return id+","+title+","+artist+","+album+",duration="+duration+",position="+position+",path"+path;
+		return id+","+title+","+artist+","+album+",duration="+duration+",position="+position+",path"+getData();
 	}
 
     public long getAlbumId() {
@@ -162,5 +185,21 @@ public class MusicInfo /*implements Parcelable*/{
 
 	public void setData(String data) {
 		this.data = data;
+	}
+
+	public long getAudioId() {
+		return audioId;
+	}
+
+	public void setAudioId(long audioId) {
+		this.audioId = audioId;
+	}
+
+	public int getResourceType() {
+		return resourceType;
+	}
+
+	public void setResourceType(int resourceType) {
+		this.resourceType = resourceType;
 	}
 }

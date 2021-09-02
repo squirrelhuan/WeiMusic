@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/quick_actionbar_common">
+
+    <cn.demomaster.huan.quickdeveloplibrary.widget.ImageTextView
+        android:id="@+id/it_actionbar_common_left"
+        style="@style/quick_actionbar_common_weight"
+        android:layout_width="@dimen/activity_actionbar_button_width"
+        android:layout_height="match_parent"
+        android:minWidth="@dimen/activity_actionbar_button_width"
+        android:padding="@dimen/dp_6"
+        android:textSize="@dimen/quickdev_title_text_size"
+        android:gravity="center_vertical"
+        app:srcCompat="@drawable/ic_arrow_back_black_24dp"
+        tools:ignore="VectorDrawableCompat" />
+
+    <cn.demomaster.huan.quickdeveloplibrary.widget.ImageTextView
+        android:id="@+id/it_actionbar_common_title"
+        style="@style/quick_actionbar_common_weight"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/dp_45"
+        android:layout_marginRight="@dimen/dp_45"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:singleLine="true"
+        android:visibility="gone"
+        android:text=""
+        android:textSize="@dimen/quickdev_title_text_size"
+        android:textStyle="bold" />
+
+    <cn.demomaster.huan.quickdeveloplibrary.widget.ImageTextView
+        android:id="@+id/it_actionbar_common_right"
+        style="@style/quick_actionbar_common_weight"
+        android:layout_width="@dimen/activity_actionbar_button_width"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_gravity="right"
+        android:visibility="gone"
+        android:padding="@dimen/dp_6"
+        android:textSize="@dimen/quickdev_title_text_size"
+        android:gravity="center_vertical"
+        app:srcCompat="@drawable/ic_more_vert_black_24dp"
+        tools:ignore="VectorDrawableCompat" />
+
+    <EditText
+        android:id="@+id/et_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_45"
+        android:layout_marginRight="@dimen/dp_55"
+        android:hint="关键词"/>
+
+    <cn.demomaster.huan.quickdeveloplibrary.widget.button.QDButton
+        android:id="@+id/btn_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:qd_backgroundColor="@color/transparent_dark_44"
+        app:qd_borderColor="@color/transparent_dark_44"
+        android:textColor="@color/white"
+        android:layout_gravity="right|center_vertical"
+        android:text="搜索"/>
+
+</FrameLayout>

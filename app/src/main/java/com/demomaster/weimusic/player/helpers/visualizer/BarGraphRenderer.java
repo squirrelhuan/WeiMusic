@@ -13,6 +13,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.NinePatchDrawable;
 import android.util.DisplayMetrics;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import com.demomaster.weimusic.R;
 
 public class BarGraphRenderer extends Renderer
@@ -44,7 +46,7 @@ public class BarGraphRenderer extends Renderer
 	  float space = 4f;
 
 	  Resources resources = mContext.getResources();
-	  NinePatchDrawable bg =  (NinePatchDrawable) resources.getDrawable(R.drawable.bar_graph);
+	  NinePatchDrawable bg =  (NinePatchDrawable) ResourcesCompat.getDrawable(resources,R.drawable.bar_graph,null);// resources.getDrawable(R.drawable.bar_graph);
 	  DisplayMetrics metrics = resources.getDisplayMetrics();
 	  //margin from left/right edges
 	  int margin = (int) ( ( 16 * (metrics.densityDpi/160f) ) + 0.5f );

@@ -23,8 +23,14 @@ public enum AudioStation {
     permission_pass(21,"權限通過"),
     LoseFocus(31,"失去焦點"),
     HasHide(32,"已隐藏"),
+
+    DOWNLOAD_SUCCESS(48,"下载完成"),
+    sheet_changed(49,"歌单信息变更"),
     ThemeCoverChange(51,"主题封面更改"),//主题封面更改
-    ThemeWallPagerChange(52,"主题壁紙更改");//主题壁紙更改
+    ThemeWallPagerChange(52,"主题壁紙更改"),
+
+
+    CURSOR_CHANGED(61,"游标移动");//主题壁紙更改
     private int value = 0;
     private String desc = "";
 

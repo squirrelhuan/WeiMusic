@@ -72,11 +72,11 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
             //来电/耳机拔出时暂停播放3
             MC.getInstance(context).pause();
         }else if (intentAction.equals(Intent.ACTION_HEADSET_PLUG)) {
-            if (intent.getIntExtra("state", 0) == 1) {
+            /*if (intent.getIntExtra("state", 0) == 1) {
                 QDLogger.println("耳机检测：插入");
             } else {
                 QDLogger.println("耳机检测：拔出");
-            }
+            }*/
         } else if (Intent.ACTION_MEDIA_BUTTON.equals(intentAction)) {
             KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
             if (event == null) {

@@ -1,7 +1,7 @@
 package com.demomaster.weimusic.interfaces;
 
 
-import com.demomaster.weimusic.model.MusicInfo;
+import com.demomaster.weimusic.model.AudioInfo;
 
 import java.util.List;
 
@@ -10,5 +10,5 @@ import java.util.List;
  *
  */
 public interface FilterListener {
-    void getFilterData(List<MusicInfo> list);// 获取过滤后的数据
+    void getFilterData(List<AudioInfo> list);// 获取过滤后的数据
 }

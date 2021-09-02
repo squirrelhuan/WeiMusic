@@ -3,7 +3,7 @@
 
     <PreferenceCategory android:title="@string/header_interface" >
         <PreferenceScreen
-            android:icon="@drawable/apollo_settings_themes"
+            android:icon="@drawable/background_wall_001"
             android:key="@string/key_themes_preferences"
             android:title="@string/themes" >
             <ListPreference

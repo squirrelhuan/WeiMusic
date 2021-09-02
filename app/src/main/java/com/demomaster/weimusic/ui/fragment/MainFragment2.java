@@ -13,17 +13,16 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.SettingActivity;
-import com.demomaster.weimusic.bamboo.Bamboo;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.constant.ThemeConstants;
 import com.demomaster.weimusic.lrc.DefaultLrcBuilder;
@@ -31,10 +30,10 @@ import com.demomaster.weimusic.lrc.ILrcBuilder;
 import com.demomaster.weimusic.lrc.ILrcViewListener;
 import com.demomaster.weimusic.lrc.LrcRow;
 import com.demomaster.weimusic.lrc.LrcView;
-import com.demomaster.weimusic.model.MusicInfo;
+import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.player.helpers.utils.ThemeUtils;
 import com.demomaster.weimusic.player.service.MC;
-import com.demomaster.weimusic.util.AnimationUtil;
+import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.util.ThemeUtil;
 import com.demomaster.weimusic.view.AudioPlayerBar;
 import com.demomaster.weimusic.view.AudioPlayerOrderBar;
@@ -50,19 +49,21 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import cn.demomaster.huan.quickdeveloplibrary.base.activity.QDActivity;
+import cn.demomaster.huan.quickdeveloplibrary.bamboo.Bamboo;
+import cn.demomaster.huan.quickdeveloplibrary.helper.toast.PopToastUtil;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
+import cn.demomaster.huan.quickdeveloplibrary.util.AnimationUtil;
 import cn.demomaster.huan.quickdeveloplibrary.util.DisplayUtil;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
+import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDMulSheetDialog;
 import cn.demomaster.qdlogger_library.QDLogger;
 
 //import static com.demomaster.weimusic.constant.Constants.Theme_Cover_Type_ByMusic;
-import static com.demomaster.weimusic.constant.AudioStation.preToPlayLast;
 import static com.demomaster.weimusic.constant.AudioStation.preToPlayNext;
 
 public class MainFragment2 extends Fragment implements OnClickListener {
 
-    private MusicInfo currentMusic = null;
+    private AudioInfo currentMusic = null;
     @BindView(R.id.button_composer_with)
     Button button_composer_with;
     @BindView(R.id.button_composer_place)
@@ -156,7 +157,7 @@ public class MainFragment2 extends Fragment implements OnClickListener {
         }
 
         if (MC.getInstance(getContext()).isFavorite(MC.getInstance(getContext()).getCurrentAudioId())) {
-            button_composer_place.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.record_card_like_s));
+            button_composer_place.setBackgroundDrawable(ResourcesCompat.getDrawable(getActivity().getResources(),R.drawable.record_card_like_s,null));
         } else {
             TypedValue typedValue = new TypedValue();
             getActivity().getTheme().resolveAttribute(R.attr.record_card_like_h, typedValue, true);
@@ -186,17 +187,17 @@ public class MainFragment2 extends Fragment implements OnClickListener {
     }
 
     public void initView() {
-        rel_music.setPadding(0,DisplayUtil.getStatusBarHeight(getContext()),0,0);
+        rel_music.setPadding(0, DisplayUtil.getStatusBarHeight(getContext()), 0, 0);
         audio_player_bar.setOnClickListener(this);
-       // audio_player_bar.setOnPlayerStateChangeListener(onPlayerStateChangeListener);
-       // iv_music_bar3.setOnPlayerStateChangeListener(onPlayerStateChangeListener2);
+        // audio_player_bar.setOnPlayerStateChangeListener(onPlayerStateChangeListener);
+        // iv_music_bar3.setOnPlayerStateChangeListener(onPlayerStateChangeListener2);
         iv_music_bar3.setOnClickActionListener(new AudioPlayerView.OnClickActionListener() {
             @Override
             public void onCenterClick() {
                 QDLogger.println("菜单动画 start");
-                if(sml_menu.isShowing()){
+                if (sml_menu.isShowing()) {
                     sml_menu.stopAnimation();
-                }else {
+                } else {
                     sml_menu.startAnimation();
                 }
             }
@@ -246,7 +247,9 @@ public class MainFragment2 extends Fragment implements OnClickListener {
             }
         });
     }
+
     boolean hasDownload_lrc = false;
+
     public void initLrc() {
         // 从assets目录下读取歌词文件内容
         String lrc = QDFileUtil.getFromAssets(getContext(), "test.lrc");
@@ -266,7 +269,7 @@ public class MainFragment2 extends Fragment implements OnClickListener {
 
     public void refreshUI() {
         if (MC.getInstance(getContext()).isFavorite(MC.getInstance(getContext()).getCurrentAudioId())) {
-            button_composer_place.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.record_card_like_s));
+            button_composer_place.setBackgroundDrawable(ResourcesCompat.getDrawable(getActivity().getResources(),R.drawable.record_card_like_s,null));
         } else {
             TypedValue typedValue = new TypedValue();
             getActivity().getTheme().resolveAttribute(R.attr.record_card_like_h, typedValue, true);
@@ -280,7 +283,7 @@ public class MainFragment2 extends Fragment implements OnClickListener {
             String artistName = MC.getInstance(getContext()).getCurrentInfo().getArtist();
             String albumName = MC.getInstance(getContext()).getCurrentInfo().getAlbum();
             String trackName = MC.getInstance(getContext()).getCurrentInfo().getTitle();
-            QDLogger.println("当前歌曲 artistName=" + artistName + ",albumName=" + albumName + ",trackName=" + trackName);
+            //QDLogger.println("当前歌曲 artistName=" + artistName + ",albumName=" + albumName + ",trackName=" + trackName);
 
             //String albumId = String.valueOf(MC.getInstance(getContext()).getCurrentAlbumId());
             tv_music_name.setText(trackName);
@@ -294,7 +297,7 @@ public class MainFragment2 extends Fragment implements OnClickListener {
             // 获取歌曲播放的位置
             final long timePassed = MC.getInstance(getContext()).Position();/*MyApp.natureBinder.getCurrentPosition()*/
             // 滚动歌词
-           // mLrcView.seekLrcToTime(timePassed);
+            // mLrcView.seekLrcToTime(timePassed);
         }
         audio_player_bar.reseatState();
         iv_music_bar3.reseatState();
@@ -328,7 +331,6 @@ public class MainFragment2 extends Fragment implements OnClickListener {
          */
     }
 
-
     /**
      * @return Share intent
      * @throws RemoteException
@@ -336,7 +338,7 @@ public class MainFragment2 extends Fragment implements OnClickListener {
     private String shareCurrentTrack() {
         Intent shareIntent = new Intent();
         String currentTrackMessage = null;
-        if(MC.getInstance(getContext()).getCurrentInfo()!=null) {
+        if (MC.getInstance(getContext()).getCurrentInfo() != null) {
             currentTrackMessage = getResources().getString(R.string.now_listening_to) + " "
                     + MC.getInstance(getContext()).getCurrentInfo().getTitle() + " " + getResources().getString(R.string.by) + " "
                     + MC.getInstance(getContext()).getCurrentInfo().getArtist();
@@ -349,7 +351,9 @@ public class MainFragment2 extends Fragment implements OnClickListener {
         }
         return currentTrackMessage;
     }
-    float lrcView_Y =0;
+
+    float lrcView_Y = 0;
+
     private void initialButton() {
         mLrcView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -375,7 +379,7 @@ public class MainFragment2 extends Fragment implements OnClickListener {
                 MC.getInstance(getContext()).toggleFavorite();
                 getActivity().invalidateOptionsMenu();
                 if (MC.getInstance(getContext()).isFavorite(MC.getInstance(getContext()).getCurrentAudioId())) {
-                    button_composer_place.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.record_card_like_s));
+                    button_composer_place.setBackgroundDrawable(ResourcesCompat.getDrawable(getActivity().getResources(),R.drawable.record_card_like_s,null));
                 } else {
                     TypedValue typedValue = new TypedValue();
                     getActivity().getTheme().resolveAttribute(R.attr.record_card_like_h, typedValue, true);
@@ -390,8 +394,8 @@ public class MainFragment2 extends Fragment implements OnClickListener {
             @Override
             public void onChanged(float progress) {
                 if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    mLrcView.setY(100 * progress+lrcView_Y);
-                }else {
+                    mLrcView.setY(100 * progress + lrcView_Y);
+                } else {
                     // cl_001.setY(ll_Y-100 * progress);
                     cl_001.setPivotX(cl_001.getMeasuredWidth() / 2);
                     cl_001.setPivotY(0);
@@ -441,14 +445,14 @@ public class MainFragment2 extends Fragment implements OnClickListener {
                     refreshUI();
                     break;
                 case LoseFocus:
-                    if (sml_menu != null&&sml_menu.isShowing()) {
+                    if (sml_menu != null && sml_menu.isShowing()) {
                         MotionEvent ev = (MotionEvent) message.obj;
                         int[] location;
                         location = new int[2];
                         sml_menu.getLocationOnScreen(location);//获取在整个屏幕内的绝对坐标
-                        if(ev.getX()<location[0]||ev.getY()<location[1]
-                                ||ev.getX()>(location[0]+sml_menu.getWidth())
-                                ||ev.getY()>(location[1]+sml_menu.getHeight())){
+                        if (ev.getX() < location[0] || ev.getY() < location[1]
+                                || ev.getX() > (location[0] + sml_menu.getWidth())
+                                || ev.getY() > (location[1] + sml_menu.getHeight())) {
                             sml_menu.stopAnimation();
                         }
                     }
@@ -476,7 +480,7 @@ public class MainFragment2 extends Fragment implements OnClickListener {
     }
 
     private void playLast() {
-        QDLogger.println("播放上一首 "+preToPlayNext);
+        QDLogger.println("播放上一首 " + preToPlayNext);
         Bamboo bamboo = new Bamboo();
         bamboo.add(new Bamboo.Node() {
             @Override
@@ -486,6 +490,12 @@ public class MainFragment2 extends Fragment implements OnClickListener {
                 MC.getInstance(getContext()).pause();
                 //2更改音频源
                 QDLogger.println("2更改音频源 ");
+
+                long audioId1 = MC.getInstance(getContext()).getCurrentAudioId();
+                long audioId2 = MC.getInstance(getContext()).getNextMusicInfo(true).getAudioId();
+                iv_music_bar3.changeAudio(audioId1,
+                        audioId2);
+
                 MC.getInstance(getContext()).loadLast();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -493,7 +503,7 @@ public class MainFragment2 extends Fragment implements OnClickListener {
                     public void run() {
                         submit();
                     }
-                },150);
+                }, 150);
             }
         }).add(new Bamboo.Node() {
             @Override
@@ -506,6 +516,9 @@ public class MainFragment2 extends Fragment implements OnClickListener {
         bamboo.start();
     }
 
+    /**
+     * 切换到下一曲
+     */
     private void playNext() {
         /*QDLogger.println("播放下一首 "+preToPlayNext);
         audio_player_bar.stop(new AudioPlayerBar.AnimationCall(AudioPlayerBar.ActionType.pause) {
@@ -533,6 +546,10 @@ public class MainFragment2 extends Fragment implements OnClickListener {
                 MC.getInstance(getContext()).pause();
                 //2更改音频源
                 QDLogger.println("2更改音频源 ");
+
+                long audioId1 = MC.getInstance(getContext()).getCurrentAudioId();
+                long audioId2 = MC.getInstance(getContext()).getNextMusicInfo(false).getAudioId();
+                iv_music_bar3.changeAudio(audioId1,audioId2);
                 MC.getInstance(getContext()).loadNext();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -540,7 +557,7 @@ public class MainFragment2 extends Fragment implements OnClickListener {
                     public void run() {
                         submit();
                     }
-                },150);
+                }, 150);
             }
         }).add(new Bamboo.Node() {
             @Override
@@ -599,16 +616,16 @@ public class MainFragment2 extends Fragment implements OnClickListener {
         bamboo.add(new Bamboo.Node() {
             @Override
             public void doJob(Bamboo.Node node, Object... result) {
-               // QDLogger.println("旋转唱臂 canpaly="+MC.getInstance(getContext()).canPlay());
-              // if(MC.getInstance(getContext()).canPlay()) {
-                   audio_player_bar.start(new AudioPlayerBar.AnimationCall(AudioPlayerBar.ActionType.play) {
-                       @Override
-                       public void call() {
-                           //QDLogger.println("call1= playMusic");
-                           submit(2);
-                       }
-                   });
-               //}
+                // QDLogger.println("旋转唱臂 canpaly="+MC.getInstance(getContext()).canPlay());
+                // if(MC.getInstance(getContext()).canPlay()) {
+                audio_player_bar.start(new AudioPlayerBar.AnimationCall(AudioPlayerBar.ActionType.play) {
+                    @Override
+                    public void call() {
+                        //QDLogger.println("call1= playMusic");
+                        submit(2);
+                    }
+                });
+                //}
             }
         }).add(new Bamboo.Node() {
             @Override
@@ -626,9 +643,9 @@ public class MainFragment2 extends Fragment implements OnClickListener {
      */
     private void refreshCover() {
         ThemeConstants.CoverType coverType = ThemeUtil.getCoverType();
-        if(coverType== ThemeConstants.CoverType.withMusic){
+        if (coverType == ThemeConstants.CoverType.withMusic) {
             iv_music_bar3.reSeat();
-        }else {
+        } else {
             iv_music_bar3.init();
         }
     }

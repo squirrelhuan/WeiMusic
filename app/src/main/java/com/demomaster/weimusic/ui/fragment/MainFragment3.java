@@ -1,7 +1,8 @@
 package com.demomaster.weimusic.ui.fragment;
 
-import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
@@ -10,6 +11,7 @@ import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Playlists;
 import android.provider.MediaStore.MediaColumns;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -20,11 +22,10 @@ import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 import androidx.appcompat.widget.Toolbar;
 
-import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,47 +38,61 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.demomaster.weimusic.activity.AddSongSheetActivity;
+import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.activity.SearchActivity;
+import com.demomaster.weimusic.activity.SongEditActivity;
 import com.demomaster.weimusic.constant.AudioStation;
+import com.demomaster.weimusic.dialog.AudioInfoDialog;
+import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter;
 import com.google.android.material.appbar.AppBarLayout;
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.model.MusicInfo;
+import com.demomaster.weimusic.model.AudioInfo;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
+import cn.demomaster.huan.quickdeveloplibrary.helper.toast.PopToastUtil;
+import cn.demomaster.huan.quickdeveloplibrary.helper.toast.QdToast;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.DisplayUtil;
+import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
+import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.OnClickActionListener;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDDialog;
+import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDInputDialog;
+import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDMulSheetDialog;
+import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDSheetDialog;
 import cn.demomaster.qdlogger_library.QDLogger;
+import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 import cn.demomaster.quickpermission_library.PermissionHelper;
 
 import static com.demomaster.weimusic.activity.BaseActivity.PERMISSIONS;
+import static com.demomaster.weimusic.constant.AudioStation.QUEUE_CHANGED;
 import static com.demomaster.weimusic.constant.Constants.*;
 
 
-public class MainFragment3 extends BaseFragment implements OnClickListener, AppBarLayout.OnOffsetChangedListener {
+public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffsetChangedListener {
 
     @BindView(R.id.rv_songs)
     RecyclerView rv_songs;
-    private List<MusicInfo> musicList = new ArrayList<>();
-    private List<MusicInfo> mMusicInfoList = new ArrayList<>();
+    private List<AudioInfo> musicList = new ArrayList<>();
+    private List<AudioInfo> mAudioInfoList = new ArrayList<>();
     //private ClearEditText mClearEditText;
 
-    /**
-     * 上次第一个可见元素，用于滚动时记录标识。
-     */
-    private int lastFirstVisibleItem = -1;
     /**
      * 汉字转换成拼音的类
      */
@@ -90,7 +105,7 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
 
     LinearLayout mSearchLayout;
     ScrollView mScrollView;
-   // ImageView iv_top;
+    // ImageView iv_top;
     ImageView ivImg;
     Toolbar toolbar;
     private TransitionSet mSet;
@@ -112,15 +127,16 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
     private boolean mEditMode = false;
     //private RecentlyAddedAdapter mRecentlyAddedAdapter;
 
+
+    @Override
+    public boolean isUseActionBarLayout() {
+        return false;
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public View setContentUI(LayoutInflater inflater, ViewGroup container) {
-        return inflater.inflate(R.layout.fragment_main_03, container, false);
     }
 
     @BindView(R.id.sv_search)
@@ -128,7 +144,13 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
     @BindView(R.id.iv_search)
     ImageView iv_search;
     @Override
+    public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_main_03, container, false);
+    }
+
+    @Override
     public void initView(View view) {
+        ButterKnife.bind(this,view);
         mSearchView.setIconifiedByDefault(true);
         mSearchView.onActionViewExpanded();
 
@@ -154,7 +176,7 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
             }
         });
 
-        adapter = new MusicRecycleViewAdapter(getContext(),musicList);
+        adapter = new MusicRecycleViewAdapter(getContext(), musicList);
        /* adapter = new MusicAdapter(musicList, getActivity(), new FilterListener() {
             // 回调方法获取过滤后的数据
             public void getFilterData(final List<MusicInfo> list) {
@@ -189,7 +211,7 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
 
             @Override
             public void showContextMenu(View view, int position) {
-                showSongMenu(view,position);
+                showSongMenu(view, position);
             }
         });
         /*lvSongs.setOnItemClickListener(new OnItemClickListener() {
@@ -200,11 +222,11 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
         });*/
 
         //通过工具类，获取虚化的bitmap
-       // Resources res = getResources();
-       //Bitmap originBitmap = BitmapFactory.decodeResource(res, R.drawable.top);
+        // Resources res = getResources();
+        //Bitmap originBitmap = BitmapFactory.decodeResource(res, R.drawable.top);
         //Bitmap blurBitmap = BlurUtil.apply(getActivity(), originBitmap, 15);
-       // iv_top = (ImageView) findViewById(R.id.iv_top);
-       // iv_top.setImageBitmap(blurBitmap);
+        // iv_top = (ImageView) findViewById(R.id.iv_top);
+        // iv_top.setImageBitmap(blurBitmap);
 
         ArrayList<String> strs = new ArrayList<String>();
 
@@ -251,15 +273,15 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
 
         boolean b = PermissionHelper.getInstance().getPermissionStatus(getContext(), PERMISSIONS);
         if (b) {
-            MusicDataManager.getInstance().loadData(getContext(), new MusicDataManager.OnLoadDataListener() {
+            MusicDataManager.getInstance(getContext()).loadData(getContext(), new MusicDataManager.OnLoadDataListener() {
                 @Override
-                public void loadComplete(int ret, List<MusicInfo> musicInfoList) {
+                public void loadComplete(int ret, List<AudioInfo> audioInfoList) {
                     if (ret == 1) {
-                        if (musicInfoList != null) {
-                            mMusicInfoList.clear();
-                            mMusicInfoList.addAll(musicInfoList);
+                        if (audioInfoList != null) {
+                            mAudioInfoList.clear();
+                            mAudioInfoList.addAll(audioInfoList);
                             musicList.clear();
-                            musicList.addAll(musicInfoList);
+                            musicList.addAll(audioInfoList);
                             adapter.notifyDataSetChanged();
                         }
                     }
@@ -299,61 +321,75 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
 
     private void queryChanged(String query) {
         musicList.clear();
-        for(MusicInfo musicInfo : mMusicInfoList){
-            if(TextUtils.isEmpty(query)||musicInfo.getTitle().contains(query)){
-                musicList.add(musicInfo);
+        for (AudioInfo audioInfo : mAudioInfoList) {
+            if (TextUtils.isEmpty(query) || audioInfo.getTitle().contains(query)) {
+                musicList.add(audioInfo);
             }
         }
         adapter.notifyDataSetChanged();
     }
 
-    QDDialog musicInfoDialog =null;
-    private void showSongMenu(View view, int position) {
-        View layout = getLayoutInflater().inflate(R.layout.dialog_music_item,
-                null);
-        ImageView imageView = layout.findViewById(R.id.iv_cover);
-        imageView.setImageBitmap(MusicDataManager.getInstance().getAlbumPicture(getContext(),musicList.get(position),false));
-        TextView artist = layout.findViewById(R.id.artist);
-        artist.setText(musicList.get(position).getArtist());
-        TextView title = layout.findViewById(R.id.title);
-        title.setText(musicList.get(position).getTitle());
+    QDDialog musicInfoDialog = null;
 
-        musicInfoDialog = new QDDialog.Builder(getContext())
+    private void showSongMenu(View view,final int position) {
+        //AudioInfoDialog audioInfoDialog = new AudioInfoDialog(getContext(),musicList.get(position),position);
+        //audioInfoDialog.show();
+
+        Intent intent =new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putInt("selectIndex",position);
+        intent.putExtras(bundle);
+        ((MainActivity)getActivity()).startFragment(new AudioInoFragment(),R.id.main_layout,intent);
+        /*musicInfoDialog = new QDDialog.Builder(getContext())
                 .setBackgroundRadius(50)
                 .setContentView(layout)
                 .setBackgroundColor(getResources().getColor(R.color.transparent_light_33))
                 .setAnimationStyleID(R.style.qd_dialog_animation_center_scale)
-                .create();
-        musicInfoDialog.show();
+                .create();*/
+        //musicInfoDialog.show();
+    }
+
+    List<AudioSheet> audioSheetList;
+    private void showMenuDialog(AudioInfo audioInfo) {
+        String[] menus = {"创建歌单"};
+        audioSheetList = MusicDataManager.getInstance(getContext()).getSongSheet(getContext());
+        if(audioSheetList != null){
+            menus=new String[audioSheetList.size()+1];
+            menus[0] = "创建歌单";
+            for (int i = 0; i< audioSheetList.size(); i++){
+                AudioSheet collection = audioSheetList.get(i);
+                menus[i+1] = collection.getName();
+            }
+        }
+        new QDSheetDialog.MenuBuilder(getContext())
+                .setData(menus)
+                .setOnDialogActionListener(new QDSheetDialog.OnDialogActionListener() {
+                    @Override
+                    public void onItemClick(QDSheetDialog dialog, int position, List<String> data) {
+                        dialog.dismiss();
+                        if (position == 0) {
+                            startActivity(new Intent(getContext(), AddSongSheetActivity.class));
+                        }else {
+                            MusicDataManager.getInstance(getContext()).addToSheet(getContext(), audioSheetList.get(position-1).getId(), audioInfo.getId());
+                        }
+                    }
+                })
+                .create()
+                .show();
     }
 
     private void playMusic(int i) {
-        if(i<musicList.size()) {
-            MC.getInstance(getContext()).playByAudioId(musicList.get(i).getId());
+        if (i < musicList.size()) {
+            MC.getInstance(getContext()).playAudio(musicList.get(i));
         }
         adapter.notifyDataSetChanged();
     }
 
-    private void playMusic(List<MusicInfo> list) {
-       /* lvSongs.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                MC.getInstance(getContext()).playByAudioId(list.get(i).getId());
-                // MusicHelper.getInstance().playAll(getActivity(), mCursor, list.get(i).getPosition());
-            }
-        });*/
-    }
-
-    private AppBarLayout abl_bar;
-    private View tl_expand;//, tl_collapse;
-    private String TAG = "CGQ";
-    private EditText tv_search_01, tv_search_02;
     ViewGroup ll_content;
     private void setHead() {
         //tv_search_01 = (EditText) findViewById(R.id.tv_search_expand);
-        tv_search_02 = findViewById(R.id.tv_search_collapse);
         ll_content = findViewById(R.id.ll_content);
-        ll_content.setPadding(ll_content.getPaddingLeft(),DisplayUtil.getStatusBarHeight(getContext()),ll_content.getPaddingRight(),ll_content.getPaddingBottom());
+        ll_content.setPadding(ll_content.getPaddingLeft(), DisplayUtil.getStatusBarHeight(getContext()), ll_content.getPaddingRight(), ll_content.getPaddingBottom());
         //v_expand_mask = (View) findViewById(R.id.v_expand_mask);
         //tl_expand = (View) findViewById(R.id.tl_expand);
         //tl_collapse = (View) findViewById(R.id.tl_collapse);
@@ -363,12 +399,12 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        Log.d(TAG, "verticalOffset=" + verticalOffset);
+        QDLogger.d("verticalOffset=" + verticalOffset);
         int offset = Math.abs(verticalOffset);
         if (offset <= DisplayUtil.dip2px(getContext(), 108)) {
             //tl_expand.setVisibility(View.VISIBLE);
             //tl_collapse.setVisibility(View.GONE);
-           // addListeners(tv_search_01);
+            // addListeners(tv_search_01);
             //v_expand_mask.setBackgroundColor(maskColorInDouble);
             //abl_bar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         } else {
@@ -381,27 +417,7 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
         //  v_pay_mask.setBackgroundColor(maskColorIn);
     }
 
-    EditText tv_orther;
-   /* private void addListeners(EditText tv_Search) {
-        tvSearch = tv_Search;
-        if (tv_Search == tv_search_01) {
-            tv_orther = tv_search_02;
-        } else {
-            tv_orther = tv_search_01;
-        }
-        tvSearch.removeTextChangedListener(textWatcher);
-        tv_orther.removeTextChangedListener(textWatcher);
-        tvSearch.setVisibility(View.VISIBLE);
-        tv_orther.setVisibility(View.GONE);
-        tv_orther.setText(tv_Search.getText());
-        tvSearch.addTextChangedListener(textWatcher);
-    }*/
 //adapter.getFilter().filter(s);
-
-    @Override
-    public void onClick(View v) {
-
-    }
 
     private void changeToolbarAlpha() {
         int scrollY = mScrollView.getScrollY();
@@ -418,7 +434,7 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
 
     private void expand() {
         //设置伸展状态时的布局
-       // tvSearch.setHint("搜索歌曲名称");
+        // tvSearch.setHint("搜索歌曲名称");
         RelativeLayout.LayoutParams LayoutParams = (RelativeLayout.LayoutParams) mSearchLayout.getLayoutParams();
         LayoutParams.width = LayoutParams.MATCH_PARENT;
         LayoutParams.setMargins(DisplayUtil.dip2px(getContext(), 10), DisplayUtil.dip2px(getContext(), 10), DisplayUtil.dip2px(getContext(), 10), DisplayUtil.dip2px(getContext(), 10));
@@ -429,8 +445,8 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
 
     private void reduce() {
         //设置收缩状态时的布局搜索
-       // tvSearch.setHint("");
-       // tvSearch.setText("");
+        // tvSearch.setHint("");
+        // tvSearch.setText("");
         RelativeLayout.LayoutParams LayoutParams = (RelativeLayout.LayoutParams) mSearchLayout.getLayoutParams();
         LayoutParams.width = DisplayUtil.dip2px(getContext(), 80);
         LayoutParams.setMargins(DisplayUtil.dip2px(getContext(), 10), DisplayUtil.dip2px(getContext(), 10), DisplayUtil.dip2px(getContext(), 10), DisplayUtil.dip2px(getContext(), 10));
@@ -595,8 +611,8 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EventMessage message) {
         //adapter.notifyDataSetChanged();
-        AudioStation station =AudioStation.getEnum(message.code);
-        if(station==null){
+        AudioStation station = AudioStation.getEnum(message.code);
+        if (station == null) {
             return;
         }
         switch (station) {
@@ -615,10 +631,34 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
                 adapter.notifyDataSetChanged();
                 break;
             case QUEUE_CHANGED:
-                musicList.clear();
-                musicList.addAll(MusicDataManager.getInstance().getQueue(getContext()));
-                adapter.notifyDataSetChanged();
+                notifyFile();
                 break;
+            case CURSOR_CHANGED:
+                int p = (int) message.getObj();
+                rv_songs.scrollToPosition(p);
+                LinearLayoutManager mLayoutManager = (LinearLayoutManager) rv_songs.getLayoutManager();
+                mLayoutManager.scrollToPositionWithOffset(p, 0);
+                break;
+        }
+    }
+    private void notifyFile() {
+        boolean b = PermissionHelper.getInstance().getPermissionStatus(getContext(), PERMISSIONS);
+        if (b) {
+            MusicDataManager.getInstance(getContext()).loadData(getContext(),60000, new MusicDataManager.OnLoadDataListener() {
+                @Override
+                public void loadComplete(int ret, List<AudioInfo> audioInfoList) {
+                    if (ret == 1) {
+                        if (audioInfoList != null) {
+                            //QdToast.show("共搜索到："+ audioInfoList.size());
+                            mAudioInfoList.clear();
+                            mAudioInfoList.addAll(audioInfoList);
+                            musicList.clear();
+                            musicList.addAll(audioInfoList);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -626,7 +666,7 @@ public class MainFragment3 extends BaseFragment implements OnClickListener, AppB
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-        if(musicInfoDialog!=null){
+        if (musicInfoDialog != null) {
             musicInfoDialog.dismiss();
         }
     }

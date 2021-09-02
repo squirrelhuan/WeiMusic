@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="70dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
-    android:orientation="horizontal" >
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/status_bar_album_art"
@@ -60,7 +61,7 @@
         android:padding="10.0dip"
         android:src="@drawable/button_music_play"
         android:scaleType="fitCenter"
-        android:tint="@color/black" />
+        app:tint="@color/black" />
 
     <ImageButton
         android:id="@+id/status_bar_next"
@@ -70,6 +71,6 @@
         android:button="@null"
         android:padding="10.0dip"
         android:src="@drawable/button_notify_next"
-        android:tint="@color/black"/>
+        app:tint="@color/black"/>
     </LinearLayout>
 </LinearLayout>

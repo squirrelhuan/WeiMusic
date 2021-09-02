@@ -4,12 +4,21 @@ import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 
-public class MusicRecord implements Serializable {
+public class AudioRecord implements Serializable {
 
     private long sheetId;//歌单id
-    private long songId;//歌曲id
+    private long songId=-1;//歌曲id
     private int index;//在歌单中的排序
     private float progress;//播放进度
+    private String data;
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
 
     public long getSheetId() {
         return sheetId;

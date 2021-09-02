@@ -48,7 +48,7 @@ public class Wallpaper extends AppCompatImageView {
         super(context, attrs);
         init();
     }
-
+    
     public Wallpaper(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
@@ -116,19 +116,15 @@ public class Wallpaper extends AppCompatImageView {
         if (bitmap == null) {
             return null;
         }
-        //QDLogger.println("width=" + wallPaperWidth + "，height=" + wallPaperHeight);
         //获取原图
         //生成新的图片
         //模糊背景
         long t1 = System.currentTimeMillis();
-        //QDLogger.println("bitmap w1=：" + bitmap.getWidth());
-        bitmap = QDBitmapUtil.zoomImage(bitmap, Math.min(bitmap.getWidth() / 2, wallPaperWidth / 3), Math.min(bitmap.getHeight() / 2, wallPaperHeight / 3));
-        //QDLogger.println("bitmap w2=：" + bitmap.getWidth());
+        bitmap = QDBitmapUtil.cropBitmap(bitmap,wallPaperWidth,wallPaperHeight);
+        bitmap = QDBitmapUtil.zoomImage(bitmap, .2f);
         bitmap = cn.demomaster.huan.quickdeveloplibrary.util.BlurUtil.doBlur(bitmap, 50, 0.2f);
         long t2 = System.currentTimeMillis();
-        //QDLogger.println("bitmap1：w=" + bitmap.getWidth() + ",h=" + bitmap.getHeight());
         QDLogger.println("模糊用时：" + (t2 - t1));
-        bitmap = QDBitmapUtil.zoomImage(bitmap, wallPaperWidth, wallPaperHeight);
         return bitmap;
     }
 
@@ -211,7 +207,7 @@ public class Wallpaper extends AppCompatImageView {
                 ThemeConstants.WallPagerType type = ThemeUtil.getWallPagerType();
                 switch (type) {
                     case withMusic://壁紙跟随音乐专辑封面
-                        bitmap = MusicDataManager.getInstance().getAlbumPicture(getContext(), MC.getInstance(getContext()).getCurrentInfo(), true);
+                        bitmap = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), MC.getInstance(getContext()).getCurrentInfo());
                         if (bitmap != null) {
                             dealBitamp();
                             drawable = new BitmapDrawable(bitmap);

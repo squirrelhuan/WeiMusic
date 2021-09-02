@@ -20,7 +20,6 @@ import com.demomaster.weimusic.R;
  */
 public class AppWidget11 extends AppWidgetProvider {
     static final String TAG = "MusicAppWidgetProvider1x1";
-
     public static final String CMDAPPWIDGETUPDATE = "appwidgetupdate1x1";
 
     private static AppWidget11 sInstance;

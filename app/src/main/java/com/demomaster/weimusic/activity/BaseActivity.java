@@ -22,7 +22,8 @@ public abstract class BaseActivity extends QDActivity {
     // 权限
     public static String[] PERMISSIONS = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.MANAGE_EXTERNAL_STORAGE};
     public void setContentView(int layoutResID) {
         setupActivityBeforeCreate();
         super.setContentView(layoutResID);
