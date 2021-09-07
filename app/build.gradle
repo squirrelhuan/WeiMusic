@@ -52,8 +52,10 @@ dependencies {
     annotationProcessor "com.jakewharton:butterknife-compiler:10.2.1"
     //implementation 'androidx.cardview:cardview:1.0.0'
     implementation files('libs/android-query-0.21.7.jar')
+    implementation project(path: ':treeviewlibrary')
     api project(path: ':quickdeveloplibrary')
     api project(path: ':qdRouter_library')
+    api project(path:":quickevent_library")
 
     annotationProcessor project(':quicksticker-compiler')
     api project(path: ':quicksticker_lib')

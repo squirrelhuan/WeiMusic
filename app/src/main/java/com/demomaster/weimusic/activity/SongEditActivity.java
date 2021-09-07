@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -41,7 +42,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import cn.demomaster.huan.quickdeveloplibrary.base.activity.QDActivity;
-import cn.demomaster.huan.quickdeveloplibrary.constant.FilePath;
 import cn.demomaster.huan.quickdeveloplibrary.helper.PhotoHelper;
 import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.Image;
 import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.UrlType;
@@ -122,7 +122,7 @@ public class SongEditActivity extends QDActivity {
                             public void onResourceReady(@NonNull @NotNull Bitmap resource, Transition<? super Bitmap> transition) {
                                 if (resource != null) {
                                     iv_sheet_img.setImageBitmap(resource);
-                                    String filePath = QDBitmapUtil.savePhoto(resource, FilePath.APP_PATH_PICTURE, "header");//String.valueOf(System.currentTimeMillis())
+                                    String filePath = QDBitmapUtil.savePhoto(resource, mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "header");//String.valueOf(System.currentTimeMillis())
                                     image = new Image(filePath, UrlType.file);
                                 }
                             }
@@ -201,7 +201,7 @@ public class SongEditActivity extends QDActivity {
                                 Bundle extras = data.getExtras();
                                 if (extras != null) {
                                     Bitmap bitmap = extras.getParcelable("data");
-                                    String filePath = QDBitmapUtil.savePhoto(bitmap, FilePath.APP_PATH_PICTURE, "header");//String.valueOf(System.currentTimeMillis())
+                                    String filePath = QDBitmapUtil.savePhoto(bitmap, mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "header");//String.valueOf(System.currentTimeMillis())
                                     image = new Image(filePath, UrlType.file);
                                     updateHeader(image);
                                 }

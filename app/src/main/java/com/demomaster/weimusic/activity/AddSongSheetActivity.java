@@ -3,6 +3,7 @@ package com.demomaster.weimusic.activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.demomaster.huan.quickdeveloplibrary.base.activity.QDActivity;
-import cn.demomaster.huan.quickdeveloplibrary.constant.FilePath;
 import cn.demomaster.huan.quickdeveloplibrary.helper.PhotoHelper;
 import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.Image;
 import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.UrlType;
@@ -139,7 +139,7 @@ public class AddSongSheetActivity extends QDActivity {
                                 Bundle extras = data.getExtras();
                                 if (extras != null) {
                                     Bitmap bitmap = extras.getParcelable("data");
-                                    String filePath = QDBitmapUtil.savePhoto(bitmap, FilePath.APP_PATH_PICTURE, "header");//String.valueOf(System.currentTimeMillis())
+                                    String filePath = QDBitmapUtil.savePhoto(bitmap, mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "header");//String.valueOf(System.currentTimeMillis())
                                     image = new Image(filePath, UrlType.file);
                                     updateHeader(image);
                                 }
