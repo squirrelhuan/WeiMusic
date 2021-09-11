@@ -28,7 +28,6 @@ import cn.demomaster.quickdatabaselibrary.QuickDbHelper;
 /**
  * Created by huan on 2018/1/27.
  */
-
 public class WeiApplication extends QDApplication implements
         ServiceConnection {
    // public ServiceToken mToken;

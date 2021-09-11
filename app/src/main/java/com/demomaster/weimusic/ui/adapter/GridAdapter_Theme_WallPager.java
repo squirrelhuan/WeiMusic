@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.bumptech.glide.Glide;
+import com.demomaster.weimusic.SystemSetting;
 import com.demomaster.weimusic.constant.Constants;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.constant.ThemeConstants;
@@ -31,15 +32,15 @@ import cn.demomaster.huan.quickdeveloplibrary.helper.QDSharedPreferences;
 public class GridAdapter_Theme_WallPager extends BaseAdapter {
     private Context mContext;
     private List datas;//数据
-    private ThemeConstants.WallPagerType type = ThemeConstants.WallPagerType.withSystem;
+    private ThemeConstants.WallPagerType dataType;
 
     //适配器初始化
     public GridAdapter_Theme_WallPager(Context context, Object datas, ThemeConstants.WallPagerType type) {
         mContext = context;
-        this.type = type;
-        if (this.type == ThemeConstants.WallPagerType.withSystem) {
+        this.dataType = type;
+        if (this.dataType == ThemeConstants.WallPagerType.withSystem) {
             this.datas = (List<String>) datas;
-        } else if (this.type == ThemeConstants.WallPagerType.customPicture){
+        } else if (this.dataType == ThemeConstants.WallPagerType.customPicture){
             this.datas = (List<Integer>) datas;
         }
     }
@@ -66,27 +67,27 @@ public class GridAdapter_Theme_WallPager extends BaseAdapter {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(mContext).inflate(R.layout.item_theme_01, null);
 
-            viewHolder.iv_thumbnail = (ImageView) convertView.findViewById(R.id.iv_thumbnail);
-            viewHolder.iv_select = (ImageView) convertView.findViewById(R.id.iv_select);
+            viewHolder.iv_thumbnail = convertView.findViewById(R.id.iv_thumbnail);
+            viewHolder.iv_select = convertView.findViewById(R.id.iv_select);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         ThemeConstants.WallPagerType type1 = ThemeUtil.getWallPagerType();
-        if (type == ThemeConstants.WallPagerType.withSystem) {
+        if (dataType == ThemeConstants.WallPagerType.withSystem) {//系统预设的壁紙
             int id = (int) datas.get(position);
-            int val = QDSharedPreferences.getInstance().getInt(Constants.Key_Theme_WallPager_System, 0);
-            if (id == val&&type==type1) {
+            int val = SystemSetting.getWallPagerWithSystemValue();
+            if (id == val&&dataType==type1) {
                 viewHolder.iv_select.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.iv_select.setVisibility(View.GONE);
             }
             viewHolder.iv_thumbnail.setBackgroundDrawable(ResourcesCompat.getDrawable(mContext.getResources(),id,null));
-        } else {
+        } else {//自定义的壁紙
             String file = (String) datas.get(position);
             try {
-                String val = QDSharedPreferences.getInstance().getString(Constants.Key_Theme_WallPager_Custom, null);
-                if (val != null && type==type1 && file.equals(val)) {
+                String val =SystemSetting.getWallPagerWithCustomValue();
+                if (val != null && dataType==type1 && file.equals(val)) {
                     viewHolder.iv_select.setVisibility(View.VISIBLE);
                 } else {
                     viewHolder.iv_select.setVisibility(View.GONE);

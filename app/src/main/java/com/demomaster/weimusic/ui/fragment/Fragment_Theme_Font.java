@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 
@@ -55,13 +56,18 @@ public class Fragment_Theme_Font extends QuickFragment implements onSelcetPictur
     List<Integer> data = new ArrayList<>();
 
     @Override
+    public boolean isUseActionBarLayout() {
+        return false;
+    }
+
+    @Override
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_theme_01, container, false);
     }
 
     @Override
     public void initView(View view) {
-
+        ButterKnife.bind(this,view);
         int[] data_c = {R.style.StartAppTheme_Light,R.style.StartAppTheme_Night};
         data.clear();
         for (int i : data_c) {

@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.demomaster.huan.quickdeveloplibrary.helper.QDSharedPreferences;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
 import cn.demomaster.huan.quickdeveloplibrary.widget.button.ToggleButton;
@@ -65,12 +66,18 @@ public class Fragment_Theme_WallPager extends QuickFragment implements onSelcetP
     List<String> data2 = new ArrayList<String>();
 
     @Override
+    public boolean isUseActionBarLayout() {
+        return false;
+    }
+
+    @Override
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_theme_wall, container, false);
     }
 
     @Override
     public void initView(View view) {
+        ButterKnife.bind(this,view);
         int[] data_c = {R.drawable.background_wall_001,R.drawable.background_wall_002,R.drawable.background_wall_003,R.drawable.background_wall_004};
         data.clear();
         for (int i : data_c) {
@@ -84,6 +91,7 @@ public class Fragment_Theme_WallPager extends QuickFragment implements onSelcetP
                 ThemeUtil.changeWallPaper(ThemeConstants.WallPagerType.withSystem, data.get(i));
                 mAdapter.notifyDataSetChanged();
                 mAdapter2.notifyDataSetChanged();
+                tg_cover_with_music.setChecked(false);
             }
         });
         mAdapter2 = new GridAdapter_Theme_WallPager(getActivity(), data2, ThemeConstants.WallPagerType.customPicture);
@@ -94,9 +102,10 @@ public class Fragment_Theme_WallPager extends QuickFragment implements onSelcetP
                 ThemeUtil.changeWallPaper(ThemeConstants.WallPagerType.customPicture, data2.get(i).toString());
                 mAdapter.notifyDataSetChanged();
                 mAdapter2.notifyDataSetChanged();
+                tg_cover_with_music.setChecked(false);
             }
         });
-        TextView tv_add = (TextView) findViewById(R.id.tv_add);
+        TextView tv_add = findViewById(R.id.tv_add);
         tv_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -110,6 +119,8 @@ public class Fragment_Theme_WallPager extends QuickFragment implements onSelcetP
             @Override
             public void onToggle(View view, boolean on) {
                 ThemeUtil.changeWallPaper(ThemeConstants.WallPagerType.withMusic,on);
+                mAdapter.notifyDataSetChanged();
+                mAdapter2.notifyDataSetChanged();
             }
         });
         loadData();

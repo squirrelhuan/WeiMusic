@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.SettingActivity;
+import com.demomaster.weimusic.activity.ThemeActivity;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.constant.ThemeConstants;
 import com.demomaster.weimusic.lrc.DefaultLrcBuilder;
@@ -408,7 +409,7 @@ public class MainFragment2 extends Fragment implements OnClickListener {
             @Override
             public void onClick(View v) {
                 sml_menu.stopAnimation();
-                getActivity().startActivity(new Intent(getActivity(), SettingActivity.class));
+                getActivity().startActivity(new Intent(getActivity(), ThemeActivity.class));
             }
         });
     }

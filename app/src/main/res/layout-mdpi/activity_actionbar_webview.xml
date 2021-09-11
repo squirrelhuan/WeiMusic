@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     style="@style/quick_actionbar_common">
 
-    <cn.demomaster.huan.quickdeveloplibrary.widget.ImageTextView
+    <cn.demomaster.qdrouter_library.view.ImageTextView
         android:id="@+id/it_actionbar_common_left"
         style="@style/quick_actionbar_common_weight"
         android:layout_width="@dimen/activity_actionbar_button_width"
@@ -33,7 +33,7 @@
         android:textSize="@dimen/quickdev_title_text_size"
         android:textStyle="bold" />
 
-    <cn.demomaster.huan.quickdeveloplibrary.widget.ImageTextView
+    <cn.demomaster.qdrouter_library.view.ImageTextView
         android:id="@+id/it_actionbar_common_right"
         style="@style/quick_actionbar_common_weight"
         android:layout_width="@dimen/activity_actionbar_button_width"

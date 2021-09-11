@@ -17,8 +17,8 @@ import static com.demomaster.weimusic.constant.Constants.Action_Theme_Change;
 /**
  * Created by huan on 2018/1/27.
  */
-
 public abstract class BaseActivity extends QDActivity {
+
     // 权限
     public static String[] PERMISSIONS = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -34,7 +34,7 @@ public abstract class BaseActivity extends QDActivity {
         return View.inflate(this, R.layout.activity_actionbar_common,null);
     }
 
-    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+   public BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Action_Theme_Change)) {

@@ -68,8 +68,8 @@ public class WebViewFragment extends QuickFragment {
     Button btn_search;
 
     @Override
-    public int getHeadlayoutResID() {
-        return R.layout.activity_actionbar_webview;
+    public View getHeaderlayout() {
+        return inflateView(R.layout.activity_actionbar_webview);
     }
 
     @Nullable

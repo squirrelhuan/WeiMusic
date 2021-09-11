@@ -37,7 +37,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
+import cn.demomaster.huan.quickdeveloplibrary.helper.QDSharedPreferences;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
+import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDMulSheetDialog;
 import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 
@@ -57,6 +60,10 @@ public class Fragment_Theme_Welcome extends QuickFragment implements onSelcetPic
     List<Integer> data = new ArrayList<>();
     List<String> data2 = new ArrayList<String>();
 
+    @Override
+    public boolean isUseActionBarLayout() {
+        return false;
+    }
 
     @Override
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
@@ -65,6 +72,7 @@ public class Fragment_Theme_Welcome extends QuickFragment implements onSelcetPic
 
     @Override
     public void initView(View view) {
+        ButterKnife.bind(this,view);
         int[] data_c = {R.drawable.bg_001};
         data.clear();
         for (int i : data_c) {
@@ -118,69 +126,54 @@ public class Fragment_Theme_Welcome extends QuickFragment implements onSelcetPic
         return ((ThemeActivity) getActivity());
     }
 
-    // 选择图片dialog
-    private PopupWindow pop = null;
-    private LinearLayout ll_popup;
     // 选择照片的popupWindow
     private void SelectPhotoPopupWindow(final String operationType) {
+        String[] menus = {"拍照", "从相册中选取", "恢复默认壁纸"};
+        new QDMulSheetDialog.MenuBuilder(getContext())
+                .setData(menus)
+                .setOnDialogActionListener(new QDMulSheetDialog.OnDialogActionListener() {
+                    @Override
+                    public void onItemClick(QDMulSheetDialog dialog, int position, List<String> data) {
+                        File file = new File(Constants.APP_PATH_PICTURE_WELCOME,System.currentTimeMillis()+".jpg");
+                        switch (position){
+                            case 0://拍照
+                                QDFileUtil.createFile(file);
+                                getThemeActivity().takePicture(QDFileUtil.getUrifromFile(getContext(),file));
+                                break;
+                            case 1://从相册中选取
+                                // fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+                                // getPictureByGallery(SettingActivity.this);
+
+                                QDFileUtil.createFile(file);
+                                getThemeActivity().getImageFromPhoto(Uri.fromFile(file));
+                                break;
+                            case 2:
+                                switch (operationType) {
+                                    case "cover":
+                                        QDSharedPreferences.getInstance().putString("cover", "默认");
+                                        break;
+                                    case "WallPagerPath":
+                                        QDSharedPreferences.getInstance().putString("WallPagerPath", "默认");
+                                        break;
+                                    case "WelcomePagePath":
+                                        QDSharedPreferences.getInstance().putString("WelcomePagerPath", "默认");
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                break;
+                        }
+                        dialog.dismiss();
+                    }
+                }).create().show();
+
         getThemeActivity().operationType = operationType;
         getThemeActivity().monSelcetPictureResult = this;
-        pop = new PopupWindow(getThemeActivity());
-        View view = getLayoutInflater().inflate(R.layout.item_popupwindows_ios,
-                null);
 
-        ll_popup = (LinearLayout) view.findViewById(R.id.ll_popup);
-        pop.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        pop.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        pop.setBackgroundDrawable(new BitmapDrawable());
-        pop.setFocusable(true);
-        pop.setOutsideTouchable(true);
-        pop.setContentView(view);
-
-        RelativeLayout parent =view.findViewById(R.id.parent);
-        Button btn_camera = view
-                .findViewById(R.id.item_popupwindows_camera);
-        Button btn_file = view
-                .findViewById(R.id.item_popupwindows_Photo);
-        Button btn_default =  view
-                .findViewById(R.id.item_popupwindows_Default);
-        Button btn_cancle = view
-                .findViewById(R.id.item_popupwindows_cancel);
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pop.dismiss();
-                ll_popup.startAnimation(AnimationUtils.loadAnimation(
-                        getThemeActivity(), R.anim.scaling_big));
-            }
-        });
-        // 拍照
-        btn_camera.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                File file = new File(Constants.APP_PATH_PICTURE_WELCOME,System.currentTimeMillis()+".jpg");
-                QDFileUtil.createFile(file);
-                getThemeActivity().takePicture(QDFileUtil.getUrifromFile(getContext(),file));
-            }
-        });
-        // 文件选取
-        btn_file.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
-                // getPictureByGallery(SettingActivity.this);
-                File file = new File(Constants.APP_PATH_PICTURE_WELCOME,System.currentTimeMillis()+".jpg");
-                QDFileUtil.createFile(file);
-                getThemeActivity().getImageFromPhoto(Uri.fromFile(file));
-            }
-        });
-        // 取消
-        btn_cancle.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                pop.dismiss();
-            }
-        });
-        pop.showAtLocation(view, Gravity.BOTTOM, 0, 0);
-        ll_popup.startAnimation(AnimationUtils.loadAnimation(getThemeActivity(),
-                R.anim.bottom_up));
+        /*ll_popup.startAnimation(AnimationUtils.loadAnimation(
+                getThemeActivity(), R.anim.scaling_big));*/
+        /*ll_popup.startAnimation(AnimationUtils.loadAnimation(getThemeActivity(),
+                R.anim.bottom_up));*/
     }
 
 
@@ -197,10 +190,6 @@ public class Fragment_Theme_Welcome extends QuickFragment implements onSelcetPic
             data2.clear();
             data2.addAll(files);
             mAdapter2.notifyDataSetChanged();
-        }
-
-        if(pop!=null) {
-            pop.dismiss();
         }
     }
 }

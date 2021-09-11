@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.demomaster.huan.quickdeveloplibrary.helper.QDSharedPreferences;
 import cn.demomaster.huan.quickdeveloplibrary.helper.toast.PopToastUtil;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
@@ -72,12 +73,18 @@ public class Fragment_Theme_Cover extends QuickFragment implements onSelcetPictu
     List<String> data2 = new ArrayList<String>();
 
     @Override
+    public boolean isUseActionBarLayout() {
+        return false;
+    }
+
+    @Override
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_theme_cover, container, false);
     }
 
     @Override
     public void initView(View view) {
+        ButterKnife.bind(this,view);
         int[] data_c = {R.color.red, R.color.orange, R.color.yellow, R.color.green, R.color.cyan, R.color.blue, R.color.purple, R.color.black};
         for (int i : data_c) {
             data.add(i);
@@ -90,6 +97,7 @@ public class Fragment_Theme_Cover extends QuickFragment implements onSelcetPictu
                 ThemeUtil.setCover(ThemeConstants.CoverType.withSystem, getActivity().getResources().getColor(data.get(i)));
                 mAdapter.notifyDataSetChanged();
                 mAdapter2.notifyDataSetChanged();
+                tg_cover_with_music.setChecked(false);
             }
         });
 
@@ -101,6 +109,7 @@ public class Fragment_Theme_Cover extends QuickFragment implements onSelcetPictu
                 ThemeUtil.setCover(ThemeConstants.CoverType.customPicture, data2.get(i));
                 mAdapter.notifyDataSetChanged();
                 mAdapter2.notifyDataSetChanged();
+                tg_cover_with_music.setChecked(false);
             }
         });
 
@@ -116,6 +125,8 @@ public class Fragment_Theme_Cover extends QuickFragment implements onSelcetPictu
             @Override
             public void onToggle(View view, boolean on) {
                 ThemeUtil.setCover(ThemeConstants.CoverType.withMusic, on);
+                mAdapter.notifyDataSetChanged();
+                mAdapter2.notifyDataSetChanged();
             }
         });
 
@@ -134,7 +145,6 @@ public class Fragment_Theme_Cover extends QuickFragment implements onSelcetPictu
     public void refreshUI() {
         mAdapter2.notifyDataSetChanged();
     }
-
     public ThemeActivity getThemeActivity() {
         return ((ThemeActivity) getActivity());
     }
@@ -142,7 +152,9 @@ public class Fragment_Theme_Cover extends QuickFragment implements onSelcetPictu
     // 选择照片的popupWindow
     private void SelectPhotoPopupWindow(final String operationType) {
         String[] menus = {"拍照", "从相册中选取", "恢复默认壁纸"};
-        new QDMulSheetDialog.MenuBuilder(getContext()).setData(menus).setOnDialogActionListener(new QDMulSheetDialog.OnDialogActionListener() {
+        new QDMulSheetDialog.MenuBuilder(getContext())
+                .setData(menus)
+                .setOnDialogActionListener(new QDMulSheetDialog.OnDialogActionListener() {
             @Override
             public void onItemClick(QDMulSheetDialog dialog, int position, List<String> data) {
                 File file = new File(Constants.APP_PATH_PICTURE_CAVER,System.currentTimeMillis()+".jpg");

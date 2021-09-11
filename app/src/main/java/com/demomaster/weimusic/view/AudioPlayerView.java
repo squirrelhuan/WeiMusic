@@ -128,6 +128,7 @@ public class AudioPlayerView extends View {
     public void setColorStyle(int colorStyle) {
         this.bitmapPath = null;
         this.colorStyle = colorStyle;
+        this.paint_circle_center_color = colorStyle;
         this.coverType = ThemeConstants.CoverType.withSystem;
         postInvalidate();
     }
@@ -217,16 +218,22 @@ public class AudioPlayerView extends View {
         Bitmap bitmap = null;
         if (coverType == ThemeConstants.CoverType.withSystem ) {
             bitmap = generateCDBitmap();
-        }else {
+        } else if (coverType == ThemeConstants.CoverType.customPicture) {
+            if(isPreviewMode) {
+                bitmap = getBitmapFromPath(bitmapPath);
+            }else {
+                bitmap = getCustomBitmap();
+            }
+        } else {
             if (actionEnum == ActionEnum.isChangeToNext) {
                 if (audionIndex == 0) {
-                    if(toCoverBitmap==null||toCoverBitmap.isRecycled()) {
+                    if (toCoverBitmap == null || toCoverBitmap.isRecycled()) {
                         AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(), playAudioId);
                         toCoverBitmap = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), audioInfo);
                     }
                     bitmap = toCoverBitmap;
                 } else {
-                    if(fromCoverBitmap==null||fromCoverBitmap.isRecycled()) {
+                    if (fromCoverBitmap == null || fromCoverBitmap.isRecycled()) {
                         AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(), lastAudioId);
                         fromCoverBitmap = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), audioInfo);
                     }
@@ -234,22 +241,22 @@ public class AudioPlayerView extends View {
                 }
             } else if (actionEnum == ActionEnum.isChangeToPrev) {
                 if (audionIndex == 0) {
-                    if(toCoverBitmap==null||toCoverBitmap.isRecycled()) {
-                        AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(),lastAudioId);
+                    if (toCoverBitmap == null || toCoverBitmap.isRecycled()) {
+                        AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(), lastAudioId);
                         toCoverBitmap = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), audioInfo);
                     }
                     bitmap = toCoverBitmap;
                 } else {
-                    if(fromCoverBitmap==null||fromCoverBitmap.isRecycled()) {
+                    if (fromCoverBitmap == null || fromCoverBitmap.isRecycled()) {
                         AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(), playAudioId);
                         fromCoverBitmap = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), audioInfo);
                     }
                     bitmap = fromCoverBitmap;
                 }
-             }else {
+            } else {
                 fromCoverBitmap = null;
                 toCoverBitmap = null;
-                if (audioBitmap == null||audioBitmap.isRecycled()) {
+                if (audioBitmap == null || audioBitmap.isRecycled()) {
                     AudioInfo audioInfo = MusicDataManager.getInstance(getContext()).getMusicInfoById(getContext(), playAudioId);
                     audioBitmap = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), audioInfo);
                 }
@@ -515,9 +522,11 @@ public class AudioPlayerView extends View {
     }
 
     public void reSeat() {
-        this.paint_circle_center_color = QDSharedPreferences.getInstance().getInt(Constants.Key_Theme_Cover_System, Color.RED);
         Bitmap bitmap1 = null;
-        coverType = ThemeUtil.getCoverType();
+        if(!isPreviewMode) {
+            coverType = ThemeUtil.getCoverType();
+            this.paint_circle_center_color = QDSharedPreferences.getInstance().getInt(Constants.Key_Theme_Cover_System, Color.RED);
+        }
         if (coverType == ThemeConstants.CoverType.withMusic) {//跟随歌曲图片
             bitmap1 = MusicDataManager.getInstance(getContext()).getAlbumPicture(getContext(), MC.getInstance(getContext()).getCurrentInfo());
             //QDLogger.println("bitmap1=" + bitmap1);
@@ -742,6 +751,11 @@ public class AudioPlayerView extends View {
      */
     public void playPrev() {
         reverseBackChangeSong(null);
+    }
+
+    private boolean isPreviewMode;//是否是预览模式
+    public void setPreviewMode(boolean b) {
+        isPreviewMode = b;
     }
 
     enum ActionEnum {
