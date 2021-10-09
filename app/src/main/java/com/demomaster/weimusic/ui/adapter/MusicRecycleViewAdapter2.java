@@ -34,7 +34,7 @@ public class MusicRecycleViewAdapter2 extends RecyclerView.Adapter<MusicRecycleV
     //创建View,被LayoutManager所用
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.music_item2, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.music_item3, parent, false);
         ViewHolder holder = new ViewHolder(view);
         return holder;
     }

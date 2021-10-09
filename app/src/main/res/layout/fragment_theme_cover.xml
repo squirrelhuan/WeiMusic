@@ -13,7 +13,6 @@
             <LinearLayout
                 style="@style/LinearLayoutItem">
 
-
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -25,6 +24,32 @@
                     android:id="@+id/tg_cover_with_music"
                     style="@style/ToggleButton"
                     android:textColor="?attr/textNight2" />
+            </LinearLayout>
+            <LinearLayout
+                style="@style/LinearLayoutItem"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="歌曲封面样式"
+                    android:textColor="?attr/textNight" />
+                <RadioGroup
+                    android:id="@+id/rg_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <RadioButton
+                        android:id="@+id/rb_001"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="样式一"/>
+                    <RadioButton
+                        android:id="@+id/rb_002"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="样式二"/>
+                </RadioGroup>
             </LinearLayout>
 
             <LinearLayout

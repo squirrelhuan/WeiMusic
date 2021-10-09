@@ -2,6 +2,8 @@ package com.demomaster.weimusic.ui.fragment;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -32,11 +34,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
+import cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil;
+import cn.demomaster.huan.quickdeveloplibrary.util.ScreenShotUitl;
 import cn.demomaster.huan.quickdeveloplibrary.widget.layout.VisibleLayout;
+import cn.demomaster.huan.quickdeveloplibrary.widget.slidingpanellayout.SlidingUpPanelLayout;
 import cn.demomaster.qdlogger_library.QDLogger;
+import cn.demomaster.qdrouter_library.actionbar.ACTIONBAR_TYPE;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
+import cn.demomaster.qdrouter_library.util.QdThreadHelper;
 
-public class SheetFragment extends QuickFragment {
+public class SheetFragment2 extends QuickFragment {
+
 
     @Override
     public boolean isUseActionBarLayout() {
@@ -44,7 +52,7 @@ public class SheetFragment extends QuickFragment {
     }
     @Override
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        View mView = inflater.inflate(R.layout.fragment_layout_sheet, null);
+        View mView = inflater.inflate(R.layout.fragment_layout_sheet3, null);
         return mView;
     }
 
@@ -62,16 +70,17 @@ public class SheetFragment extends QuickFragment {
     //BannerCursorView cursorView;
     SheetHeaderAdapter sheetHeaderAdapter;
     long sheetId;
-    Bitmap bitmap;
     @Override
     public void initView(View rootView) {
-        /*bitmap = ScreenShotUitl.shotActivity(getActivity(),true);
-        new Thread(new Runnable() {
+        /*getActionBarTool().setActionBarType(ACTIONBAR_TYPE.NO_ACTION_BAR);*/
+        //bitmap = ScreenShotUitl.shotActivity(getActivity(),true);
+        //rootView.setBackground(new BitmapDrawable(bitmap));
+       /* new Thread(new Runnable() {
             @Override
             public void run() {
-                bitmap = QDBitmapUtil.zoomImageWithWidth(bitmap, 164);
+                //bitmap = QDBitmapUtil.zoomImageWithWidth(bitmap, 164);
                 //QDLogger.println("bitmap w2=：" + bitmap.getWidth());
-                bitmap = BlurUtil.doBlur(bitmap, 12, 0.2f);
+                //bitmap = BlurUtil.doBlur(bitmap, 12, 0.2f);
                 QdThreadHelper.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -81,7 +90,7 @@ public class SheetFragment extends QuickFragment {
             }
         }).start();*/
         rl_header_bg = findViewById(R.id.rl_header_bg);
-        /*cn.demomaster.huan.quickdeveloplibrary.widget.slidingpanellayout.SlidingUpPanelLayout sliding_layout = findViewById(R.id.sliding_layout);
+        SlidingUpPanelLayout sliding_layout = findViewById(R.id.sliding_layout);
         sliding_layout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -94,18 +103,18 @@ public class SheetFragment extends QuickFragment {
                     finish();
                 }
             }
-        });*/
+        });
 
        /* cursorView = findViewById(R.id.cursorView);
         cursorView.setRadius(DisplayUtil.dip2px(getContext(),3),DisplayUtil.dip2px(getContext(),4));
         cursorView.setCursorPointColor(getResources().getColor(R.color.transparent_light_77),getResources().getColor(R.color.white));*/
-        /*rl_content = findViewById(R.id.rl_content);
+        rl_content = findViewById(R.id.rl_content);
         rl_content.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
-        });*/
+        });
 
         iv_edit = findViewById(R.id.iv_edit);
         iv_edit.setOnClickListener(new View.OnClickListener() {
@@ -131,16 +140,16 @@ public class SheetFragment extends QuickFragment {
         sheetHeaderViewPager.setOffscreenPageLimit(3);
         sheetHeaderAdapter = new SheetHeaderAdapter(getContext(), audioSheets);
         sheetHeaderViewPager.setAdapter(sheetHeaderAdapter);
-        sheetHeaderViewPager.setPageTransformer(false, new ScaleTransformer());
+        sheetHeaderViewPager.setPageTransformer(false, new ScaleTransformer3());
         sheetHeaderViewPager.post(new Runnable() {
             @Override
             public void run() {
                 int margin = -((ViewGroup.MarginLayoutParams)sheetHeaderViewPager.getLayoutParams()).leftMargin;
                 int paddingLeft = sheetHeaderViewPager.getPaddingLeft();
                 QDLogger.i("setPageMargin="+margin+","+sheetHeaderViewPager.getPageMargin()+",paddingLeft="+paddingLeft);
-                //sheetHeaderViewPager.setPageMargin(margin);
+                sheetHeaderViewPager.setPageMargin(margin);
                 ViewGroup.LayoutParams layoutParams = sheetHeaderViewPager.getLayoutParams();
-                layoutParams.height = sheetHeaderViewPager.getMeasuredWidth();
+                //layoutParams.height = sheetHeaderViewPager.getMeasuredWidth();
             }
         });
         sheetHeaderViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -195,7 +204,7 @@ public class SheetFragment extends QuickFragment {
                 View view = adater2.getCurrentView(viewPager2,position);
                 if(view!=null) {
                     View scrollView = view.findViewById(R.id.rv_songs);
-                    //sliding_layout.setScrollableView(scrollView);
+                    sliding_layout.setScrollableView(scrollView);
                 }
                 //QDLogger.e("getImgSrc="+audioSheets.get(position).getImgSrc());
                 //Glide.with(mContext).load(audioSheets.get(position).getImgSrc()).into(iv_icon);
@@ -235,7 +244,7 @@ public class SheetFragment extends QuickFragment {
                 View view = adater2.getCurrentView(viewPager2,viewPager2.getCurrentItem());
                 if(view!=null) {
                     View scrollView = view.findViewById(R.id.rv_songs);
-                    //sliding_layout.setScrollableView(scrollView);
+                    sliding_layout.setScrollableView(scrollView);
                 }
                 tv_name.setText(audioSheets.get(viewPager2.getCurrentItem()).getName());
                 sheetHeaderAdapter.setCurrent(sheetHeaderViewPager,viewPager2.getCurrentItem());
@@ -314,7 +323,7 @@ public class SheetFragment extends QuickFragment {
             //QDLogger.e("transformPage: "+page.hashCode()+",position="+position+",progress:" +progress +",y="+page.getY()+",getTranslationY()="+page.getTranslationY());
             page.setScaleX(progress*(1-MIN_SCALE)+MIN_SCALE);
             page.setScaleY(progress*(1-MIN_SCALE)+MIN_SCALE);
-            QDLogger.e("getScaleX: "+page.getScaleX()+",position="+position+",progress="+progress+",a="+(progress*(1-MIN_SCALE)+MIN_SCALE));
+            //QDLogger.e("getScaleX: "+page.getScaleX()+",position="+position+",progress="+progress+",a="+(progress*(1-MIN_SCALE)+MIN_SCALE));
 
             page.setY(page.getHeight()*(1-page.getScaleX())/2);
             //Log.d("google_lenve_fb", "transformPage: scaleX:" + scaleX);
@@ -369,6 +378,65 @@ public class SheetFragment extends QuickFragment {
 
             int y = (int) (page.getHeight()*(1-page.getScaleX())/2);
             page.setY(-y+100*page.getScaleX());
+            //Log.d("google_lenve_fb", "transformPage: scaleX:" + scaleX);
+            //  page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
+        }
+    }
+
+    public static class ScaleTransformer3 implements ViewPager.PageTransformer {
+        private static final float MIN_SCALE = 0.50f;
+
+        @Override
+        public void transformPage(View page, float position) {
+            //重新计算偏移量,因为ViewPager的margin导致计算误差所以重新计算
+            ViewPager viewPager = ((ViewPager)page.getParent());
+            int margin = -((ViewGroup.MarginLayoutParams)viewPager.getLayoutParams()).leftMargin;
+            int clientWidth = viewPager.getMeasuredWidth() - viewPager.getPaddingLeft() - viewPager.getPaddingRight()+margin;
+            position = (float) (page.getLeft() - viewPager.getScrollX()) / clientWidth;
+
+/*（1）当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：
+            view2的posion由1 -> 0;
+            view1的posion由0 -> -1;
+            （2）当View2右滑到View1时，由transformPage函数的日志获得以下数据(注意顺序)：
+            view2的posion有0 -> 1;
+            view1的posion由-1 -> 0;
+            view3的posion有1 -> 2;
+（2）当View2右滑到View3时，由transformPage函数的日志获得以下数据(注意顺序)：
+            view2的posion有0 -> -1;
+            view3的posion有1 -> 0;
+            view1的posion有-1 -> -2;
+
+            作者：墨源为水
+            链接：https://www.jianshu.com/p/50f59a6a87e8
+            来源：简书*/
+
+            float progress =0;
+            if (position < -1 ) {
+                //progress = position+2;
+                progress = 0;
+            }else if(position<0){
+                progress = 1+position;
+            }else if(position<1){//当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：view2的posion由1 -> 0;view1的posion由0 -> -1;
+                progress = 1-position;
+            }else if(position<2){
+                //progress = position-1;
+                progress = 0;
+            }
+            page.setAlpha(progress+.3f);
+            //ViewGroup.LayoutParams layoutParams = page.getLayoutParams();
+            //QDLogger.e("transformPage: "+page.hashCode()+",position="+position+",progress:" +progress +",y="+page.getY()+",getTranslationY()="+page.getTranslationY());
+            page.setScaleX(progress*(1-MIN_SCALE)+MIN_SCALE);
+            page.setScaleY(progress*(1-MIN_SCALE)+MIN_SCALE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if(progress==1) {
+                    page.setZ(1);
+                }else {
+                    page.setZ(0);
+                }
+            }
+            //QDLogger.e("getScaleX: "+page.getScaleX()+",position="+position+",progress="+progress+",a="+(progress*(1-MIN_SCALE)+MIN_SCALE));
+
+            //page.setY(page.getHeight()*(1-page.getScaleX())/2);
             //Log.d("google_lenve_fb", "transformPage: scaleX:" + scaleX);
             //  page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
         }

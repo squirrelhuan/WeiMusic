@@ -16,12 +16,8 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import cn.demomaster.qdlogger_library.QDLogger;
-
-import static java.lang.Thread.sleep;
 
 public class MediaPlayerProxy extends Thread {
 

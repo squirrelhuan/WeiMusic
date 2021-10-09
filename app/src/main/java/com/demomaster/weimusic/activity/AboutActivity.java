@@ -8,7 +8,6 @@ import com.demomaster.weimusic.R;
 /**
  * Created by huan on 2018/1/23.
  */
-
 public class AboutActivity extends BaseActivity {
 
     @Override

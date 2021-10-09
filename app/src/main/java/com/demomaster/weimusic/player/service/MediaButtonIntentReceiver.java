@@ -23,11 +23,7 @@ import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
-import com.demomaster.weimusic.activity.MainActivity;
-
-import cn.demomaster.huan.quickdeveloplibrary.helper.toast.QdToast;
 import cn.demomaster.qdlogger_library.QDLogger;
 
 /**

@@ -28,7 +28,7 @@ import com.demomaster.weimusic.player.helpers.visualizer.Renderer;
 import com.demomaster.weimusic.player.helpers.visualizer.SolidBarGraphRenderer;
 import com.demomaster.weimusic.player.helpers.visualizer.WaveformRenderer;
 
-import static com.demomaster.weimusic.constant.Constants.*;
+import static com.demomaster.weimusic.constant.Constants.VISUALIZATION_TYPE;
 
 
 public class VisualizerView extends View {

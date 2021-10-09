@@ -2,7 +2,6 @@ package com.demomaster.weimusic.util;
 
 import android.animation.ValueAnimator;
 import android.graphics.Matrix;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 

@@ -4,7 +4,6 @@ package com.demomaster.weimusic.player.helpers.utils;
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
 
-
 import com.demomaster.weimusic.ui.widet.VisualizerView;
 
 import java.lang.ref.WeakReference;

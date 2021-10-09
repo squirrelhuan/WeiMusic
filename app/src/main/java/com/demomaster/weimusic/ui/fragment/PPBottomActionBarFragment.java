@@ -19,7 +19,6 @@ import androidx.annotation.Nullable;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.constant.AudioStation;
-import com.demomaster.weimusic.player.helpers.MusicHelper;
 import com.demomaster.weimusic.player.service.MC;
 
 import org.greenrobot.eventbus.EventBus;
@@ -66,6 +65,7 @@ public class PPBottomActionBarFragment extends QuickFragment {
     public boolean isUseActionBarLayout() {
         return false;
     }
+
     @Override
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -80,21 +80,8 @@ public class PPBottomActionBarFragment extends QuickFragment {
     @Override
     public void initView(View view) {
         ButterKnife.bind(this, view);
-        iv_info.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showMulMenuDialog();
-            }
-        });
-        mPrev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                long id1 = MC.getInstance(getContext()).getCurrentAudioId();
-                long id2 = MC.getInstance(getContext()).getNextMusicInfo(true).getAudioId();
-                EventBus.getDefault().post(new EventMessage(AudioStation.preToPlayLast.value(),new long[]{id1,id2}));//准备播放下一首
-                // MC.getInstance(getContext()).playPrev();
-            }
-        });
+        iv_info.setOnClickListener(this);
+        mPrev.setOnClickListener(this);
         bottom_action_bar_play.setSelected(MC.getInstance(getContext()).isPlaying());
         bottom_action_bar_play.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -111,19 +98,11 @@ public class PPBottomActionBarFragment extends QuickFragment {
                 }
             }
         });
-        mNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // MC.getInstance(getContext()).playNext();
-                long id1 = MC.getInstance(getContext()).getCurrentAudioId();
-                long id2 = MC.getInstance(getContext()).getNextMusicInfo(false).audioId;
-                EventBus.getDefault().post(new EventMessage(AudioStation.preToPlayNext.value(),new long[]{id1,id2}));//准备播放下一首
-            }
-        });
+        mNext.setOnClickListener(this);
         bottom_select_cd_open.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).showSheetFragment();
+                ((MainActivity) getActivity()).showSheetFragment();
             }
         });
 
@@ -146,6 +125,7 @@ public class PPBottomActionBarFragment extends QuickFragment {
         });
         mProgress.setMax(1000);
     }
+
     private void showMulMenuDialog() {
         String[] menus = {"不开启", "播放完当前歌曲", "10分钟", "20分钟", "30分钟", "60分钟", "90分钟", "120分钟", "自定义"};
         new QDMulSheetDialog.MenuBuilder(getContext()).setData(menus).setOnDialogActionListener(new QDMulSheetDialog.OnDialogActionListener() {
@@ -154,8 +134,8 @@ public class PPBottomActionBarFragment extends QuickFragment {
                 dialog.dismiss();
             }
         })
-        .create()
-        .show();
+                .create()
+                .show();
     }
 
     public void refreshUI() {
@@ -226,6 +206,10 @@ public class PPBottomActionBarFragment extends QuickFragment {
                     handler.removeCallbacks(runnable);
                     handler.post(runnable);
                     break;
+                case REPEATMODE_CHANGED://播放顺序变化
+                    /*mRepeat.setSequenceType(MC.getInstance(getContext()).getRepeatMode());
+                    iv_info.setImageResource();*/
+                    break;
             }
         } else {
             QDLogger.println("事件2:" + message);
@@ -242,5 +226,28 @@ public class PPBottomActionBarFragment extends QuickFragment {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        super.onClick(v);
+        switch (v.getId()) {
+            case R.id.iv_info:
+                MC.getInstance(getContext()).doRepeat();
+                //showMulMenuDialog();
+                break;
+            case R.id.bottom_action_bar_previous:
+                long id1 = MC.getInstance(getContext()).getCurrentAudioId();
+                long id2 = MC.getInstance(getContext()).getNextMusicInfo(true).getAudioId();
+                EventBus.getDefault().post(new EventMessage(AudioStation.preToPlayLast.value(), new long[]{id1, id2}));//准备播放下一首
+                // MC.getInstance(getContext()).playPrev();
+                break;
+            case R.id.bottom_action_bar_next:
+                // MC.getInstance(getContext()).playNext();
+                long id3 = MC.getInstance(getContext()).getCurrentAudioId();
+                long id4 = MC.getInstance(getContext()).getNextMusicInfo(false).audioId;
+                EventBus.getDefault().post(new EventMessage(AudioStation.preToPlayNext.value(), new long[]{id3, id4}));//准备播放下一首
+                break;
+        }
     }
 }

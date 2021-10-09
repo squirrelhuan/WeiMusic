@@ -1,7 +1,6 @@
 package com.demomaster.weimusic.player.service;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.media.MediaDataSource;
 import android.media.MediaPlayer;
 import android.net.Uri;

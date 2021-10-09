@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import androidx.viewpager.widget.ViewPager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -19,7 +18,12 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import static com.demomaster.weimusic.constant.Constants.*;
+import androidx.viewpager.widget.ViewPager;
+
+import static com.demomaster.weimusic.constant.Constants.APOLLO;
+import static com.demomaster.weimusic.constant.Constants.APOLLO_PREFERENCES;
+import static com.demomaster.weimusic.constant.Constants.THEME_ITEM_FOREGROUND;
+import static com.demomaster.weimusic.constant.Constants.THEME_PACKAGE_NAME;
 
 
 /**

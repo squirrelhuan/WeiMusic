@@ -13,15 +13,15 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
-
-import androidx.annotation.Nullable;
-
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
+import androidx.annotation.Nullable;
+
+import com.demomaster.weimusic.SystemSetting;
 import com.demomaster.weimusic.constant.Constants;
 import com.demomaster.weimusic.constant.ThemeConstants;
 import com.demomaster.weimusic.model.AudioInfo;
@@ -203,21 +203,22 @@ public class AudioPlayerView extends View {
     }
 
     Bitmap viewBitmap;
-
     Bitmap audioBitmap;//自定义的图片
     Bitmap fromCoverBitmap;//上一曲封面图片
     Bitmap toCoverBitmap;//上一曲封面图片
     /**
      * 绘制唱盘
-     *
      * @param canvas
      * @param scale
      * @param audionIndex -1是上一首歌曲的封面 0 是当前 1是下一曲
      */
     public void drawCover(Canvas canvas, float scale, ActionEnum actionEnum,int audionIndex) {
         Bitmap bitmap = null;
+       /* if(!isPreviewMode) {
+            coverType =
+        }*/
         if (coverType == ThemeConstants.CoverType.withSystem ) {
-            bitmap = generateCDBitmap();
+            bitmap = generateCDBitmap(null);
         } else if (coverType == ThemeConstants.CoverType.customPicture) {
             if(isPreviewMode) {
                 bitmap = getBitmapFromPath(bitmapPath);
@@ -262,9 +263,12 @@ public class AudioPlayerView extends View {
                 }
                 bitmap = audioBitmap;
             }
+            if(SystemSetting.getCoverStytle()==1&&bitmap!=null){
+                bitmap = generateCDBitmap(bitmap);
+            }
         }
         if (bitmap == null || bitmap.isRecycled()) {
-            bitmap = generateCDBitmap();
+            bitmap = generateCDBitmap(null);
         }
         bitmap = dealBitmap(bitmap);
        /* Path path = new Path();
@@ -294,7 +298,7 @@ public class AudioPlayerView extends View {
         canvas.drawBitmap(bitmap, srcRect, dstRect, new Paint());
     }
 
-    private Bitmap generateCDBitmap() {
+    private Bitmap generateCDBitmap(Bitmap bitmap1) {
         float radius_cd = radius;
         int width = (int) radius_cd * 2;
         int height = width;
@@ -329,12 +333,27 @@ public class AudioPlayerView extends View {
         paint_ring_mask.setStyle(Paint.Style.FILL); //设置为
         canvas1.drawCircle(width / 2, height / 2, radius_cd - paint_boun_width * radius_cd, paint_ring_mask);
 
-        //绘制红色圆心
-        paint_circle_center.setAntiAlias(true);
-        paint_circle_center.setColor(paint_circle_center_color);
-        paint_circle_center.setStyle(Paint.Style.FILL); //设置为
-        canvas1.drawCircle(width / 2, height / 2, paint_circle_center_width * radius_cd, paint_circle_center);
-
+        QDLogger.i(coverType+"-bitmap1=" + (bitmap1==null?"null:"+(SystemSetting.getCoverStytle()):(""+bitmap1.isRecycled())));
+        if(SystemSetting.getCoverStytle()==0||bitmap1==null) {
+            //绘制红色圆心
+            paint_circle_center.setAntiAlias(true);
+            paint_circle_center.setColor(paint_circle_center_color);
+            paint_circle_center.setStyle(Paint.Style.FILL); //设置为
+            canvas1.drawCircle(width / 2, height / 2, paint_circle_center_width * radius_cd, paint_circle_center);
+        }else {
+            Path path = new Path();
+            //按照逆时针方向添加一个圆
+            path.addCircle(width / 2, height / 2, paint_circle_center_width * radius_cd,Path.Direction.CCW);
+            canvas1.clipPath(path);
+            //设置为在圆形区域内绘制
+            float l = width/2-paint_circle_center_width * radius_cd;
+            float t = height/2-paint_circle_center_width * radius_cd;
+            float r = width/2+paint_circle_center_width * radius_cd;
+            float b = height/2+paint_circle_center_width * radius_cd;
+            Rect rect = new Rect(0,0,bitmap1.getWidth(),bitmap1.getHeight());
+            Rect rect2 = new Rect((int) l,(int)t,(int)r,(int)b);
+            canvas1.drawBitmap(bitmap1,rect,rect2,pain);
+        }
         //绘制红色圆心的光影效果
         LinearGradient mShader2 = new LinearGradient(0, 0, getMeasuredWidth(), getMeasuredHeight(), new int[]{
                 0x55000000, 0x22000000, 0x55aabbcc, 0x22000000, 0x55000000}, new float[]{0f, 0.3f, 0.5f, 0.7f, 1.0f},

@@ -1,7 +1,5 @@
 package com.demomaster.weimusic.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

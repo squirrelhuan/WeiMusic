@@ -14,39 +14,23 @@ import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-import com.bumptech.glide.Glide;
-import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.WeiApplication;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.constant.SequenceType;
-import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.model.AudioRecord;
+import com.demomaster.weimusic.model.AudioSheet;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.audio.mp3.MP3File;
-import org.jaudiotagger.tag.TagException;
-import org.jaudiotagger.tag.id3.AbstractID3v2Tag;
-import org.jaudiotagger.tag.images.Artwork;
-import org.jaudiotagger.tag.images.ArtworkFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.Image;
-import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.UrlType;
-import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.helper.QDSharedPreferences;
+import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
 import cn.demomaster.qdlogger_library.QDLogger;
 
-import static com.demomaster.weimusic.constant.Constants.EXTERNAL;
 import static com.demomaster.weimusic.constant.Constants.PLAYLIST_NAME_FAVORITES;
 
 public class MusicDataManager {

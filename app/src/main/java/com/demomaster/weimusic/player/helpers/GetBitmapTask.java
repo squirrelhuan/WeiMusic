@@ -5,14 +5,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
-
 import com.demomaster.weimusic.player.cache.ImageInfo;
 import com.demomaster.weimusic.player.helpers.utils.ImageUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-import static com.demomaster.weimusic.constant.Constants.*;
+import static com.demomaster.weimusic.constant.Constants.SIZE_NORMAL;
+import static com.demomaster.weimusic.constant.Constants.SIZE_THUMB;
+import static com.demomaster.weimusic.constant.Constants.SRC_FILE;
+import static com.demomaster.weimusic.constant.Constants.SRC_FIRST_AVAILABLE;
+import static com.demomaster.weimusic.constant.Constants.SRC_GALLERY;
+import static com.demomaster.weimusic.constant.Constants.SRC_LASTFM;
+import static com.demomaster.weimusic.constant.Constants.TYPE_ALBUM;
+import static com.demomaster.weimusic.constant.Constants.TYPE_ARTIST;
 
 
 public class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {

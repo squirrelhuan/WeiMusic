@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -33,7 +32,7 @@ public class SheetHeaderAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return data==null?0:data.size();
+        return data == null ? 0 : data.size();
     }
 
     @Override
@@ -41,40 +40,44 @@ public class SheetHeaderAdapter extends PagerAdapter {
         return view == object;
     }
 
-    public void setCurrent(ViewPager viewPager, int position){
-        View view1 = getCurrentView(viewPager,position-1);
-        if(view1!=null) {
+    public void setCurrent(ViewPager viewPager, int position) {
+        View view1 = getCurrentView(viewPager, position - 1);
+        if (view1 != null) {
             ViewHolder viewHolder = new ViewHolder(view1);
             //viewHolder.tv_name.setVisibility(View.GONE);
             viewHolder.iv_play_sheet.setVisibility(View.GONE);
         }
 
-        View view2 = getCurrentView(viewPager, position+1);
-        if(view2!=null) {
+        View view2 = getCurrentView(viewPager, position + 1);
+        if (view2 != null) {
             ViewHolder viewHolder2 = new ViewHolder(view2);
-           // viewHolder2.tv_name.setVisibility(View.GONE);
+            // viewHolder2.tv_name.setVisibility(View.GONE);
             viewHolder2.iv_play_sheet.setVisibility(View.GONE);
         }
 
-        View view3 = getCurrentView(viewPager,position);
-        ViewHolder viewHolder3 = new ViewHolder(view3);
-        //viewHolder3.tv_name.setVisibility(View.VISIBLE);
-        viewHolder3.iv_play_sheet.setVisibility(View.VISIBLE);
-        viewHolder3.iv_play_sheet.setImageResource(MusicDataManager.getInstance(mContext).getCurrentSheetId()==data.get(position).getId()?R.drawable.button_music_play01:R.drawable.button_music_play02);
+        View view3 = getCurrentView(viewPager, position);
+        if(view3!=null) {
+            ViewHolder viewHolder3 = new ViewHolder(view3);
+            //viewHolder3.tv_name.setVisibility(View.VISIBLE);
+            viewHolder3.iv_play_sheet.setVisibility(View.VISIBLE);
+            viewHolder3.iv_play_sheet.setImageResource(MusicDataManager.getInstance(mContext).getCurrentSheetId() == data.get(position).getId() ? R.drawable.button_music_play01 : R.drawable.button_music_play02);
+        }
     }
-    public View getCurrentView(ViewPager viewPager, int position){
+
+    public View getCurrentView(ViewPager viewPager, int position) {
         int count = viewPager.getChildCount();
-        for(int i=0;i<count;i++){
+        for (int i = 0; i < count; i++) {
             View view = viewPager.getChildAt(i);
-            if(view!=null&&view.getTag()!=null){
-                String tag = (""+view.getTag());
-                if(tag.equals(position+"")) {
+            if (view != null && view.getTag() != null) {
+                String tag = ("" + view.getTag());
+                if (tag.equals(position + "")) {
                     return view;
                 }
             }
         }
         return null;
     }
+
     @Override
     public Object instantiateItem(final ViewGroup container, final int position) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_sheet_header, null);
@@ -87,19 +90,19 @@ public class SheetHeaderAdapter extends PagerAdapter {
             //viewHolder.tv_name.setVisibility(View.GONE);
             //viewHolder.tv_name.setText(data.get(position).getName());
             viewHolder.iv_play_sheet.setVisibility(View.GONE);
-            viewHolder.iv_play_sheet.setImageResource(MusicDataManager.getInstance(mContext).getCurrentSheetId()==data.get(position).getId()?R.drawable.button_music_play01:R.drawable.button_music_play02);
+            viewHolder.iv_play_sheet.setImageResource(MusicDataManager.getInstance(mContext).getCurrentSheetId() == data.get(position).getId() ? R.drawable.button_music_play01 : R.drawable.button_music_play02);
             viewHolder.iv_play_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(MusicDataManager.getInstance(mContext).getCurrentSheetId()==data.get(position).getId()){
-                        if(MC.getInstance(mContext).isPlaying()){
+                    if (MusicDataManager.getInstance(mContext).getCurrentSheetId() == data.get(position).getId()) {
+                        if (MC.getInstance(mContext).isPlaying()) {
                             MC.getInstance(mContext).pause();
                             viewHolder.iv_play_sheet.setImageResource(R.drawable.button_music_play02);
-                        }else {
+                        } else {
                             MC.getInstance(mContext).playSheet(data.get(position).getId());
                             viewHolder.iv_play_sheet.setImageResource(R.drawable.button_music_play01);
                         }
-                    }else {
+                    } else {
                         MC.getInstance(mContext).playSheet(data.get(position).getId());
                         viewHolder.iv_play_sheet.setImageResource(R.drawable.button_music_play01);
                     }
@@ -116,13 +119,14 @@ public class SheetHeaderAdapter extends PagerAdapter {
     }
 
     class ViewHolder {
-        ImageView iv_icon,iv_play_sheet;
+        ImageView iv_icon, iv_play_sheet;
         //TextView tv_name;
-
         public ViewHolder(View view) {
-            iv_icon = view.findViewById(R.id.iv_icon);
-            //tv_name = view.findViewById(R.id.tv_name);
-            iv_play_sheet = view.findViewById(R.id.iv_play_sheet);
+            if (view != null) {
+                iv_icon = view.findViewById(R.id.iv_icon);
+                //tv_name = view.findViewById(R.id.tv_name);
+                iv_play_sheet = view.findViewById(R.id.iv_play_sheet);
+            }
         }
     }
 }

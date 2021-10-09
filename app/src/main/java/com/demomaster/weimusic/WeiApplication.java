@@ -1,9 +1,7 @@
 package com.demomaster.weimusic;
 
-import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -11,7 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.media.AudioManager;
 import android.os.IBinder;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.model.AudioSheet;

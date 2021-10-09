@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
 
-
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.player.helpers.GetBitmapTask;
 import com.demomaster.weimusic.player.helpers.utils.ImageUtils;
@@ -24,7 +23,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import static com.demomaster.weimusic.constant.Constants.*;
+import static com.demomaster.weimusic.constant.Constants.SIZE_NORMAL;
+import static com.demomaster.weimusic.constant.Constants.SIZE_THUMB;
+import static com.demomaster.weimusic.constant.Constants.SRC_FILE;
+import static com.demomaster.weimusic.constant.Constants.SRC_GALLERY;
+import static com.demomaster.weimusic.constant.Constants.SRC_LASTFM;
 
 
 public class ImageProvider implements GetBitmapTask.OnBitmapReadyListener{

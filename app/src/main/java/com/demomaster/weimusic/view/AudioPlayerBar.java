@@ -1,6 +1,5 @@
 package com.demomaster.weimusic.view;
 
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -11,18 +10,15 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
+import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
-
-import android.util.AttributeSet;
-import android.view.animation.Animation;
 
 import com.demomaster.weimusic.player.service.MC;
 
 import cn.demomaster.huan.quickdeveloplibrary.animation.QDObjectAnimator;
 import cn.demomaster.huan.quickdeveloplibrary.animation.QDValueAnimator;
-import cn.demomaster.qdlogger_library.QDLogger;
 
 /**
  * Created by squirrel桓 on 2018/1/22.

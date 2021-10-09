@@ -1,35 +1,23 @@
 package com.demomaster.weimusic.activity;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import android.text.TextUtils;
-import android.util.Log;
-
-
-import com.alibaba.fastjson.JSON;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.interfaces.onSelcetPictureResult;
-import com.demomaster.weimusic.ui.adapter.FragmentAdapter;
 import com.demomaster.weimusic.ui.adapter.ScrollingTabsAdapter;
 import com.demomaster.weimusic.ui.fragment.Fragment_Theme_Cover;
 import com.demomaster.weimusic.ui.fragment.Fragment_Theme_Font;
 import com.demomaster.weimusic.ui.fragment.Fragment_Theme_WallPager;
 import com.demomaster.weimusic.ui.fragment.Fragment_Theme_Welcome;
-import com.demomaster.weimusic.util.ImageUtils;
 import com.demomaster.weimusic.view.ScrollableTabView;
 
 import org.jetbrains.annotations.NotNull;
@@ -39,11 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import cn.demomaster.huan.quickdeveloplibrary.helper.PhotoHelper;
-import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.Image;
-import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
 import cn.demomaster.qdlogger_library.QDLogger;
 
 public class ThemeActivity extends BaseActivity {

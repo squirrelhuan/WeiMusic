@@ -1,8 +1,6 @@
 package com.demomaster.weimusic.ui.fragment;
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
@@ -10,79 +8,65 @@ import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Playlists;
 import android.provider.MediaStore.MediaColumns;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.transition.AutoTransition;
-import androidx.transition.TransitionManager;
-import androidx.transition.TransitionSet;
-import androidx.appcompat.widget.Toolbar;
-
-import android.text.InputType;
 import android.text.TextUtils;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionManager;
+import androidx.transition.TransitionSet;
 
+import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.AddSongSheetActivity;
 import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.activity.SearchActivity;
-import com.demomaster.weimusic.activity.SongEditActivity;
 import com.demomaster.weimusic.constant.AudioStation;
-import com.demomaster.weimusic.dialog.AudioInfoDialog;
+import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter;
 import com.google.android.material.appbar.AppBarLayout;
-import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.model.AudioInfo;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.demomaster.huan.quickdeveloplibrary.helper.toast.PopToastUtil;
-import cn.demomaster.huan.quickdeveloplibrary.helper.toast.QdToast;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.DisplayUtil;
-import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
-import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.OnClickActionListener;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDDialog;
-import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDInputDialog;
-import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDMulSheetDialog;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDSheetDialog;
 import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 import cn.demomaster.quickpermission_library.PermissionHelper;
 
 import static com.demomaster.weimusic.activity.BaseActivity.PERMISSIONS;
-import static com.demomaster.weimusic.constant.AudioStation.QUEUE_CHANGED;
-import static com.demomaster.weimusic.constant.Constants.*;
+import static com.demomaster.weimusic.constant.Constants.EXTERNAL;
+import static com.demomaster.weimusic.constant.Constants.MIME_TYPE;
+import static com.demomaster.weimusic.constant.Constants.PLAYLIST_FAVORITES;
+import static com.demomaster.weimusic.constant.Constants.PLAYLIST_QUEUE;
 
 
 public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffsetChangedListener {
@@ -340,6 +324,7 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
         bundle.putInt("selectIndex",position);
         intent.putExtras(bundle);
         ((MainActivity)getActivity()).startFragment(new AudioInoFragment(),R.id.main_layout,intent);
+
         /*musicInfoDialog = new QDDialog.Builder(getContext())
                 .setBackgroundRadius(50)
                 .setContentView(layout)

@@ -18,7 +18,7 @@
         app:srcCompat="@drawable/ic_arrow_back_black_24dp"
         tools:ignore="VectorDrawableCompat" />
 
-    <cn.demomaster.huan.quickdeveloplibrary.widget.ImageTextView
+    <cn.demomaster.qdrouter_library.view.ImageTextView
         android:id="@+id/it_actionbar_common_title"
         style="@style/quick_actionbar_common_weight"
         android:layout_width="match_parent"

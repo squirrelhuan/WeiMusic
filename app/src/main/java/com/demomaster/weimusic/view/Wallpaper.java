@@ -3,6 +3,8 @@ package com.demomaster.weimusic.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -30,14 +32,16 @@ import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.util.ThemeUtil;
 
 import cn.demomaster.huan.quickdeveloplibrary.helper.QDSharedPreferences;
+import cn.demomaster.huan.quickdeveloplibrary.helper.toast.QdToast;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil;
-import cn.demomaster.huan.quickdeveloplibrary.view.drawable.QDRoundButtonDrawable;
-import cn.demomaster.huan.quickdeveloplibrary.widget.button.QDButton;
 import cn.demomaster.qdlogger_library.QDLogger;
 
 import static com.demomaster.weimusic.constant.Constants.Key_Theme_WallPager_Custom;
 import static com.demomaster.weimusic.constant.Constants.Key_Theme_WallPager_System;
 
+/**
+ * 滚动壁紙
+ */
 public class Wallpaper extends AppCompatImageView {
     public Wallpaper(@NonNull Context context) {
         super(context);
@@ -48,7 +52,7 @@ public class Wallpaper extends AppCompatImageView {
         super(context, attrs);
         init();
     }
-    
+
     public Wallpaper(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
@@ -73,7 +77,7 @@ public class Wallpaper extends AppCompatImageView {
         //matrix.postScale(scale, scale);
         matrix.postTranslate(-offset_dx, 0);
         canvas.setMatrix(matrix);
-           /* Paint paint = new Paint();
+        /* Paint paint = new Paint();
             paint.setAntiAlias(true);
             paint.setColor(Color.RED);
             canvas.drawRect(new Rect(0,0,bitmap.getWidth(),bitmap.getHeight()),paint);*/
@@ -96,17 +100,36 @@ public class Wallpaper extends AppCompatImageView {
             if (bitmap != null && bitmap.getWidth() != 0 && bitmap.getHeight() != 0) {
                 Rect rect_src = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
                 Rect rect_target = new Rect(0, 0, wallPaperWidth, getMeasuredHeight());
-                canvas.drawBitmap(bitmap, rect_src, rect_target, new Paint());
+                Paint paint1 = new Paint();
+                ColorMatrix colorMatrixS = new ColorMatrix();
+                float one = 0;
+                colorMatrixS.setRotate(0, one);
+                colorMatrixS.setRotate(1, one);
+                colorMatrixS.setRotate(2, one);
+                ColorMatrix colorMatrixL = new ColorMatrix();
+                float two = 0.8f;
+                colorMatrixL.setScale(two, two, two, 1);
+                ColorMatrix colorMatrixB = new ColorMatrix();
+                float three = 0.5f;
+                colorMatrixB.setSaturation(three);
+                ColorMatrix colorMatriximg = new ColorMatrix();
+                //通过postConcat()方法可以将以上效果叠加到一起
+                colorMatriximg.postConcat(colorMatrixB);
+                colorMatriximg.postConcat(colorMatrixL);
+                colorMatriximg.postConcat(colorMatrixS);
+                ColorMatrixColorFilter colorMatrixColorFilter = new ColorMatrixColorFilter(colorMatriximg);
+                paint1.setColorFilter(colorMatrixColorFilter);
+                canvas.drawBitmap(bitmap, rect_src, rect_target, paint1);
             } else {
                 canvas.setMatrix(new Matrix());
                 super.onDraw(canvas);
             }
         }
         //QDRoundButtonDrawable bg_normal = QDRoundButtonDrawable.fromAttributeSet(context, attrs, defStyleAttr);
-        LinearGradient mShader = new LinearGradient(0, 0, 0, getHeight(), new int[]{0x33000000, 0x33000000}, null, Shader.TileMode.REPEAT);
+        /*LinearGradient mShader = new LinearGradient(0, 0, 0, getHeight(), new int[]{0x33000000, 0x33000000}, null, Shader.TileMode.REPEAT);
         Paint paint = new Paint();
         paint.setShader(mShader);
-        canvas.drawRect(new Rect(0, 0, wallPaperWidth, getHeight()), paint);
+        canvas.drawRect(new Rect(0, 0, wallPaperWidth, getHeight()), paint);*/
     }
 
     private Bitmap dealBitamp() {
@@ -120,7 +143,7 @@ public class Wallpaper extends AppCompatImageView {
         //生成新的图片
         //模糊背景
         long t1 = System.currentTimeMillis();
-        bitmap = QDBitmapUtil.cropBitmap(bitmap,wallPaperWidth,wallPaperHeight);
+        bitmap = QDBitmapUtil.cropBitmap(bitmap, wallPaperWidth, wallPaperHeight);
         bitmap = QDBitmapUtil.zoomImage(bitmap, .2f);
         bitmap = cn.demomaster.huan.quickdeveloplibrary.util.BlurUtil.doBlur(bitmap, 50, 0.2f);
         long t2 = System.currentTimeMillis();
@@ -236,16 +259,19 @@ public class Wallpaper extends AppCompatImageView {
                 }
 
                 if (drawable == null) {
-                    if (path != null) {//如果找不到壁纸， 使用自定义壁纸
+                    //如果找不到壁纸， 使用自定义壁纸
+                    if (path != null) {
                         try {
+                            //QdToast.show("找不到壁纸");
                             bitmap = QDBitmapUtil.getBitmapFromPath(path);
+                            dealBitamp();
                             drawable = new BitmapDrawable(bitmap);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
-
-                    if (drawable == null) {//如果找不到壁纸， 使用系统壁纸
+                    //如果找不到壁纸， 使用系统壁纸
+                    if (drawable == null) {
                         if (resID != 0) {
                             drawableId = resID;
                         }

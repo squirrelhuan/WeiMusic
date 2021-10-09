@@ -21,13 +21,15 @@ import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 import android.view.View;
 
-
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.player.helpers.utils.ThemeUtils;
 
 import java.util.List;
 
-import static com.demomaster.weimusic.constant.Constants.*;
+import static com.demomaster.weimusic.constant.Constants.APOLLO;
+import static com.demomaster.weimusic.constant.Constants.THEME_PACKAGE_NAME;
+import static com.demomaster.weimusic.constant.Constants.THEME_PREVIEW;
+import static com.demomaster.weimusic.constant.Constants.WIDGET_STYLE;
 
 
 /**

@@ -6,9 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.player.helpers.utils.ThemeUtils;

@@ -6,12 +6,8 @@ import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.os.RemoteException;
 import android.provider.BaseColumns;
-import android.provider.MediaStore.Audio;
-
 
 import com.demomaster.weimusic.IApolloService;
-import com.demomaster.weimusic.player.helpers.MusicHelper;
-import com.demomaster.weimusic.player.service.MC;
 
 import java.util.Arrays;
 

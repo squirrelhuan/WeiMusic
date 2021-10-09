@@ -1,7 +1,6 @@
 package com.demomaster.weimusic.player.service;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -11,20 +10,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.provider.SyncStateContract;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RemoteViews;
-import android.widget.TextView;
-
-import androidx.core.app.NotificationCompat;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.MainActivity;
-import com.demomaster.weimusic.constant.Constants;
 
 import cn.demomaster.huan.quickdeveloplibrary.helper.NotificationHelper;
-import cn.demomaster.qdlogger_library.QDLogger;
 
 import static android.app.Notification.FLAG_NO_CLEAR;
 import static android.content.Context.NOTIFICATION_SERVICE;

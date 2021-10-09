@@ -1,55 +1,40 @@
 package com.demomaster.weimusic.ui.fragment;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.RadioGroup;
 import android.widget.TextView;
-
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.demomaster.weimusic.constant.Constants;
 import com.demomaster.weimusic.R;
+import com.demomaster.weimusic.SystemSetting;
 import com.demomaster.weimusic.activity.ThemeActivity;
+import com.demomaster.weimusic.constant.Constants;
 import com.demomaster.weimusic.constant.ThemeConstants;
 import com.demomaster.weimusic.interfaces.onSelcetPictureResult;
 import com.demomaster.weimusic.ui.adapter.GridAdapter_Theme_Cover;
-import com.demomaster.weimusic.util.ImageUtils;
 import com.demomaster.weimusic.util.ThemeUtil;
 import com.demomaster.weimusic.view.CustomGridView;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.demomaster.huan.quickdeveloplibrary.helper.QDSharedPreferences;
-import cn.demomaster.huan.quickdeveloplibrary.helper.toast.PopToastUtil;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
 import cn.demomaster.huan.quickdeveloplibrary.widget.button.ToggleButton;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDMulSheetDialog;
-import cn.demomaster.huan.quickdeveloplibrary.widget.popup.QDPopup;
-import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
-
-import static com.demomaster.weimusic.constant.Constants.Action_WallBackGround;
-import static com.demomaster.weimusic.constant.Constants.Action_WellComeBackGround;
 
 /**
  * Created by huan on 2018/1/21.
@@ -63,6 +48,9 @@ public class Fragment_Theme_Cover extends QuickFragment implements onSelcetPictu
     CustomGridView grid_02;
     @BindView(R.id.tv_add)
     TextView tv_add;
+
+    @BindView(R.id.rg_style)
+    RadioGroup rg_style;
 
     @BindView(R.id.tg_cover_with_music)
     ToggleButton tg_cover_with_music;
@@ -129,7 +117,13 @@ public class Fragment_Theme_Cover extends QuickFragment implements onSelcetPictu
                 mAdapter2.notifyDataSetChanged();
             }
         });
-
+        rg_style.check(SystemSetting.getCoverStytle()==0?R.id.rb_001:R.id.rb_002);
+        rg_style.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                SystemSetting.setCoverStytle(checkedId==R.id.rb_001?0:1);
+            }
+        });
         loadData();
     }
 

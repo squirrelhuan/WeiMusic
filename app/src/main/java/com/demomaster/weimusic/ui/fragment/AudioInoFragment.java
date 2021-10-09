@@ -2,14 +2,11 @@ package com.demomaster.weimusic.ui.fragment;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,35 +15,20 @@ import androidx.viewpager.widget.ViewPager;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.dialog.AudioInfoDialog;
-import com.demomaster.weimusic.model.AudioInfo;
-import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.ui.adapter.AudioInfoAdapter;
 import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter;
-import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter2;
-import com.demomaster.weimusic.ui.adapter.SheetAdapter;
-import com.demomaster.weimusic.ui.adapter.SheetHeaderAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import cn.demomaster.huan.quickdeveloplibrary.helper.QdThreadHelper;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
-import cn.demomaster.huan.quickdeveloplibrary.util.BlurUtil;
-import cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil;
-import cn.demomaster.huan.quickdeveloplibrary.util.ScreenShotUitl;
-import cn.demomaster.huan.quickdeveloplibrary.widget.layout.VisibleLayout;
-import cn.demomaster.huan.quickdeveloplibrary.widget.slidingpanellayout.SlidingUpPanelLayout;
 import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 
 import static com.demomaster.weimusic.constant.AudioStation.CURSOR_CHANGED;
-import static com.demomaster.weimusic.constant.AudioStation.QUEUE_CHANGED;
 
 public class AudioInoFragment extends QuickFragment {
 
@@ -65,7 +47,7 @@ public class AudioInoFragment extends QuickFragment {
     Bitmap bitmap;
     @Override
     public void initView(View rootView) {
-        bitmap = ScreenShotUitl.shotActivity(getActivity(),true);
+        /*bitmap = ScreenShotUitl.shotActivity(getActivity(),true);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -79,7 +61,7 @@ public class AudioInoFragment extends QuickFragment {
                     }
                 });
             }
-        }).start();
+        }).start();*/
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         selectIndex = bundle.getInt("selectIndex");

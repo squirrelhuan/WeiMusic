@@ -113,8 +113,7 @@ public class LrcView extends View implements ILrcView {
     /**
      * 当没有歌词的时候展示的内容
      **/
-    private String mLoadingLrcTip = "暂无歌词";
-
+    private String mLoadingLrcTip ="";// "暂无歌词";
     private Paint mPaint;
 
     public LrcView(Context context, AttributeSet attr) {

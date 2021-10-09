@@ -2,44 +2,33 @@ package com.demomaster.weimusic.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.viewpager.widget.ViewPager;
 
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.activity.SongEditActivity;
 import com.demomaster.weimusic.model.AudioInfo;
-import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.ui.adapter.AudioInfoAdapter;
 import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter;
-import com.demomaster.weimusic.ui.adapter.SheetAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
-import cn.demomaster.huan.quickdeveloplibrary.helper.toast.QdToast;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.OnClickActionListener;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDDialog;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDDialog2;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDInputDialog;
-import cn.demomaster.qdlogger_library.QDLogger;
 
 import static com.demomaster.weimusic.constant.AudioStation.QUEUE_CHANGED;
 

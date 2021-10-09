@@ -15,8 +15,6 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.telephony.TelephonyManager;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.constant.SequenceType;
@@ -43,6 +41,7 @@ import static com.demomaster.weimusic.activity.BaseActivity.PERMISSIONS;
 import static com.demomaster.weimusic.constant.AudioStation.PLAYSTATE_CHANGED;
 import static com.demomaster.weimusic.constant.AudioStation.Pause;
 import static com.demomaster.weimusic.constant.AudioStation.Play;
+import static com.demomaster.weimusic.constant.AudioStation.REPEATMODE_CHANGED;
 import static com.demomaster.weimusic.constant.AudioStation.audio_ready;
 import static com.demomaster.weimusic.constant.AudioStation.audio_source_change_last;
 import static com.demomaster.weimusic.constant.AudioStation.audio_source_change_next;
@@ -336,6 +335,7 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
 
     public void setRepeatMode(SequenceType mRepeatMode) {
         this.mRepeatMode = mRepeatMode;
+        EventBus.getDefault().post(new EventMessage(REPEATMODE_CHANGED.value()));
     }
 
     public boolean isPlaying() {
@@ -872,6 +872,7 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
         record.setSongId(-1);
         MusicDataManager.getInstance(mContext).savePlayRecord(record);
         recovery();
+        setRepeatMode(REPEAT_ALL);
         play();
     }
 

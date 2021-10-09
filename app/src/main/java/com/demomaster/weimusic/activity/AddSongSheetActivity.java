@@ -32,8 +32,10 @@ import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDSheetDialog;
 import cn.demomaster.qdlogger_library.QDLogger;
-import cn.demomaster.qdrouter_library.base.activity.QuickActivity;
 
+/**
+ * 创建歌单页面
+ */
 public class AddSongSheetActivity extends QDActivity {
 
     Button btn_creat;

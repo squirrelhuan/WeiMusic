@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.MediaStore.Audio;
 
-
 import com.demomaster.weimusic.player.cache.ImageInfo;
 import com.demomaster.weimusic.player.helpers.lastfm.Album;
 import com.demomaster.weimusic.player.helpers.lastfm.Artist;
@@ -24,7 +23,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 
-import static com.demomaster.weimusic.constant.Constants.*;
+import static com.demomaster.weimusic.constant.Constants.ALBUM_SUFFIX;
+import static com.demomaster.weimusic.constant.Constants.ARTIST_SUFFIX;
+import static com.demomaster.weimusic.constant.Constants.GENRE_SUFFIX;
+import static com.demomaster.weimusic.constant.Constants.LASTFM_API_KEY;
+import static com.demomaster.weimusic.constant.Constants.PLAYLIST_SUFFIX;
+import static com.demomaster.weimusic.constant.Constants.TYPE_ALBUM;
+import static com.demomaster.weimusic.constant.Constants.TYPE_ARTIST;
+import static com.demomaster.weimusic.constant.Constants.TYPE_GENRE;
+import static com.demomaster.weimusic.constant.Constants.TYPE_PLAYLIST;
 
 
 public class ImageUtils {

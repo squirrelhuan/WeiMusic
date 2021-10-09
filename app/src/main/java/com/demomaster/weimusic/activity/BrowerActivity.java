@@ -1,6 +1,7 @@
 package com.demomaster.weimusic.activity;
 
 import android.os.Bundle;
+
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.ui.fragment.WebViewFragment;
 

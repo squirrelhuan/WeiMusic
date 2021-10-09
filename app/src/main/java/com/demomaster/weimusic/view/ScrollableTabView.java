@@ -17,12 +17,12 @@
 package com.demomaster.weimusic.view;
 
 import android.content.Context;
-import androidx.viewpager.widget.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
+import androidx.viewpager.widget.ViewPager;
 
 import com.demomaster.weimusic.ui.adapter.TabAdapter;
 

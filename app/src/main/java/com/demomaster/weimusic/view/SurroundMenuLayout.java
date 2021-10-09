@@ -2,26 +2,13 @@ package com.demomaster.weimusic.view;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 
-import androidx.annotation.Nullable;
-
-import com.demomaster.weimusic.constant.AudioStation;
-
-import org.greenrobot.eventbus.EventBus;
-
 import cn.demomaster.huan.quickdeveloplibrary.animation.QDValueAnimator;
-import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
-import cn.demomaster.qdlogger_library.QDLogger;
-
-import static cn.demomaster.huan.quickdeveloplibrary.animation.QDValueAnimator.AnimationState.isClosed;
-import static cn.demomaster.huan.quickdeveloplibrary.animation.QDValueAnimator.AnimationState.isOpened;
-import static cn.demomaster.huan.quickdeveloplibrary.animation.QDValueAnimator.AnimationState.isOpening;
 
 public class SurroundMenuLayout extends ViewGroup {
     public SurroundMenuLayout(Context context) {

@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import com.demomaster.weimusic.IApolloService;
 import com.demomaster.weimusic.player.helpers.MusicHelper;
 
 public class ServiceBinder implements ServiceConnection {

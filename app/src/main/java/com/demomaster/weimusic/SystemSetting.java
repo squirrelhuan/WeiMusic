@@ -38,4 +38,17 @@ public class SystemSetting {
     public static int getCoverWithSystemValue() {
         return QDSharedPreferences.getInstance().getInt(Constants.Key_Theme_Cover_System, 0);
     }
+
+    public static final String Key_Theme_Cover_Style = "Key_Theme_Cover_Style";
+    /**
+     * 获取歌曲封面样式
+     * @return
+     */
+    public static int getCoverStytle() {
+       return  QDSharedPreferences.getInstance().getInt(Key_Theme_Cover_Style, 0);
+    }
+
+    public static void setCoverStytle(int i) {
+        QDSharedPreferences.getInstance().putInt(Key_Theme_Cover_Style, i);
+    }
 }

@@ -9,7 +9,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.model.AudioSheet;
 

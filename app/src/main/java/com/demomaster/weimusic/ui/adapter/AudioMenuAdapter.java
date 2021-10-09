@@ -1,7 +1,6 @@
 package com.demomaster.weimusic.ui.adapter;
 
 import android.content.Context;
-import android.graphics.drawable.AnimationDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

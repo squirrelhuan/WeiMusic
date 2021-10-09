@@ -15,14 +15,13 @@ import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.os.RemoteException;
+import android.util.AttributeSet;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
-import android.util.AttributeSet;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.constant.SequenceType;
-import com.demomaster.weimusic.player.helpers.MusicHelper;
 import com.demomaster.weimusic.player.service.MC;
 
 import static com.demomaster.weimusic.constant.SequenceType.Normal;

@@ -14,7 +14,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.player.helpers.MusicHelper;
 import com.demomaster.weimusic.player.service.MC;
 
 

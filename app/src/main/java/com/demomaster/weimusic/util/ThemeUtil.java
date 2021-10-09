@@ -3,28 +3,36 @@ package com.demomaster.weimusic.util;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
+
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-import android.widget.ImageView;
-
-import com.demomaster.weimusic.constant.Constants;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.constant.AudioStation;
+import com.demomaster.weimusic.constant.Constants;
 import com.demomaster.weimusic.constant.ThemeConstants;
 
 import org.greenrobot.eventbus.EventBus;
-
-import java.io.FileInputStream;
 
 import cn.demomaster.huan.quickdeveloplibrary.helper.QDSharedPreferences;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil;
 
-import static com.demomaster.weimusic.constant.Constants.*;
+import static com.demomaster.weimusic.constant.Constants.Key_Theme_Cover_Custom;
+import static com.demomaster.weimusic.constant.Constants.Key_Theme_Cover_System;
+import static com.demomaster.weimusic.constant.Constants.Key_Theme_Font_System;
+import static com.demomaster.weimusic.constant.Constants.Key_Theme_WallPager_Custom;
+import static com.demomaster.weimusic.constant.Constants.Key_Theme_WallPager_System;
+import static com.demomaster.weimusic.constant.Constants.Key_Theme_Welcome_Custom;
+import static com.demomaster.weimusic.constant.Constants.Key_Theme_Welcome_System;
+import static com.demomaster.weimusic.constant.Constants.Theme_Cover_Type;
+import static com.demomaster.weimusic.constant.Constants.Theme_WallPager_Type;
+import static com.demomaster.weimusic.constant.Constants.Theme_Welcome_Type;
+import static com.demomaster.weimusic.constant.Constants.Theme_Welcome_Type_Custom;
+import static com.demomaster.weimusic.constant.Constants.Theme_Welcome_Type_System;
 import static com.demomaster.weimusic.constant.ThemeConstants.WallPagerType.customPicture;
 import static com.demomaster.weimusic.constant.ThemeConstants.WallPagerType.withMusic;
 import static com.demomaster.weimusic.constant.ThemeConstants.WallPagerType.withSystem;

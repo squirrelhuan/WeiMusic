@@ -2,11 +2,9 @@ package com.demomaster.weimusic.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,8 +12,6 @@ import androidx.annotation.Nullable;
 import com.demomaster.weimusic.R;
 
 import org.jetbrains.annotations.NotNull;
-
-import cn.demomaster.qdlogger_library.QDLogger;
 
 public class SheetLableView extends androidx.appcompat.widget.AppCompatTextView {
     public SheetLableView(@NonNull @NotNull Context context) {
@@ -54,7 +50,7 @@ public class SheetLableView extends androidx.appcompat.widget.AppCompatTextView 
 
         Paint paint =new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(getResources().getColor(R.color.transparent_light_cc));
+        paint.setColor(getResources().getColor(R.color.transparent_light_a8));
         canvas.clipRect(new Rect(0,0,getMeasuredWidth(),getMeasuredHeight()));
         canvas.drawCircle(x,y, (float) r, paint);
         super.onDraw(canvas);

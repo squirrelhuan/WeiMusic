@@ -16,7 +16,10 @@ import android.widget.TextView;
 
 import com.demomaster.weimusic.R;
 
-import static com.demomaster.weimusic.constant.Constants.*;
+import static com.demomaster.weimusic.constant.Constants.APOLLO;
+import static com.demomaster.weimusic.constant.Constants.THEME_DESCRIPTION;
+import static com.demomaster.weimusic.constant.Constants.THEME_PREVIEW;
+import static com.demomaster.weimusic.constant.Constants.THEME_TITLE;
 
 public class ThemePreview extends Preference {
     private CharSequence themeName;

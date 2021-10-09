@@ -5,8 +5,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
-import cn.demomaster.qdlogger_library.QDLogger;
-
 public class MainLayout extends RelativeLayout {
     public MainLayout(Context context) {
         super(context);
@@ -18,6 +16,14 @@ public class MainLayout extends RelativeLayout {
 
     public MainLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if(onInterceptTouchListener!=null){
+           return onInterceptTouchListener.interceptTouchEvent(ev);
+        }
+        return super.onInterceptTouchEvent(ev);
     }
 
     @Override
@@ -40,5 +46,14 @@ public class MainLayout extends RelativeLayout {
 
     public static interface OnDispatchTouchListener{
         boolean dispatchTouchEvent(MotionEvent ev);
+    }
+    OnInterceptTouchListener onInterceptTouchListener;
+
+    public void setOnInterceptTouchListener(OnInterceptTouchListener onInterceptTouchListener) {
+        this.onInterceptTouchListener = onInterceptTouchListener;
+    }
+
+    public static interface OnInterceptTouchListener{
+        boolean interceptTouchEvent(MotionEvent ev);
     }
 }
