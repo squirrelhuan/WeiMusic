@@ -363,7 +363,7 @@ public class MainActivity extends BaseActivity {
         if (sheetFragment != null) {
             hideSheetFragment();
         } else {
-            ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bottom_bg);
+           // ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bottom_bg);
             //ll_bottom.setBackgroundResource(R.color.transparent_light_33);
             Bitmap bitmap = ScreenShotUitl.getCacheBitmapFromView(iv_wallpager);
             bitmap = QDBitmapUtil.zoomImageWithWidth(bitmap, 164);
@@ -389,6 +389,7 @@ public class MainActivity extends BaseActivity {
             colorMatriximg.postConcat(colorMatrixS);
             ColorMatrixColorFilter colorMatrixColorFilter = new ColorMatrixColorFilter(colorMatriximg);
             paint.setColorFilter(colorMatrixColorFilter);
+            paint.setAlpha(250);
             canvas.drawBitmap(bitmap, new Matrix(), paint);
 
             rl_docker_panel.setBackground(new BitmapDrawable(copyBitmap));
@@ -408,7 +409,7 @@ public class MainActivity extends BaseActivity {
 
     public void hideSheetFragment() {
         if (sheetFragment != null) {
-            ll_bottom.setBackgroundColor(Color.TRANSPARENT);
+           // ll_bottom.setBackgroundColor(Color.TRANSPARENT);
             rl_docker_panel.setBackgroundColor(Color.TRANSPARENT);
             sheetFragment.finish();
             sheetFragment = null;

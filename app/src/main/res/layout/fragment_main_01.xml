@@ -50,21 +50,30 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:hint="请输入歌曲资源地址"
+            android:paddingLeft="@dimen/dp_5"
+            android:textColorHint="@color/transparent_light_99"
             android:lines="1"
-            android:text=""
-            android:textColor="@color/transparent_light_cc"
-            android:textSize="16dp" />
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_13" />
         <cn.demomaster.huan.quickdeveloplibrary.widget.button.QDButton
             android:id="@+id/btn_play_online"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:qd_radius="1px"
-            app:qd_backgroundColor="@color/transparent_dark_44"
-            app:qd_borderColor="@color/transparent_dark_44"
-            android:textColor="@color/black"
+            app:qd_backgroundColor="@color/colorPrimary"
+            app:qd_borderColor="@color/colorPrimary"
+            android:textColor="@color/white"
             android:text="在线播放"/>
     </LinearLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_10"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_13"
+        android:text="音乐搜索"/>
 
     <LinearLayout
         android:id="@+id/ll_01"
@@ -72,7 +81,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:layout_marginTop="25dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:gravity="center_vertical"
@@ -100,29 +108,42 @@
             android:text="搜索" />
     </LinearLayout>
 
-    <GridView
-        android:id="@+id/gridview1"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_channel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ll_search"
         android:layout_margin="10dp"
+        android:background="@drawable/rect_round_docker_bg"
         android:columnWidth="90dp"
         android:gravity="center"
         android:horizontalSpacing="10dp"
         android:numColumns="3"
         android:stretchMode="columnWidth"
         android:verticalSpacing="10dp" >
-    </GridView>
+    </androidx.recyclerview.widget.RecyclerView>
 
-    <ListView
-        android:id="@+id/lv_song_sheet"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_10"
+        android:textSize="@dimen/sp_13"
+        android:textColor="@color/white"
+        android:text="我的歌单"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_song_sheet"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/gridview1"
         android:layout_margin="10dp"
-        android:divider="@null"
-        android:layout_below="@+id/gridview1">
-
-    </ListView>
-
+        android:background="@drawable/rect_round_docker_bg"
+        android:columnWidth="90dp"
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
+        android:numColumns="3"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dp" >
+    </androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>

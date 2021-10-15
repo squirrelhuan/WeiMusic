@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?android:attr/selectableItemBackground">
     <!--android:background="@color/mp.list.background"-->
@@ -9,44 +9,39 @@
     <TextView
         android:id="@+id/tv_index"
         android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:gravity="center"
         android:textSize="13sp"
         android:textColor="?attr/textLight"/>
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@+id/tv_index"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:orientation="vertical" >
-
+        android:orientation="vertical">
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="Title"
-            android:maxEms="10"
+            android:maxEms="12"
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textColor="?attr/textLight"
-            android:textSize="15sp" />
+            android:textSize="@dimen/sp_13" />
         <TextView
             android:id="@+id/artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxEms="10"
+            android:maxEms="12"
             android:scrollHorizontally="true"
-            android:gravity="left"
             android:textColor="?attr/textLight"
-            android:textSize="12sp"
+            android:textSize="@dimen/sp_10"
             android:singleLine="true"
-            android:text="Artist" />
+            android:text="" />
     </LinearLayout>
 
     <LinearLayout
@@ -78,14 +73,14 @@
     <ImageView
         android:id="@+id/iv_more"
         android:layout_width="wrap_content"
-        android:layout_height="60dp"
+        android:layout_height="@dimen/dp_40"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:paddingRight="15dp"
-        android:paddingLeft="15dp"
+        android:padding="@dimen/dp_10"
+        android:layout_margin="@dimen/dp_5"
         android:gravity="center_vertical|right"
-        android:text="Duration"
+        android:tint="@color/white"
         app:srcCompat="@drawable/apollo_holo_dark_overflow2"
         android:background="?android:attr/selectableItemBackground"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

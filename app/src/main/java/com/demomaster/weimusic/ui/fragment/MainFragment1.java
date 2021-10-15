@@ -26,11 +26,19 @@ import androidx.annotation.Nullable;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.model.AudioSheet;
+import com.demomaster.weimusic.model.Channel;
 import com.demomaster.weimusic.player.service.MC;
+import com.demomaster.weimusic.player.service.MusicDataManager;
+import com.demomaster.weimusic.ui.adapter.MusicChannelAdapter;
 import com.demomaster.weimusic.ui.adapter.MusicCollectAdapter;
+import com.demomaster.weimusic.ui.adapter.RecyclerSheetAdapter;
+import com.demomaster.weimusic.ui.adapter.SheetAdapter;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -43,15 +51,15 @@ import cn.demomaster.huan.quickdeveloplibrary.util.DisplayUtil;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 
 public class MainFragment1 extends QuickFragment implements OnClickListener,
-        OnItemClickListener , LoaderManager.LoaderCallbacks<Cursor> {
+        OnItemClickListener  {
 
     LinearLayout ll_search;
-    ListView lv_song_sheet;
-    public Adapter adapter;
-    public MusicCollectAdapter musicCollectAdapter;
+    RecyclerView recyclerView_song_sheet;
+    public MusicChannelAdapter adapter;
+    public RecyclerSheetAdapter recyclerSheetAdapter;
     EditText et_audio_source;
     Button btn_play_online;
-
+    
     @Override
     public boolean isUseActionBarLayout() {
         return false;
@@ -61,7 +69,7 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main_01, container, false);
     }
-
+    List<Channel> channelList;
     @Override
     public void initView(View view) {
         ll_search = findViewById(R.id.ll_search);
@@ -77,43 +85,59 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
             }
         });
 
-        GridView gridview1 = findViewById(R.id.gridview1);//
-        ArrayList<HashMap<String, Object>> ItemList = new ArrayList<HashMap<String, Object>>();
+        RecyclerView recycler_channel = findViewById(R.id.recycler_channel);//
+        channelList = new ArrayList<>();
+        Channel channel = new Channel();
+        channel.setName("qq音乐");
+        channel.setRes(R.mipmap.ic_qq_music);
+        channel.setUrl("https://y.qq.com/?ADTAG=myqq#type=index");
+        channelList.add(channel);
 
-        HashMap<String, Object> map_0 = new HashMap<String, Object>();
-        map_0.put("Image", R.mipmap.ic_qq_music);
-        map_0.put("Tag", "qq音乐");
-        ItemList.add(map_0);
-        HashMap<String, Object> map_1 = new HashMap<String, Object>();
-        map_1.put("Image", R.mipmap.ic_cloud_music);
-        map_1.put("Tag", "网易云音乐");
-        ItemList.add(map_1);
-        HashMap<String, Object> map_2 = new HashMap<String, Object>();
-        map_2.put("Image", R.mipmap.ic_qianqian_music);
-        map_2.put("Tag", "千千音乐");
-        ItemList.add(map_2);
-        HashMap<String, Object> map_3 = new HashMap<String, Object>();
-        map_3.put("Image", R.mipmap.ic_kugou_music);
-        map_3.put("Tag", "酷狗音乐");
-        ItemList.add(map_3);
-        HashMap<String, Object> map_4 = new HashMap<String, Object>();
-        map_4.put("Image", R.mipmap.ic_ximalaya);
-        map_4.put("Tag", "喜马拉雅");
-        ItemList.add(map_4);
-        HashMap<String, Object> map_5 = new HashMap<String, Object>();
-        map_5.put("Image", R.mipmap.ic_kuwo);
-        map_5.put("Tag", "酷我音乐");
-        ItemList.add(map_5);
+        Channel channel1 = new Channel();
+        channel1.setName("网易云音乐");
+        channel1.setRes(R.mipmap.ic_cloud_music);
+        channel1.setUrl("https://music.163.com/");
+        channelList.add(channel1);
 
-        adapter = new SimpleAdapter(getActivity(), ItemList,
+        Channel channel2 = new Channel();
+        channel2.setName("千千音乐");
+        channel2.setRes(R.mipmap.ic_qianqian_music);
+        channel2.setUrl("https://music.taihe.com/");
+        channelList.add(channel2);
+
+        Channel channel3 = new Channel();
+        channel3.setName("酷狗音乐");
+        channel3.setRes(R.mipmap.ic_kugou_music);
+        channel3.setUrl("https://www.kugou.com/");
+        channelList.add(channel3);
+
+        Channel channel4 = new Channel();
+        channel4.setName("喜马拉雅");
+        channel4.setRes(R.mipmap.ic_ximalaya);
+        channel4.setUrl("https://www.ximalaya.com/yinyue/");
+        channelList.add(channel4);
+
+        Channel channel5 = new Channel();
+        channel5.setName("酷我音乐");
+        channel5.setRes(R.mipmap.ic_kuwo);
+        channel5.setUrl("https://www.kuwo.cn/");
+        channelList.add(channel5);
+
+        recycler_channel.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        adapter = new MusicChannelAdapter(getContext(),channelList);
+        /*adapter = new SimpleAdapter(getActivity(), ItemList,
                 R.layout.home_item_style, new String[]{"Image", "Tag"},
-                new int[]{R.id.iv_logo, R.id.tv_title});
-        gridview1.setAdapter((ListAdapter) adapter);
-        gridview1.setOnItemClickListener(this);
+                new int[]{R.id.iv_logo, R.id.tv_title});*/
+        recycler_channel.setAdapter(adapter);
+        adapter.setOnItemClickListener(this);
 
-        lv_song_sheet = (ListView) findViewById(R.id.lv_song_sheet);
-        musicCollectAdapter = new MusicCollectAdapter(audioSheets,getActivity());
-        lv_song_sheet.setAdapter(musicCollectAdapter);
+        recyclerView_song_sheet = findViewById(R.id.recyclerView_song_sheet);
+
+        recyclerView_song_sheet.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        audioSheets = new ArrayList<>();
+        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(getContext()));
+        recyclerSheetAdapter = new RecyclerSheetAdapter(getActivity(),audioSheets);
+        recyclerView_song_sheet.setAdapter(recyclerSheetAdapter);
 
         //歌单
         //getLoaderManager().initLoader(0, null, this);
@@ -140,10 +164,13 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
         Bundle bundle = new Bundle();
-        switch (position) {
+        Channel channel = channelList.get(position);
+        bundle.putString("Title", channel.getName());
+        jumpUrl(channel.getUrl());
+        /*switch (position) {
             case 0:
                 bundle.putString("Title", "QQ音乐");
-                jumpUrl("https://y.qq.com/?ADTAG=myqq#type=index");
+                jumpUrl("");
                 //IntentUtil.jump(getActivity(), MusicListActivity.class, bundle);
                 break;
             case 1:
@@ -169,7 +196,7 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
                 break;
             default:
                 break;
-        }
+        }*/
     }
 
     private void jumpUrl(String url) {
@@ -188,7 +215,7 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
             BaseColumns._ID, MediaStore.Audio.PlaylistsColumns.NAME
     };
     private Cursor mCursor;
-    @Override
+   /* @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         //加载歌单
         if (i == 0) {
@@ -203,11 +230,11 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
             return cursorLoader;
         }
         return null;
-    }
+    }*/
     // Aduio columns
     public static int mPlaylistNameIndex, mPlaylistIdIndex;
     private List<AudioSheet> audioSheets = new ArrayList<>();
-    @Override
+    /*@Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data == null) {
             return;
@@ -228,11 +255,11 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
             }
             musicCollectAdapter.notifyDataSetChanged();
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
-    }
+    }*/
 
 }

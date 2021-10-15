@@ -14,14 +14,17 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.AddSongSheetActivity;
 import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MusicDataManager;
+import com.demomaster.weimusic.ui.adapter.HorizontalAdapter;
 import com.demomaster.weimusic.ui.adapter.SheetAdapter;
 import com.demomaster.weimusic.ui.adapter.SheetHeaderAdapter;
 
@@ -36,6 +39,8 @@ import java.util.List;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil;
 import cn.demomaster.huan.quickdeveloplibrary.util.ScreenShotUitl;
+import cn.demomaster.huan.quickdeveloplibrary.widget.AutoCenterHorizontalScrollView;
+import cn.demomaster.huan.quickdeveloplibrary.widget.HorizontalScrollView;
 import cn.demomaster.huan.quickdeveloplibrary.widget.layout.VisibleLayout;
 import cn.demomaster.huan.quickdeveloplibrary.widget.slidingpanellayout.SlidingUpPanelLayout;
 import cn.demomaster.qdlogger_library.QDLogger;
@@ -64,11 +69,13 @@ public class SheetFragment2 extends QuickFragment {
     private ViewPager viewPager2;
     private SheetAdapter adater2;
     private ViewGroup rl_header_bg;
+    SlidingUpPanelLayout sliding_layout;
     //SheetHeaderAdapter adater;
     List<AudioSheet> audioSheets;
     VisibleLayout vl_layout;
     //BannerCursorView cursorView;
     SheetHeaderAdapter sheetHeaderAdapter;
+    AutoCenterHorizontalScrollView horizontal_sheet;
     long sheetId;
     @Override
     public void initView(View rootView) {
@@ -90,7 +97,10 @@ public class SheetFragment2 extends QuickFragment {
             }
         }).start();*/
         rl_header_bg = findViewById(R.id.rl_header_bg);
-        SlidingUpPanelLayout sliding_layout = findViewById(R.id.sliding_layout);
+        rl_content = findViewById(R.id.rl_content);
+        iv_edit = findViewById(R.id.iv_edit);
+        viewPager2 = findViewById(R.id.viewpager2);
+        sliding_layout = findViewById(R.id.sliding_layout);
         sliding_layout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -108,7 +118,6 @@ public class SheetFragment2 extends QuickFragment {
        /* cursorView = findViewById(R.id.cursorView);
         cursorView.setRadius(DisplayUtil.dip2px(getContext(),3),DisplayUtil.dip2px(getContext(),4));
         cursorView.setCursorPointColor(getResources().getColor(R.color.transparent_light_77),getResources().getColor(R.color.white));*/
-        rl_content = findViewById(R.id.rl_content);
         rl_content.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +125,6 @@ public class SheetFragment2 extends QuickFragment {
             }
         });
 
-        iv_edit = findViewById(R.id.iv_edit);
         iv_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,13 +136,26 @@ public class SheetFragment2 extends QuickFragment {
             }
         });
 
+        audioSheets = new ArrayList<>();
+        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(getContext()));
+
+        horizontal_sheet = findViewById(R.id.horizontal_sheet);
+        horizontal_sheet.setOnSelectChangeListener(new AutoCenterHorizontalScrollView.OnSelectChangeListener() {
+            @Override
+            public void onSelectChange(int position) {
+                if(viewPager2.getCurrentItem()!=position) {
+                    viewPager2.setCurrentItem(position);
+                }
+            }
+        });
+        horizontal_sheet.setAdapter(new HorizontalAdapter(mContext,audioSheets));
+
+
         //vl_layout = rootView.findViewById(R.id.vl_layout);
         //vl_layout.setGravity(Gravity.TOP);
         //iv_icon = rootView.findViewById(R.id.iv_icon);
         tv_name = rootView.findViewById(R.id.tv_name);
 
-        audioSheets = new ArrayList<>();
-        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(getContext()));
        // cursorView.setIndicatorCount(audioSheets.size());
         sheetHeaderViewPager = findViewById(R.id.viewpager);
         sheetHeaderViewPager.setOffscreenPageLimit(3);
@@ -152,7 +173,7 @@ public class SheetFragment2 extends QuickFragment {
                 //layoutParams.height = sheetHeaderViewPager.getMeasuredWidth();
             }
         });
-        sheetHeaderViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+       /* sheetHeaderViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -174,14 +195,29 @@ public class SheetFragment2 extends QuickFragment {
             @Override
             public void onPageScrollStateChanged(int state) {
             }
+        });*/
+
+        sheetHeaderViewPager.addOnPageChangeListener(new BaseLinkPageChangeListener(sheetHeaderViewPager, viewPager2) {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+            }
         });
 
-        viewPager2 = findViewById(R.id.viewpager2);
         viewPager2.setOffscreenPageLimit(3);
         adater2 = new SheetAdapter(getContext(), audioSheets);
         viewPager2.setAdapter(adater2);
 
-        viewPager2.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager2.addOnPageChangeListener(new BaseLinkPageChangeListener(viewPager2, sheetHeaderViewPager) {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                horizontal_sheet.setCurrentIndex(position);
+                tv_name.setText(audioSheets.get(position).getName());
+            }
+        });
+
+        /*viewPager2.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if(positionOffsetPixels!=0){
@@ -192,6 +228,7 @@ public class SheetFragment2 extends QuickFragment {
                     }
                     //vl_layout.setProgress(positionOffset*2);
                 }
+                tabLayout.onPageScrolled(position, positionOffset, positionOffsetPixels);
             }
 
             @Override
@@ -214,7 +251,7 @@ public class SheetFragment2 extends QuickFragment {
             public void onPageScrollStateChanged(int state) {
 
             }
-        });
+        });*/
 
         /*tv_play_sheet.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -331,6 +368,44 @@ public class SheetFragment2 extends QuickFragment {
         }
     }
 
+    public class BaseLinkPageChangeListener implements ViewPager.OnPageChangeListener {
+
+        private ViewPager linkViewPager;
+        private ViewPager selfViewPager;
+
+        private int pos;
+
+        public BaseLinkPageChangeListener(ViewPager selfViewPager, ViewPager linkViewPager) {
+            this.linkViewPager = linkViewPager;
+            this.selfViewPager = selfViewPager;
+        }
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            int marginX = ((selfViewPager.getWidth() + selfViewPager.getPageMargin()) * position
+                    + positionOffsetPixels) * (linkViewPager.getWidth() + linkViewPager.getPageMargin()) / (
+                    selfViewPager.getWidth()
+                            + selfViewPager.getPageMargin());
+
+            if (linkViewPager.getScrollX() != marginX) {
+                linkViewPager.scrollTo(marginX, 0);
+            }
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            this.pos = position;
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+            if (state == ViewPager.SCROLL_STATE_IDLE) {
+                linkViewPager.setCurrentItem(pos);
+            }
+        }
+    }
+
     public static class ScaleTransformer2 implements ViewPager.PageTransformer {
         private static final float MIN_SCALE = 0.30f;
 
@@ -422,23 +497,57 @@ public class SheetFragment2 extends QuickFragment {
                 //progress = position-1;
                 progress = 0;
             }
-            page.setAlpha(progress+.3f);
+            page.setAlpha(progress+.45f);
             //ViewGroup.LayoutParams layoutParams = page.getLayoutParams();
-            //QDLogger.e("transformPage: "+page.hashCode()+",position="+position+",progress:" +progress +",y="+page.getY()+",getTranslationY()="+page.getTranslationY());
+            QDLogger.e("transformPage: "+page.hashCode()+",position="+position+",progress:" +progress +",y="+page.getY()+",getTranslationY()="+page.getTranslationY());
             page.setScaleX(progress*(1-MIN_SCALE)+MIN_SCALE);
             page.setScaleY(progress*(1-MIN_SCALE)+MIN_SCALE);
+            /*page.setTranslationX((1-progress)*viewPager.getMeasuredWidth());
+            page.setTranslationX(20);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 if(progress==1) {
                     page.setZ(1);
                 }else {
                     page.setZ(0);
                 }
-            }
+            }*/
             //QDLogger.e("getScaleX: "+page.getScaleX()+",position="+position+",progress="+progress+",a="+(progress*(1-MIN_SCALE)+MIN_SCALE));
 
             //page.setY(page.getHeight()*(1-page.getScaleX())/2);
             //Log.d("google_lenve_fb", "transformPage: scaleX:" + scaleX);
             //  page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
+
+
+           /* int pageWidth = page.getWidth();
+
+            if (position < -1) { // [-Infinity,-1)
+                // This page is way off-screen to the left.
+                page.setAlpha(0);
+
+            } else if (position <= 0) { // [-1,0]
+                // Use the default slide transition when moving to the left page
+                page.setAlpha(1);
+                page.setTranslationX(0);
+                page.setScaleX(1);
+                page.setScaleY(1);
+
+            } else if (position <= 1) { // (0,1]
+                // Fade the page out.
+                page.setAlpha(1 - position);
+
+                // Counteract the default slide transition
+                page.setTranslationX(pageWidth * -position);
+
+                // Scale the page down (between MIN_SCALE and 1)
+                float scaleFactor = MIN_SCALE
+                        + (1 - MIN_SCALE) * (1 - Math.abs(position));
+                page.setScaleX(scaleFactor);
+                page.setScaleY(scaleFactor);
+
+            } else { // (1,+Infinity]
+                // This page is way off-screen to the right.
+                page.setAlpha(0);
+            }*/
         }
     }
 

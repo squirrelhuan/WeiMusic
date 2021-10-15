@@ -60,7 +60,6 @@ public class MusicCollectAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 		viewHolder.title.setText(musicList.get(position).getName());
-
 		return convertView;
 	}
 	

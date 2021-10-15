@@ -26,3 +26,4 @@ project (':quickevent_library').projectDir = new File('D:\\Android\\AndroidStudi
 project (':quicksticker-compiler').projectDir = new File('D:\\Android\\AndroidStudioProjects\\QuickSticker\\quicksticker-compiler')
 project (':quicksticker_lib').projectDir = new File('D:\\Android\\AndroidStudioProjects\\QuickSticker\\quicksticker_lib')
 project (':quicksticker-annotations').projectDir = new File('D:\\Android\\AndroidStudioProjects\\QuickSticker\\quicksticker-annotations')
+include ':fitnessexercise'
