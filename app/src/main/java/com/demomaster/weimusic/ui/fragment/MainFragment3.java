@@ -1,6 +1,7 @@
 package com.demomaster.weimusic.ui.fragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
@@ -49,6 +50,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,12 +200,6 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
                 showSongMenu(view, position);
             }
         });
-        /*lvSongs.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                playMusic(i);
-            }
-        });*/
 
         //通过工具类，获取虚化的bitmap
         // Resources res = getResources();
@@ -314,7 +310,6 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
     }
 
     QDDialog musicInfoDialog = null;
-
     private void showSongMenu(View view,final int position) {
         //AudioInfoDialog audioInfoDialog = new AudioInfoDialog(getContext(),musicList.get(position),position);
         //audioInfoDialog.show();
@@ -323,6 +318,16 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
         Bundle bundle = new Bundle();
         bundle.putInt("selectIndex",position);
         intent.putExtras(bundle);
+
+        Bitmap bitmap = ((MainActivity)getActivity()).getBackagroundBitmap(220);
+        //rl_docker_panel.setBackground(new BitmapDrawable(copyBitmap));
+        //rl_docker_panel.setBackgroundColor(getResources().getColor(R.color.white));
+        //ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bg);
+        ByteArrayOutputStream baos=new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte [] bitmapByte =baos.toByteArray();
+        intent.putExtra("bitmap", bitmapByte);
+
         ((MainActivity)getActivity()).startFragment(new AudioInoFragment(),R.id.main_layout,intent);
 
         /*musicInfoDialog = new QDDialog.Builder(getContext())
@@ -591,7 +596,6 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
             }
         }
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EventMessage message) {

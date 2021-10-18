@@ -22,6 +22,8 @@ import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.player.service.MusicDataManager;
+import com.demomaster.weimusic.ui.fragment.SheetFragment;
+import com.demomaster.weimusic.ui.fragment.SheetFragment2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +37,10 @@ public class SheetAdapter extends PagerAdapter {
     private Context mContext;
 
     private List<AudioSheet> data = new ArrayList<AudioSheet>();
-    //SheetFragment fragment;
-    public SheetAdapter(Context context, List<AudioSheet> list) {
-        //this.fragment = fragment;
-        this.mContext = context;
+    SheetFragment2 fragment;
+    public SheetAdapter(SheetFragment2 fragment, List<AudioSheet> list) {
+        this.fragment = fragment;
+        this.mContext = fragment.getContext();
         this.data = list;
     }
 
@@ -91,6 +93,7 @@ public class SheetAdapter extends PagerAdapter {
                 @Override
                 public void onItemClick(View view, int position) {
                     playMusic(musicList,adapter,position);
+                    fragment.finish();
                 }
 
                 @Override

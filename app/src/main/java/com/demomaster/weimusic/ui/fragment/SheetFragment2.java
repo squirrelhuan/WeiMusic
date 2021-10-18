@@ -2,8 +2,8 @@ package com.demomaster.weimusic.ui.fragment;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -14,10 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.bumptech.glide.Glide;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.AddSongSheetActivity;
 import com.demomaster.weimusic.activity.MainActivity;
@@ -37,16 +35,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
-import cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil;
-import cn.demomaster.huan.quickdeveloplibrary.util.ScreenShotUitl;
 import cn.demomaster.huan.quickdeveloplibrary.widget.AutoCenterHorizontalScrollView;
-import cn.demomaster.huan.quickdeveloplibrary.widget.HorizontalScrollView;
 import cn.demomaster.huan.quickdeveloplibrary.widget.layout.VisibleLayout;
 import cn.demomaster.huan.quickdeveloplibrary.widget.slidingpanellayout.SlidingUpPanelLayout;
 import cn.demomaster.qdlogger_library.QDLogger;
-import cn.demomaster.qdrouter_library.actionbar.ACTIONBAR_TYPE;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
-import cn.demomaster.qdrouter_library.util.QdThreadHelper;
 
 public class SheetFragment2 extends QuickFragment {
 
@@ -55,6 +48,7 @@ public class SheetFragment2 extends QuickFragment {
     public boolean isUseActionBarLayout() {
         return false;
     }
+
     @Override
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         View mView = inflater.inflate(R.layout.fragment_layout_sheet3, null);
@@ -66,8 +60,8 @@ public class SheetFragment2 extends QuickFragment {
     TextView tv_name;
     ViewGroup rl_content;
     private ViewPager sheetHeaderViewPager;
-    private ViewPager viewPager2;
-    private SheetAdapter adater2;
+    private ViewPager sheetBodyViewPager;
+    private SheetAdapter sheetAdapter;
     private ViewGroup rl_header_bg;
     SlidingUpPanelLayout sliding_layout;
     //SheetHeaderAdapter adater;
@@ -77,29 +71,20 @@ public class SheetFragment2 extends QuickFragment {
     SheetHeaderAdapter sheetHeaderAdapter;
     AutoCenterHorizontalScrollView horizontal_sheet;
     long sheetId;
+
     @Override
     public void initView(View rootView) {
         /*getActionBarTool().setActionBarType(ACTIONBAR_TYPE.NO_ACTION_BAR);*/
-        //bitmap = ScreenShotUitl.shotActivity(getActivity(),true);
-        //rootView.setBackground(new BitmapDrawable(bitmap));
-       /* new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //bitmap = QDBitmapUtil.zoomImageWithWidth(bitmap, 164);
-                //QDLogger.println("bitmap w2=：" + bitmap.getWidth());
-                //bitmap = BlurUtil.doBlur(bitmap, 12, 0.2f);
-                QdThreadHelper.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        rootView.setBackground(new BitmapDrawable(bitmap));
-                    }
-                });
-            }
-        }).start();*/
+        Intent intent = getIntent();
+        if (intent != null) {
+            byte[] bis = intent.getByteArrayExtra("bitmap");
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
+            rootView.setBackground(new BitmapDrawable(bitmap));
+        }
         rl_header_bg = findViewById(R.id.rl_header_bg);
         rl_content = findViewById(R.id.rl_content);
         iv_edit = findViewById(R.id.iv_edit);
-        viewPager2 = findViewById(R.id.viewpager2);
+        sheetBodyViewPager = findViewById(R.id.viewpager2);
         sliding_layout = findViewById(R.id.sliding_layout);
         sliding_layout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -143,12 +128,12 @@ public class SheetFragment2 extends QuickFragment {
         horizontal_sheet.setOnSelectChangeListener(new AutoCenterHorizontalScrollView.OnSelectChangeListener() {
             @Override
             public void onSelectChange(int position) {
-                if(viewPager2.getCurrentItem()!=position) {
-                    viewPager2.setCurrentItem(position);
+                if (sheetBodyViewPager.getCurrentItem() != position) {
+                    sheetBodyViewPager.setCurrentItem(position);
                 }
             }
         });
-        horizontal_sheet.setAdapter(new HorizontalAdapter(mContext,audioSheets));
+        horizontal_sheet.setAdapter(new HorizontalAdapter(mContext, audioSheets));
 
 
         //vl_layout = rootView.findViewById(R.id.vl_layout);
@@ -156,7 +141,7 @@ public class SheetFragment2 extends QuickFragment {
         //iv_icon = rootView.findViewById(R.id.iv_icon);
         tv_name = rootView.findViewById(R.id.tv_name);
 
-       // cursorView.setIndicatorCount(audioSheets.size());
+        // cursorView.setIndicatorCount(audioSheets.size());
         sheetHeaderViewPager = findViewById(R.id.viewpager);
         sheetHeaderViewPager.setOffscreenPageLimit(3);
         sheetHeaderAdapter = new SheetHeaderAdapter(getContext(), audioSheets);
@@ -165,9 +150,9 @@ public class SheetFragment2 extends QuickFragment {
         sheetHeaderViewPager.post(new Runnable() {
             @Override
             public void run() {
-                int margin = -((ViewGroup.MarginLayoutParams)sheetHeaderViewPager.getLayoutParams()).leftMargin;
+                int margin = -((ViewGroup.MarginLayoutParams) sheetHeaderViewPager.getLayoutParams()).leftMargin;
                 int paddingLeft = sheetHeaderViewPager.getPaddingLeft();
-                QDLogger.i("setPageMargin="+margin+","+sheetHeaderViewPager.getPageMargin()+",paddingLeft="+paddingLeft);
+                QDLogger.i("setPageMargin=" + margin + "," + sheetHeaderViewPager.getPageMargin() + ",paddingLeft=" + paddingLeft);
                 sheetHeaderViewPager.setPageMargin(margin);
                 ViewGroup.LayoutParams layoutParams = sheetHeaderViewPager.getLayoutParams();
                 //layoutParams.height = sheetHeaderViewPager.getMeasuredWidth();
@@ -197,18 +182,18 @@ public class SheetFragment2 extends QuickFragment {
             }
         });*/
 
-        sheetHeaderViewPager.addOnPageChangeListener(new BaseLinkPageChangeListener(sheetHeaderViewPager, viewPager2) {
+        sheetHeaderViewPager.addOnPageChangeListener(new BaseLinkPageChangeListener(sheetHeaderViewPager, sheetBodyViewPager) {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
             }
         });
 
-        viewPager2.setOffscreenPageLimit(3);
-        adater2 = new SheetAdapter(getContext(), audioSheets);
-        viewPager2.setAdapter(adater2);
+        sheetBodyViewPager.setOffscreenPageLimit(3);
+        sheetAdapter = new SheetAdapter(this, audioSheets);
+        sheetBodyViewPager.setAdapter(sheetAdapter);
 
-        viewPager2.addOnPageChangeListener(new BaseLinkPageChangeListener(viewPager2, sheetHeaderViewPager) {
+        sheetBodyViewPager.addOnPageChangeListener(new BaseLinkPageChangeListener(sheetBodyViewPager, sheetHeaderViewPager) {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
@@ -260,31 +245,31 @@ public class SheetFragment2 extends QuickFragment {
             }
         });*/
         sheetId = MusicDataManager.getInstance(mContext).getCurrentSheetId();
-        if(sheetId==-1&&audioSheets!=null&&audioSheets.size()>0){
+        if (sheetId == -1 && audioSheets != null && audioSheets.size() > 0) {
             sheetId = audioSheets.get(0).getId();
         }
-        viewPager2.post(new Runnable() {
+        sheetBodyViewPager.post(new Runnable() {
             @Override
             public void run() {
-                if(audioSheets !=null){
-                    for(int i = 0; i< audioSheets.size(); i++){
-                        if(audioSheets.get(i).getId()==sheetId){
-                            if(i>0){
-                                viewPager2.setCurrentItem(i);
+                if (audioSheets != null) {
+                    for (int i = 0; i < audioSheets.size(); i++) {
+                        if (audioSheets.get(i).getId() == sheetId) {
+                            if (i > 0) {
+                                sheetBodyViewPager.setCurrentItem(i);
                             }
                             break;
                         }
                     }
-                }else {
-                    viewPager2.setCurrentItem(0);
+                } else {
+                    sheetBodyViewPager.setCurrentItem(0);
                 }
-                View view = adater2.getCurrentView(viewPager2,viewPager2.getCurrentItem());
-                if(view!=null) {
+                View view = sheetAdapter.getCurrentView(sheetBodyViewPager, sheetBodyViewPager.getCurrentItem());
+                if (view != null) {
                     View scrollView = view.findViewById(R.id.rv_songs);
                     sliding_layout.setScrollableView(scrollView);
                 }
-                tv_name.setText(audioSheets.get(viewPager2.getCurrentItem()).getName());
-                sheetHeaderAdapter.setCurrent(sheetHeaderViewPager,viewPager2.getCurrentItem());
+                tv_name.setText(audioSheets.get(sheetBodyViewPager.getCurrentItem()).getName());
+                sheetHeaderAdapter.setCurrent(sheetHeaderViewPager, sheetBodyViewPager.getCurrentItem());
             }
         });
 
@@ -301,7 +286,7 @@ public class SheetFragment2 extends QuickFragment {
                 case PLAYSTATE_CHANGED:
                 case audio_ready:
                     //adater.notifyDataSetChanged();
-                    adater2.notifyDataSetChanged();
+                    sheetAdapter.notifyDataSetChanged();
                     break;
                 case sheet_changed:
                     break;
@@ -317,15 +302,16 @@ public class SheetFragment2 extends QuickFragment {
         }
         return super.onKeyDown(keyCode, event);
     }
+
     public static class ScaleTransformer implements ViewPager.PageTransformer {
         private static final float MIN_SCALE = 0.30f;
 
         @Override
         public void transformPage(View page, float position) {
             //重新计算偏移量,因为ViewPager的margin导致计算误差所以重新计算
-            ViewPager viewPager = ((ViewPager)page.getParent());
-            int margin = -((ViewGroup.MarginLayoutParams)viewPager.getLayoutParams()).leftMargin;
-            int clientWidth = viewPager.getMeasuredWidth() - viewPager.getPaddingLeft() - viewPager.getPaddingRight()+margin;
+            ViewPager viewPager = ((ViewPager) page.getParent());
+            int margin = -((ViewGroup.MarginLayoutParams) viewPager.getLayoutParams()).leftMargin;
+            int clientWidth = viewPager.getMeasuredWidth() - viewPager.getPaddingLeft() - viewPager.getPaddingRight() + margin;
             position = (float) (page.getLeft() - viewPager.getScrollX()) / clientWidth;
 
 /*（1）当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：
@@ -344,27 +330,27 @@ public class SheetFragment2 extends QuickFragment {
             链接：https://www.jianshu.com/p/50f59a6a87e8
             来源：简书*/
 
-            float progress =0;
-            if (position < -1 ) {
+            float progress = 0;
+            if (position < -1) {
                 //progress = position+2;
                 progress = 0;
-            }else if(position<0){
-                progress = 1+position;
-            }else if(position<1){//当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：view2的posion由1 -> 0;view1的posion由0 -> -1;
-                progress = 1-position;
-            }else if(position<2){
+            } else if (position < 0) {
+                progress = 1 + position;
+            } else if (position < 1) {//当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：view2的posion由1 -> 0;view1的posion由0 -> -1;
+                progress = 1 - position;
+            } else if (position < 2) {
                 //progress = position-1;
                 progress = 0;
             }
             //ViewGroup.LayoutParams layoutParams = page.getLayoutParams();
             //QDLogger.e("transformPage: "+page.hashCode()+",position="+position+",progress:" +progress +",y="+page.getY()+",getTranslationY()="+page.getTranslationY());
-            page.setScaleX(progress*(1-MIN_SCALE)+MIN_SCALE);
-            page.setScaleY(progress*(1-MIN_SCALE)+MIN_SCALE);
+            page.setScaleX(progress * (1 - MIN_SCALE) + MIN_SCALE);
+            page.setScaleY(progress * (1 - MIN_SCALE) + MIN_SCALE);
             //QDLogger.e("getScaleX: "+page.getScaleX()+",position="+position+",progress="+progress+",a="+(progress*(1-MIN_SCALE)+MIN_SCALE));
 
-            page.setY(page.getHeight()*(1-page.getScaleX())/2);
+            page.setY(page.getHeight() * (1 - page.getScaleX()) / 2);
             //Log.d("google_lenve_fb", "transformPage: scaleX:" + scaleX);
-              //  page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
+            //  page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
         }
     }
 
@@ -412,9 +398,9 @@ public class SheetFragment2 extends QuickFragment {
         @Override
         public void transformPage(View page, float position) {
             //重新计算偏移量,因为ViewPager的margin导致计算误差所以重新计算
-            ViewPager viewPager = ((ViewPager)page.getParent());
-            int margin = -((ViewGroup.MarginLayoutParams)viewPager.getLayoutParams()).leftMargin;
-            int clientWidth = viewPager.getMeasuredWidth() - viewPager.getPaddingLeft() - viewPager.getPaddingRight()+margin;
+            ViewPager viewPager = ((ViewPager) page.getParent());
+            int margin = -((ViewGroup.MarginLayoutParams) viewPager.getLayoutParams()).leftMargin;
+            int clientWidth = viewPager.getMeasuredWidth() - viewPager.getPaddingLeft() - viewPager.getPaddingRight() + margin;
             position = (float) (page.getLeft() - viewPager.getScrollX()) / clientWidth;
 
 /*（1）当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：
@@ -433,26 +419,26 @@ public class SheetFragment2 extends QuickFragment {
             链接：https://www.jianshu.com/p/50f59a6a87e8
             来源：简书*/
 
-            float progress =0;
-            if (position < -1 ) {
+            float progress = 0;
+            if (position < -1) {
                 //progress = position+2;
                 progress = 0;
-            }else if(position<0){
-                progress = 1+position;
-            }else if(position<1){//当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：view2的posion由1 -> 0;view1的posion由0 -> -1;
-                progress = 1-position;
-            }else if(position<2){
+            } else if (position < 0) {
+                progress = 1 + position;
+            } else if (position < 1) {//当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：view2的posion由1 -> 0;view1的posion由0 -> -1;
+                progress = 1 - position;
+            } else if (position < 2) {
                 //progress = position-1;
                 progress = 0;
             }
             //ViewGroup.LayoutParams layoutParams = page.getLayoutParams();
             //QDLogger.e("transformPage: "+page.hashCode()+",position="+position+",progress:" +progress +",y="+page.getY()+",getTranslationY()="+page.getTranslationY());
-            page.setScaleX(progress*(1-MIN_SCALE)+MIN_SCALE);
-            page.setScaleY(progress*(1-MIN_SCALE)+MIN_SCALE);
-            QDLogger.e("getScaleX: "+page.getScaleX()+",position="+position+",progress="+progress+",a="+(progress*(1-MIN_SCALE)+MIN_SCALE));
+            page.setScaleX(progress * (1 - MIN_SCALE) + MIN_SCALE);
+            page.setScaleY(progress * (1 - MIN_SCALE) + MIN_SCALE);
+            QDLogger.e("getScaleX: " + page.getScaleX() + ",position=" + position + ",progress=" + progress + ",a=" + (progress * (1 - MIN_SCALE) + MIN_SCALE));
 
-            int y = (int) (page.getHeight()*(1-page.getScaleX())/2);
-            page.setY(-y+100*page.getScaleX());
+            int y = (int) (page.getHeight() * (1 - page.getScaleX()) / 2);
+            page.setY(-y + 100 * page.getScaleX());
             //Log.d("google_lenve_fb", "transformPage: scaleX:" + scaleX);
             //  page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
         }
@@ -464,9 +450,9 @@ public class SheetFragment2 extends QuickFragment {
         @Override
         public void transformPage(View page, float position) {
             //重新计算偏移量,因为ViewPager的margin导致计算误差所以重新计算
-            ViewPager viewPager = ((ViewPager)page.getParent());
-            int margin = -((ViewGroup.MarginLayoutParams)viewPager.getLayoutParams()).leftMargin;
-            int clientWidth = viewPager.getMeasuredWidth() - viewPager.getPaddingLeft() - viewPager.getPaddingRight()+margin;
+            ViewPager viewPager = ((ViewPager) page.getParent());
+            int margin = -((ViewGroup.MarginLayoutParams) viewPager.getLayoutParams()).leftMargin;
+            int clientWidth = viewPager.getMeasuredWidth() - viewPager.getPaddingLeft() - viewPager.getPaddingRight() + margin;
             position = (float) (page.getLeft() - viewPager.getScrollX()) / clientWidth;
 
 /*（1）当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：
@@ -485,23 +471,23 @@ public class SheetFragment2 extends QuickFragment {
             链接：https://www.jianshu.com/p/50f59a6a87e8
             来源：简书*/
 
-            float progress =0;
-            if (position < -1 ) {
+            float progress = 0;
+            if (position < -1) {
                 //progress = position+2;
                 progress = 0;
-            }else if(position<0){
-                progress = 1+position;
-            }else if(position<1){//当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：view2的posion由1 -> 0;view1的posion由0 -> -1;
-                progress = 1-position;
-            }else if(position<2){
+            } else if (position < 0) {
+                progress = 1 + position;
+            } else if (position < 1) {//当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：view2的posion由1 -> 0;view1的posion由0 -> -1;
+                progress = 1 - position;
+            } else if (position < 2) {
                 //progress = position-1;
                 progress = 0;
             }
-            page.setAlpha(progress+.45f);
+            page.setAlpha(progress + .45f);
             //ViewGroup.LayoutParams layoutParams = page.getLayoutParams();
-            QDLogger.e("transformPage: "+page.hashCode()+",position="+position+",progress:" +progress +",y="+page.getY()+",getTranslationY()="+page.getTranslationY());
-            page.setScaleX(progress*(1-MIN_SCALE)+MIN_SCALE);
-            page.setScaleY(progress*(1-MIN_SCALE)+MIN_SCALE);
+            QDLogger.e("transformPage: " + page.hashCode() + ",position=" + position + ",progress:" + progress + ",y=" + page.getY() + ",getTranslationY()=" + page.getTranslationY());
+            page.setScaleX(progress * (1 - MIN_SCALE) + MIN_SCALE);
+            page.setScaleY(progress * (1 - MIN_SCALE) + MIN_SCALE);
             /*page.setTranslationX((1-progress)*viewPager.getMeasuredWidth());
             page.setTranslationX(20);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -554,6 +540,6 @@ public class SheetFragment2 extends QuickFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ((MainActivity)getActivity()).hideSheetFragment();
+        ((MainActivity) getActivity()).hideSheetFragment();
     }
 }

@@ -102,7 +102,7 @@ public class SheetDialog extends QDDialog2 {
 
         viewPager2 = findViewById(R.id.viewpager2);
         viewPager2.setOffscreenPageLimit(1);
-        adater2 = new SheetAdapter(this.activity, audioSheets);
+       // adater2 = new SheetAdapter(this.activity, audioSheets);
         viewPager2.setAdapter(adater2);
 
         //viewPager.setPageTransformer(false, new ScaleTransformer());

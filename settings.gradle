@@ -19,7 +19,7 @@ project(':quickpermission_library').projectDir = new File('D:\\Android\\AndroidS
 project(':quickdatabaselibrary').projectDir = new File('D:\\Android\\AndroidStudioProjects\\QuickDataBase\\quickdatabaselibrary')
 project(':qdRouter_library').projectDir = new File('D:\\Android\\AndroidStudioProjects\\QuickRouter\\qdRouter_library')
 project (':treeviewlibrary').projectDir = new File('D:\\Android\\AndroidStudioProjects\\QuickTreeView\\treeviewlibrary')
-project (':jaudiotagger_library').projectDir = new File('D:\\Android\\work\\jaudiotaggerandroid\\jaudiotagger_library')
+project (':jaudiotagger_library').projectDir = new File('D:\\Android\\\\AndroidStudioProjects\\jaudiotaggerandroid\\jaudiotagger_library')
 project (':quickevent_library').projectDir = new File('D:\\Android\\AndroidStudioProjects\\QuickEvent\\quickevent_library')
 
 //butterknife替代品

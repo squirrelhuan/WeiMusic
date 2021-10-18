@@ -7,6 +7,7 @@
     android:paddingLeft="@dimen/dp_0"
     android:paddingRight="@dimen/dp_0"
     android:orientation="vertical"
+    android:background="@drawable/rect_round_docker_bg"
     tools:ignore="ResAuto">
 
     <androidx.recyclerview.widget.RecyclerView

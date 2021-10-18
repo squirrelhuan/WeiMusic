@@ -2,6 +2,8 @@ package com.demomaster.weimusic.ui.fragment;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -63,8 +65,14 @@ public class AudioInoFragment extends QuickFragment {
             }
         }).start();*/
         Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        selectIndex = bundle.getInt("selectIndex");
+        if(intent !=null)
+        {
+            Bundle bundle = intent.getExtras();
+            selectIndex = bundle.getInt("selectIndex");
+            byte [] bis=intent.getByteArrayExtra("bitmap");
+            Bitmap bitmap= BitmapFactory.decodeByteArray(bis, 0, bis.length);
+            rootView.setBackground(new BitmapDrawable(bitmap));
+        }
 
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override

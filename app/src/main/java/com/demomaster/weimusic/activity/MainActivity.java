@@ -33,6 +33,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.ByteArrayOutputStream;
+
 import cn.demomaster.huan.quickdeveloplibrary.helper.toast.QdToast;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil;
@@ -365,38 +367,17 @@ public class MainActivity extends BaseActivity {
         } else {
            // ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bottom_bg);
             //ll_bottom.setBackgroundResource(R.color.transparent_light_33);
-            Bitmap bitmap = ScreenShotUitl.getCacheBitmapFromView(iv_wallpager);
-            bitmap = QDBitmapUtil.zoomImageWithWidth(bitmap, 164);
-
-            Bitmap copyBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
-            Paint paint = new Paint();
-            Canvas canvas = new Canvas(copyBitmap);
-            ColorMatrix colorMatrixS = new ColorMatrix();
-            float one=0;
-            colorMatrixS.setRotate(0, one);
-            colorMatrixS.setRotate(1, one);
-            colorMatrixS.setRotate(2, one);
-            ColorMatrix colorMatrixL = new ColorMatrix();
-            float two=0.7f;
-            colorMatrixL.setScale(two, two, two, 1);
-            ColorMatrix colorMatrixB = new ColorMatrix();
-            float three=0.5f;
-            colorMatrixB.setSaturation(three);
-            ColorMatrix colorMatriximg = new ColorMatrix();
-            //通过postConcat()方法可以将以上效果叠加到一起
-            colorMatriximg.postConcat(colorMatrixB);
-            colorMatriximg.postConcat(colorMatrixL);
-            colorMatriximg.postConcat(colorMatrixS);
-            ColorMatrixColorFilter colorMatrixColorFilter = new ColorMatrixColorFilter(colorMatriximg);
-            paint.setColorFilter(colorMatrixColorFilter);
-            paint.setAlpha(250);
-            canvas.drawBitmap(bitmap, new Matrix(), paint);
-
-            rl_docker_panel.setBackground(new BitmapDrawable(copyBitmap));
+            Bitmap bitmap = getBackagroundBitmap(250);
+            //rl_docker_panel.setBackground(new BitmapDrawable(copyBitmap));
             //rl_docker_panel.setBackgroundColor(getResources().getColor(R.color.white));
             //ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bg);
             sheetFragment = new SheetFragment2();
-            startFragment(sheetFragment, R.id.fl_main, null);
+            Intent intent = new Intent();
+            ByteArrayOutputStream baos=new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte [] bitmapByte =baos.toByteArray();
+            intent.putExtra("bitmap", bitmapByte);
+            startFragment(sheetFragment, R.id.fl_main, intent);
         }
         //Bitmap bitmap = ScreenShotUitl.getCacheBitmapFromView(findViewById(R.id.main_layout));
         //GroundGlassUtil glassUtil = new GroundGlassUtil(mContext);
@@ -405,6 +386,35 @@ public class MainActivity extends BaseActivity {
         }
         sheetDialog = new SheetDialog(mContext);
         sheetDialog.show();*/
+    }
+
+    public Bitmap getBackagroundBitmap(int alpha) {
+        Bitmap bitmap = ScreenShotUitl.getCacheBitmapFromView(iv_wallpager);
+        bitmap = QDBitmapUtil.zoomImageWithWidth(bitmap, 164);
+        Bitmap copyBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+        Paint paint = new Paint();
+        Canvas canvas = new Canvas(copyBitmap);
+        ColorMatrix colorMatrixS = new ColorMatrix();
+        float one=0;
+        colorMatrixS.setRotate(0, one);
+        colorMatrixS.setRotate(1, one);
+        colorMatrixS.setRotate(2, one);
+        ColorMatrix colorMatrixL = new ColorMatrix();
+        float two=0.7f;
+        colorMatrixL.setScale(two, two, two, 1);
+        ColorMatrix colorMatrixB = new ColorMatrix();
+        float three=0.5f;
+        colorMatrixB.setSaturation(three);
+        ColorMatrix colorMatriximg = new ColorMatrix();
+        //通过postConcat()方法可以将以上效果叠加到一起
+        colorMatriximg.postConcat(colorMatrixB);
+        colorMatriximg.postConcat(colorMatrixL);
+        colorMatriximg.postConcat(colorMatrixS);
+        ColorMatrixColorFilter colorMatrixColorFilter = new ColorMatrixColorFilter(colorMatriximg);
+        paint.setColorFilter(colorMatrixColorFilter);
+        paint.setAlpha(alpha);
+        canvas.drawBitmap(bitmap, new Matrix(), paint);
+        return copyBitmap;
     }
 
     public void hideSheetFragment() {

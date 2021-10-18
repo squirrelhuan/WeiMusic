@@ -1,5 +1,6 @@
 package com.demomaster.weimusic.ui.fragment;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.demomaster.weimusic.R;
+import com.demomaster.weimusic.activity.AddSongSheetActivity;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.model.Channel;
 import com.demomaster.weimusic.player.service.MC;
@@ -137,6 +139,16 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
         audioSheets = new ArrayList<>();
         audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(getContext()));
         recyclerSheetAdapter = new RecyclerSheetAdapter(getActivity(),audioSheets);
+        recyclerSheetAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Bundle bundle = new Bundle();
+                bundle.putLong("sheetId", audioSheets.get(position).getId());
+                Intent intent = new Intent(getContext(), AddSongSheetActivity.class);
+                intent.putExtras(bundle);
+                getContext().startActivity(intent);
+            }
+        });
         recyclerView_song_sheet.setAdapter(recyclerSheetAdapter);
 
         //歌单

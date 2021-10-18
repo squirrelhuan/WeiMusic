@@ -169,7 +169,7 @@ public class SheetFragment extends QuickFragment {
 
         viewPager2 = findViewById(R.id.viewpager2);
         viewPager2.setOffscreenPageLimit(3);
-        adater2 = new SheetAdapter(getContext(), audioSheets);
+        //adater2 = new SheetAdapter(getContext(), audioSheets);
         viewPager2.setAdapter(adater2);
 
         viewPager2.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {

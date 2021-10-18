@@ -415,7 +415,7 @@ public class MC implements AudioManager.OnAudioFocusChangeListener {
             audioInfo = MusicDataManager.getInstance(mContext).getFirstMusicInfo();
         }
 
-        if (audioInfo != null) {
+        if (audioInfo != null&&record!=null) {
             if (record.getSheetId() != -1) {
                 audioInfo.setSheetId(record.getSheetId());
             }
