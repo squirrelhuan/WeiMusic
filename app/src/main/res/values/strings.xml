@@ -205,5 +205,6 @@
 
     <string name="mp.list.layoutManager.linear">LinearLayoutManager</string>
     <string name="title_activity_theme">ThemeActivity</string>
+    <string name="title_activity_scrolling">ScrollingActivity</string>
 
 </resources>

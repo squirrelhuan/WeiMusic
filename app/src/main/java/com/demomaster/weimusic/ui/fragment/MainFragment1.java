@@ -2,7 +2,6 @@ package com.demomaster.weimusic.ui.fragment;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
@@ -11,45 +10,38 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.AddSongSheetActivity;
+import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.model.Channel;
 import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.ui.adapter.MusicChannelAdapter;
-import com.demomaster.weimusic.ui.adapter.MusicCollectAdapter;
 import com.demomaster.weimusic.ui.adapter.RecyclerSheetAdapter;
-import com.demomaster.weimusic.ui.adapter.SheetAdapter;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import cn.demomaster.huan.quickdeveloplibrary.base.activity.QDActivity;
+import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.DisplayUtil;
+import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 
 public class MainFragment1 extends QuickFragment implements OnClickListener,
@@ -274,4 +266,19 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
 
     }*/
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(EventMessage message) {
+        AudioStation station = AudioStation.getEnum(message.getCode());
+        if (station != null) {
+            QDLogger.println("首頁事件:" + station.getDesc());
+            switch (station) {
+                case sheet_create:
+                case sheet_changed:
+                    audioSheets.clear();
+                    audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(getContext()));
+                    recyclerSheetAdapter.notifyDataSetChanged();
+                    break;
+            }
+        }
+    }
 }

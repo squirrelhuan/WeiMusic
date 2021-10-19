@@ -141,5 +141,7 @@
     <dimen name="play_controls_notification">48.0dip</dimen>
     <dimen name="notification_padding">8.0dip</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 
 </resources>

@@ -17,6 +17,8 @@ import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MusicDataManager;
+import com.demomaster.weimusic.view.appbar.AppBarLayout;
+import com.demomaster.weimusic.view.appbar.CollapsingLayout;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -32,11 +34,12 @@ import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDSheetDialog;
 import cn.demomaster.qdlogger_library.QDLogger;
+import cn.demomaster.qdrouter_library.actionbar.ACTIONBAR_TYPE;
 
 /**
  * 创建歌单页面
  */
-public class AddSongSheetActivity extends QDActivity {
+public class AddSongSheetActivity extends QDActivity implements View.OnClickListener {
 
     Button btn_creat;
     TextView et_sheet_name;
@@ -44,47 +47,38 @@ public class AddSongSheetActivity extends QDActivity {
     ImageView iv_sheet_img;
     LinearLayout ll_theme_color;
     ImageView iv_theme_color;
+    CollapsingLayout collapsingLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_song_sheet);
-
+        getActionBarTool().setActionBarType(ACTIONBAR_TYPE.NO_ACTION_BAR);
         iv_theme_color = findViewById(R.id.iv_theme_color);
         ll_theme_color = findViewById(R.id.ll_theme_color);
-        ll_theme_color.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext,SelectThemeColorActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putInt("themeColor",mColor);
-                intent.putExtras(bundle);
-                startActivityForResult(intent,123);
-            }
-        });
+        ll_theme_color.setOnClickListener(this);
+
         iv_sheet_img = findViewById(R.id.iv_sheet_img);
-        iv_sheet_img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showMenuDialog();
-            }
-        });
+        iv_sheet_img.setOnClickListener(this);
         et_sheet_name = findViewById(R.id.et_sheet_name);
         btn_creat = findViewById(R.id.btn_creat);
-        btn_creat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                creatSheet();
-            }
-        });
+        btn_creat.setOnClickListener(this);
+        collapsingLayout = findViewById(R.id.collapsingLayout);
+            collapsingLayout.setOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+                @Override
+                public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                    appBarLayout.getHeight();
+                }
+            });
         Intent intent = getIntent();
-        if(intent!=null) {
+        if (intent != null) {
             Bundle bundle = intent.getExtras();
-            if(bundle!=null&&bundle.containsKey("sheetId")){
+            if (bundle != null && bundle.containsKey("sheetId")) {
                 sheetId = bundle.getLong("sheetId");
                 btn_creat.setText("保存修改");
-                QDLogger.e("sheetId="+sheetId);
-                AudioSheet audioSheet = MusicDataManager.getInstance(mContext).getSongSheetById(mContext,sheetId);
-                if(audioSheet !=null){
+                QDLogger.e("sheetId=" + sheetId);
+                AudioSheet audioSheet = MusicDataManager.getInstance(mContext).getSongSheetById(mContext, sheetId);
+                if (audioSheet != null) {
                     et_sheet_name.setText(audioSheet.getName());
                     Glide.with(mContext).load(audioSheet.getImgSrc()).into(iv_sheet_img);
                     iv_theme_color.setBackgroundColor(audioSheet.getThemeColor());
@@ -95,12 +89,13 @@ public class AddSongSheetActivity extends QDActivity {
     }
 
     int mColor;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==RESULT_OK){
+        if (resultCode == RESULT_OK) {
             Bundle bundle = data.getExtras();
-            mColor = bundle.getInt("themeColor",mColor);
+            mColor = bundle.getInt("themeColor", mColor);
             iv_theme_color.setBackgroundColor(mColor);
         }
     }
@@ -111,19 +106,20 @@ public class AddSongSheetActivity extends QDActivity {
         audioSheet.setName(et_sheet_name.getText().toString());
         audioSheet.setThemeColor(mColor);
         audioSheet.setId(sheetId);
-        if(image!=null) {
+        if (image != null) {
             audioSheet.setImgSrc(image.getPath());
         }
-        if(sheetId==-1) {
-            MusicDataManager.getInstance(mContext).createSheet(mContext,audioSheet);
+        if (sheetId == -1) {
+            MusicDataManager.getInstance(mContext).createSheet(mContext, audioSheet);
             finish();
-        }else {
-            MusicDataManager.getInstance(mContext).modifySheet(mContext,audioSheet);
+        } else {
+            MusicDataManager.getInstance(mContext).modifySheet(mContext, audioSheet);
             finish();
         }
     }
 
     private Image image;
+
     private void showMenuDialog() {
         String[] menus = getResources().getStringArray(cn.demomaster.huan.quickdeveloplibrary.R.array.select_picture_items);
         new QDSheetDialog.MenuBuilder(mContext).setData(menus).setOnDialogActionListener(new QDSheetDialog.OnDialogActionListener() {
@@ -157,7 +153,7 @@ public class AddSongSheetActivity extends QDActivity {
                     ((QDActivity) mContext).getPhotoHelper().selectPhotoFromMyGallery(new PhotoHelper.OnSelectPictureResult() {
                         @Override
                         public void onSuccess(Intent data, ArrayList<Image> images) {
-                            if(images!=null&&images.size()>0) {
+                            if (images != null && images.size() > 0) {
                                 image = images.get(0);
                                 updateHeader(image);
                             }
@@ -183,6 +179,25 @@ public class AddSongSheetActivity extends QDActivity {
             Glide.with(mContext).load(image.getPath()).into(iv_sheet_img);
         } else if (image.getUrlType() == UrlType.file) {
             Glide.with(mContext).load(new File(image.getPath())).into(iv_sheet_img);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ll_theme_color:
+                Intent intent = new Intent(mContext, SelectThemeColorActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("themeColor", mColor);
+                intent.putExtras(bundle);
+                startActivityForResult(intent, 123);
+                break;
+            case R.id.iv_sheet_img:
+                showMenuDialog();
+                break;
+            case R.id.btn_creat:
+                creatSheet();
+                break;
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.demomaster.weimusic.ui.fragment;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +19,7 @@ import androidx.annotation.Nullable;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.MainActivity;
+import com.demomaster.weimusic.activity.SportActivity;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.player.service.MC;
 
@@ -233,8 +235,10 @@ public class PPBottomActionBarFragment extends QuickFragment {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.iv_info:
-                MC.getInstance(getContext()).doRepeat();
+                //MC.getInstance(getContext()).doRepeat();
                 //showMulMenuDialog();
+                Intent intent = new Intent(mContext, SportActivity.class);
+                startActivity(intent);
                 break;
             case R.id.bottom_action_bar_previous:
                 long id1 = MC.getInstance(getContext()).getCurrentAudioId();

@@ -19,7 +19,7 @@ import com.demomaster.weimusic.activity.AddSongSheetActivity;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.player.service.MusicDataManager;
-import com.demomaster.weimusic.ui.adapter.SheetAdapter;
+import com.demomaster.weimusic.ui.adapter.SheetBodyAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class SheetDialog extends QDDialog2 {
     TextView tv_name,tv_count;
     ViewGroup rl_content;
     private ViewPager viewPager2;
-    private SheetAdapter adater2;
+    private SheetBodyAdapter adater2;
     //SheetHeaderAdapter adater;
     List<AudioSheet> audioSheets;
     VisibleLayout vl_layout;

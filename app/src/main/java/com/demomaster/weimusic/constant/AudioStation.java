@@ -26,6 +26,8 @@ public enum AudioStation {
 
     DOWNLOAD_SUCCESS(48,"下载完成"),
     sheet_changed(49,"歌单信息变更"),
+    sheet_create(50,"歌单创建"),
+
     ThemeCoverChange(51,"主题封面更改"),//主题封面更改
     ThemeWallPagerChange(52,"主题壁紙更改"),
 

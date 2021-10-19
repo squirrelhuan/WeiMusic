@@ -26,6 +26,7 @@ import com.demomaster.weimusic.dialog.SheetDialog;
 import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.ui.adapter.MyChildAdapter;
 import com.demomaster.weimusic.ui.fragment.SheetFragment2;
+import com.demomaster.weimusic.ui.fragment.SheetFragment3;
 import com.demomaster.weimusic.view.MainLayout;
 import com.demomaster.weimusic.view.Wallpaper;
 
@@ -358,25 +359,25 @@ public class MainActivity extends BaseActivity {
     }
 
     SheetDialog sheetDialog;
-    SheetFragment2 sheetFragment;
+    SheetFragment3 sheetFragment;
 
     public void showSheetFragment() {
         fl_main.setVisibility(View.VISIBLE);
         if (sheetFragment != null) {
             hideSheetFragment();
         } else {
-           // ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bottom_bg);
+            // ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bottom_bg);
             //ll_bottom.setBackgroundResource(R.color.transparent_light_33);
-            Bitmap bitmap = getBackagroundBitmap(250);
+            Bitmap bitmap = getBackagroundBitmap(200);
             //rl_docker_panel.setBackground(new BitmapDrawable(copyBitmap));
             //rl_docker_panel.setBackgroundColor(getResources().getColor(R.color.white));
             //ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bg);
-            sheetFragment = new SheetFragment2();
+            sheetFragment = new SheetFragment3();
             Intent intent = new Intent();
-            ByteArrayOutputStream baos=new ByteArrayOutputStream();
+             /*ByteArrayOutputStream baos=new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
             byte [] bitmapByte =baos.toByteArray();
-            intent.putExtra("bitmap", bitmapByte);
+            intent.putExtra("bitmap", bitmapByte);*/
             startFragment(sheetFragment, R.id.fl_main, intent);
         }
         //Bitmap bitmap = ScreenShotUitl.getCacheBitmapFromView(findViewById(R.id.main_layout));
@@ -395,15 +396,15 @@ public class MainActivity extends BaseActivity {
         Paint paint = new Paint();
         Canvas canvas = new Canvas(copyBitmap);
         ColorMatrix colorMatrixS = new ColorMatrix();
-        float one=0;
+        float one = 0;
         colorMatrixS.setRotate(0, one);
         colorMatrixS.setRotate(1, one);
         colorMatrixS.setRotate(2, one);
         ColorMatrix colorMatrixL = new ColorMatrix();
-        float two=0.7f;
+        float two = 0.7f;
         colorMatrixL.setScale(two, two, two, 1);
         ColorMatrix colorMatrixB = new ColorMatrix();
-        float three=0.5f;
+        float three = 0.5f;
         colorMatrixB.setSaturation(three);
         ColorMatrix colorMatriximg = new ColorMatrix();
         //通过postConcat()方法可以将以上效果叠加到一起
@@ -419,7 +420,7 @@ public class MainActivity extends BaseActivity {
 
     public void hideSheetFragment() {
         if (sheetFragment != null) {
-           // ll_bottom.setBackgroundColor(Color.TRANSPARENT);
+            // ll_bottom.setBackgroundColor(Color.TRANSPARENT);
             rl_docker_panel.setBackgroundColor(Color.TRANSPARENT);
             sheetFragment.finish();
             sheetFragment = null;

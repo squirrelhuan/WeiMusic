@@ -20,7 +20,7 @@ import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MusicDataManager;
-import com.demomaster.weimusic.ui.adapter.SheetAdapter;
+import com.demomaster.weimusic.ui.adapter.SheetBodyAdapter;
 import com.demomaster.weimusic.ui.adapter.SheetHeaderAdapter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -44,7 +44,7 @@ public class SheetFragment extends QuickFragment {
     }
     @Override
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        View mView = inflater.inflate(R.layout.fragment_layout_sheet, null);
+        View mView = inflater.inflate(R.layout.fragment_layout_sheet2, null);
         return mView;
     }
 
@@ -54,7 +54,7 @@ public class SheetFragment extends QuickFragment {
     ViewGroup rl_content;
     private ViewPager sheetHeaderViewPager;
     private ViewPager viewPager2;
-    private SheetAdapter adater2;
+    private SheetBodyAdapter adater2;
     private ViewGroup rl_header_bg;
     //SheetHeaderAdapter adater;
     List<AudioSheet> audioSheets;
@@ -159,7 +159,7 @@ public class SheetFragment extends QuickFragment {
                     viewPager2.setCurrentItem(position);
                 }
                 tv_name.setText(audioSheets.get(position).getName());
-                sheetHeaderAdapter.setCurrent(sheetHeaderViewPager,position);
+                //sheetHeaderAdapter.setCurrent(sheetHeaderViewPager,position);
             }
 
             @Override
@@ -238,7 +238,7 @@ public class SheetFragment extends QuickFragment {
                     //sliding_layout.setScrollableView(scrollView);
                 }
                 tv_name.setText(audioSheets.get(viewPager2.getCurrentItem()).getName());
-                sheetHeaderAdapter.setCurrent(sheetHeaderViewPager,viewPager2.getCurrentItem());
+                //sheetHeaderAdapter.setCurrent(sheetHeaderViewPager,viewPager2.getCurrentItem());
             }
         });
 
@@ -257,6 +257,7 @@ public class SheetFragment extends QuickFragment {
                     //adater.notifyDataSetChanged();
                     adater2.notifyDataSetChanged();
                     break;
+                case sheet_create:
                 case sheet_changed:
                     break;
             }

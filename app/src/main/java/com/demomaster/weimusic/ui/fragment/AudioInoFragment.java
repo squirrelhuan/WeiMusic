@@ -64,7 +64,7 @@ public class AudioInoFragment extends QuickFragment {
                 });
             }
         }).start();*/
-        Intent intent = getIntent();
+        /*Intent intent = getIntent();
         if(intent !=null)
         {
             Bundle bundle = intent.getExtras();
@@ -72,7 +72,7 @@ public class AudioInoFragment extends QuickFragment {
             byte [] bis=intent.getByteArrayExtra("bitmap");
             Bitmap bitmap= BitmapFactory.decodeByteArray(bis, 0, bis.length);
             rootView.setBackground(new BitmapDrawable(bitmap));
-        }
+        }*/
 
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,6 +128,8 @@ public class AudioInoFragment extends QuickFragment {
                 case audio_ready:
                     //adater2.notifyDataSetChanged();
                     break;
+
+                case sheet_create:
                 case sheet_changed:
                     break;
             }

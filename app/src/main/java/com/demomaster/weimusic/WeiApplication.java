@@ -18,6 +18,7 @@ import com.demomaster.weimusic.player.service.MediaButtonIntentReceiver;
 
 import cn.demomaster.huan.quickdeveloplibrary.QDApplication;
 import cn.demomaster.huan.quickdeveloplibrary.constant.AppConfig;
+import cn.demomaster.huan.quickdeveloplibrary.helper.toast.QdToast;
 import cn.demomaster.huan.quickdeveloplibrary.util.CrashHandler;
 import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.quickdatabaselibrary.QuickDbHelper;
@@ -102,10 +103,12 @@ public class WeiApplication extends QDApplication implements
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
        // MusicHelper.getInstance().mService = IApolloService.Stub.asInterface(service);
+        QdToast.show("name="+name);
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
        // MusicHelper.getInstance().mService = null;
+        QdToast.show("name="+name);
     }
 }

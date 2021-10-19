@@ -319,14 +319,14 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
         bundle.putInt("selectIndex",position);
         intent.putExtras(bundle);
 
-        Bitmap bitmap = ((MainActivity)getActivity()).getBackagroundBitmap(220);
+        /*Bitmap bitmap = ((MainActivity)getActivity()).getBackagroundBitmap(220);
         //rl_docker_panel.setBackground(new BitmapDrawable(copyBitmap));
         //rl_docker_panel.setBackgroundColor(getResources().getColor(R.color.white));
         //ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bg);
         ByteArrayOutputStream baos=new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte [] bitmapByte =baos.toByteArray();
-        intent.putExtra("bitmap", bitmapByte);
+        intent.putExtra("bitmap", bitmapByte);*/
 
         ((MainActivity)getActivity()).startFragment(new AudioInoFragment(),R.id.main_layout,intent);
 

@@ -23,7 +23,7 @@ import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.ui.adapter.HorizontalAdapter;
-import com.demomaster.weimusic.ui.adapter.SheetAdapter;
+import com.demomaster.weimusic.ui.adapter.SheetBodyAdapter;
 import com.demomaster.weimusic.ui.adapter.SheetHeaderAdapter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
+import cn.demomaster.huan.quickdeveloplibrary.util.DisplayUtil;
+import cn.demomaster.huan.quickdeveloplibrary.view.banner.BannerCursorView;
 import cn.demomaster.huan.quickdeveloplibrary.widget.AutoCenterHorizontalScrollView;
 import cn.demomaster.huan.quickdeveloplibrary.widget.layout.VisibleLayout;
 import cn.demomaster.huan.quickdeveloplibrary.widget.slidingpanellayout.SlidingUpPanelLayout;
@@ -61,13 +63,13 @@ public class SheetFragment2 extends QuickFragment {
     ViewGroup rl_content;
     private ViewPager sheetHeaderViewPager;
     private ViewPager sheetBodyViewPager;
-    private SheetAdapter sheetAdapter;
+    private SheetBodyAdapter sheetAdapter;
     private ViewGroup rl_header_bg;
     SlidingUpPanelLayout sliding_layout;
     //SheetHeaderAdapter adater;
     List<AudioSheet> audioSheets;
     VisibleLayout vl_layout;
-    //BannerCursorView cursorView;
+    BannerCursorView cursorView;
     SheetHeaderAdapter sheetHeaderAdapter;
     AutoCenterHorizontalScrollView horizontal_sheet;
     long sheetId;
@@ -75,16 +77,16 @@ public class SheetFragment2 extends QuickFragment {
     @Override
     public void initView(View rootView) {
         /*getActionBarTool().setActionBarType(ACTIONBAR_TYPE.NO_ACTION_BAR);*/
-        Intent intent = getIntent();
+       /* Intent intent = getIntent();
         if (intent != null) {
             byte[] bis = intent.getByteArrayExtra("bitmap");
             Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
             rootView.setBackground(new BitmapDrawable(bitmap));
-        }
+        }*/
         rl_header_bg = findViewById(R.id.rl_header_bg);
         rl_content = findViewById(R.id.rl_content);
         iv_edit = findViewById(R.id.iv_edit);
-        sheetBodyViewPager = findViewById(R.id.viewpager2);
+        sheetBodyViewPager = findViewById(R.id.viewpager_sheet_body);
         sliding_layout = findViewById(R.id.sliding_layout);
         sliding_layout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -100,9 +102,9 @@ public class SheetFragment2 extends QuickFragment {
             }
         });
 
-       /* cursorView = findViewById(R.id.cursorView);
-        cursorView.setRadius(DisplayUtil.dip2px(getContext(),3),DisplayUtil.dip2px(getContext(),4));
-        cursorView.setCursorPointColor(getResources().getColor(R.color.transparent_light_77),getResources().getColor(R.color.white));*/
+        cursorView = findViewById(R.id.cursorView);
+        cursorView.setRadius(DisplayUtil.dip2px(getContext(), 3), DisplayUtil.dip2px(getContext(), 4));
+        cursorView.setCursorPointColor(getResources().getColor(R.color.transparent_light_77), getResources().getColor(R.color.white));
         rl_content.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,7 +126,7 @@ public class SheetFragment2 extends QuickFragment {
         audioSheets = new ArrayList<>();
         audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(getContext()));
 
-        horizontal_sheet = findViewById(R.id.horizontal_sheet);
+        /*horizontal_sheet = findViewById(R.id.horizontal_sheet);
         horizontal_sheet.setOnSelectChangeListener(new AutoCenterHorizontalScrollView.OnSelectChangeListener() {
             @Override
             public void onSelectChange(int position) {
@@ -133,16 +135,15 @@ public class SheetFragment2 extends QuickFragment {
                 }
             }
         });
-        horizontal_sheet.setAdapter(new HorizontalAdapter(mContext, audioSheets));
-
+        horizontal_sheet.setAdapter(new HorizontalAdapter(mContext, audioSheets));*/
 
         //vl_layout = rootView.findViewById(R.id.vl_layout);
         //vl_layout.setGravity(Gravity.TOP);
         //iv_icon = rootView.findViewById(R.id.iv_icon);
         tv_name = rootView.findViewById(R.id.tv_name);
 
-        // cursorView.setIndicatorCount(audioSheets.size());
-        sheetHeaderViewPager = findViewById(R.id.viewpager);
+        cursorView.setIndicatorCount(audioSheets.size());
+        //sheetHeaderViewPager = findViewById(R.id.viewpager_sheet_header);
         sheetHeaderViewPager.setOffscreenPageLimit(3);
         sheetHeaderAdapter = new SheetHeaderAdapter(getContext(), audioSheets);
         sheetHeaderViewPager.setAdapter(sheetHeaderAdapter);
@@ -190,13 +191,14 @@ public class SheetFragment2 extends QuickFragment {
         });
 
         sheetBodyViewPager.setOffscreenPageLimit(3);
-        sheetAdapter = new SheetAdapter(this, audioSheets);
+        sheetAdapter = new SheetBodyAdapter(this, audioSheets);
         sheetBodyViewPager.setAdapter(sheetAdapter);
 
         sheetBodyViewPager.addOnPageChangeListener(new BaseLinkPageChangeListener(sheetBodyViewPager, sheetHeaderViewPager) {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+                cursorView.selecte(position);
                 horizontal_sheet.setCurrentIndex(position);
                 tv_name.setText(audioSheets.get(position).getName());
             }
@@ -269,7 +271,7 @@ public class SheetFragment2 extends QuickFragment {
                     sliding_layout.setScrollableView(scrollView);
                 }
                 tv_name.setText(audioSheets.get(sheetBodyViewPager.getCurrentItem()).getName());
-                sheetHeaderAdapter.setCurrent(sheetHeaderViewPager, sheetBodyViewPager.getCurrentItem());
+                //sheetHeaderAdapter.setCurrent(sheetHeaderViewPager, sheetBodyViewPager.getCurrentItem());
             }
         });
 
@@ -288,6 +290,7 @@ public class SheetFragment2 extends QuickFragment {
                     //adater.notifyDataSetChanged();
                     sheetAdapter.notifyDataSetChanged();
                     break;
+                case sheet_create:
                 case sheet_changed:
                     break;
             }
