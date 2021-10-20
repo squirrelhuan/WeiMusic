@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray_bg"
     android:fitsSystemWindows="true">
 
     <com.demomaster.weimusic.view.appbar.AppBarLayout
@@ -18,8 +19,8 @@
             android:layout_height="@dimen/dp_240"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:toolbarId="@+id/toolbar_layout_01"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:toolbarId="@+id/toolbar_layout_01">
 
             <ImageView
                 android:id="@+id/iv_sheet_img"
@@ -28,26 +29,15 @@
                 android:layout_gravity="center_horizontal"
                 android:background="@color/transparent_dark_44"
                 android:scaleType="centerCrop" />
-           <!-- <include
-                android:id="@+id/toolbar_layout_01"
-                layout="@layout/activity_actionbar_common"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_collapseMode="pin"/>-->
-            <LinearLayout
-                android:id="@+id/toolbar_layout_01"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fitsSystemWindows="true"
-                android:background="@color/red"
-                app:layout_collapseMode="pin">
 
-                <include
-              layout="@layout/activity_actionbar_common"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              app:layout_collapseMode="pin"/>
-            </LinearLayout>
+            <cn.demomaster.qdrouter_library.actionbar.QuickAppBarLayout
+                android:id="@+id/toolbar_layout_01"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout="@layout/activity_actionbar_common2"
+                android:fitsSystemWindows="true"
+                app:layout_collapseMode="pin"/>
+
         </com.demomaster.weimusic.view.appbar.CollapsingLayout>
     </com.demomaster.weimusic.view.appbar.AppBarLayout>
 
@@ -69,83 +59,83 @@
             android:orientation="vertical"
             tools:context=".activity.AddSongSheetActivity">
 
-<!--
-            <com.demomaster.weimusic.view.ElemeDetailView
-                android:id="@+id/elemeDetailView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                app:headerHeightMaxAlign="@+id/headerView"
-                app:scrollView="@+id/ll_content"
-                app:topView="@+id/headerView">
-
-                <RelativeLayout
-                    android:id="@+id/headerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="260dp"
-                    android:orientation="vertical">
-
-                    <cn.demomaster.huan.quickdeveloplibrary.widget.MarqueeTextView
-                        android:id="@+id/tv_shopNotice"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:background="@color/transparent_dark_55"
-                        android:ellipsize="marquee"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:marqueeRepeatLimit="marquee_forever"
-                        android:padding="@dimen/dp_5"
-                        android:singleLine="true"
-                        android:text="店铺公告："
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/sp_12" />
-                </RelativeLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_content"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/dp_60"
-                    android:orientation="vertical">
-
-                    &lt;!&ndash;<ImageView
-                        android:id="@+id/iv_category_menu"
-                        android:layout_width="@dimen/dp_40"
-                        android:layout_height="@dimen/dp_40"
-                        android:padding="@dimen/dp_10"
-                        android:src="@drawable/ic_menu"
-                        android:tint="@color/white"
-                        android:rotation="90"/>&ndash;&gt;
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <cn.demomaster.huan.quickdeveloplibrary.widget.layout.LoadLayout
-                            android:id="@+id/loadlayout_foodlist"
-                            android:layout_width="0dp"
+            <!--
+                        <com.demomaster.weimusic.view.ElemeDetailView
+                            android:id="@+id/elemeDetailView"
+                            android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_weight="4">
+                            android:orientation="vertical"
+                            app:headerHeightMaxAlign="@+id/headerView"
+                            app:scrollView="@+id/ll_content"
+                            app:topView="@+id/headerView">
 
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/goods_list"
+                            <RelativeLayout
+                                android:id="@+id/headerView"
+                                android:layout_width="match_parent"
+                                android:layout_height="260dp"
+                                android:orientation="vertical">
+
+                                <cn.demomaster.huan.quickdeveloplibrary.widget.MarqueeTextView
+                                    android:id="@+id/tv_shopNotice"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:background="@color/transparent_dark_55"
+                                    android:ellipsize="marquee"
+                                    android:focusable="true"
+                                    android:focusableInTouchMode="true"
+                                    android:marqueeRepeatLimit="marquee_forever"
+                                    android:padding="@dimen/dp_5"
+                                    android:singleLine="true"
+                                    android:text="店铺公告："
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/sp_12" />
+                            </RelativeLayout>
+
+                            <LinearLayout
+                                android:id="@+id/ll_content"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:layout_weight="4"
-                                android:background="@color/gray_bg"
-                                android:clipToPadding="false"
-                                android:drawSelectorOnTop="true"
-                                android:listSelector="@android:color/transparent"
-                                android:scrollbarSize="3dip"
-                                android:scrollbars="none" />
-                        </cn.demomaster.huan.quickdeveloplibrary.widget.layout.LoadLayout>
+                                android:layout_marginBottom="@dimen/dp_60"
+                                android:orientation="vertical">
 
-                    </LinearLayout>
-                </LinearLayout>
-            </com.demomaster.weimusic.view.ElemeDetailView>
--->
+                                &lt;!&ndash;<ImageView
+                                    android:id="@+id/iv_category_menu"
+                                    android:layout_width="@dimen/dp_40"
+                                    android:layout_height="@dimen/dp_40"
+                                    android:padding="@dimen/dp_10"
+                                    android:src="@drawable/ic_menu"
+                                    android:tint="@color/white"
+                                    android:rotation="90"/>&ndash;&gt;
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:orientation="vertical">
+
+                                    <cn.demomaster.huan.quickdeveloplibrary.widget.layout.LoadLayout
+                                        android:id="@+id/loadlayout_foodlist"
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="4">
+
+                                        <androidx.recyclerview.widget.RecyclerView
+                                            android:id="@+id/goods_list"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_weight="4"
+                                            android:background="@color/gray_bg"
+                                            android:clipToPadding="false"
+                                            android:drawSelectorOnTop="true"
+                                            android:listSelector="@android:color/transparent"
+                                            android:scrollbarSize="3dip"
+                                            android:scrollbars="none" />
+                                    </cn.demomaster.huan.quickdeveloplibrary.widget.layout.LoadLayout>
+
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.demomaster.weimusic.view.ElemeDetailView>
+            -->
 
             <EditText
                 android:id="@+id/et_sheet_name"

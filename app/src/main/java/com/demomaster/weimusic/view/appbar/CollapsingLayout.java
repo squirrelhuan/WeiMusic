@@ -124,6 +124,11 @@ public class CollapsingLayout extends FrameLayout {
   private int layoutId;
   @Nullable private View toolbarView;
 
+  @Nullable
+  public View getToolbarView() {
+    return toolbarView;
+  }
+
   @Nullable private Drawable contentScrim;
   @Nullable Drawable statusBarScrim;
   private int scrimAlpha;
@@ -150,7 +155,6 @@ public class CollapsingLayout extends FrameLayout {
     super(wrap(context, attrs, defStyleAttr, DEF_STYLE_RES), attrs, defStyleAttr);
     // Ensure we are using the correctly themed context rather than the context that was passed in.
     context = getContext();
-
 
     TypedArray a =
         ThemeEnforcement.obtainStyledAttributes(
@@ -304,7 +308,13 @@ public class CollapsingLayout extends FrameLayout {
     if (layoutId != -1) {
       // If we have an ID set, try and find it and it's direct parent to us
       this.toolbarView = findViewById(layoutId);
-      setMinimumHeight(toolbarView.getMeasuredHeight());
+      /*toolbarView.post(new Runnable() {
+        @Override
+        public void run() {
+          int min = toolbarView.getMeasuredHeight();
+          setMinimumHeight(min);
+        }
+      });*/
     }
     refreshToolbar = false;
   }
@@ -322,6 +332,7 @@ public class CollapsingLayout extends FrameLayout {
       heightMeasureSpec =
           MeasureSpec.makeMeasureSpec(getMeasuredHeight() + topInset, MeasureSpec.EXACTLY);
       super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
     }
 
     //setMinimumHeight 控制最小高度
@@ -331,7 +342,7 @@ public class CollapsingLayout extends FrameLayout {
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     super.onLayout(changed, left, top, right, bottom);
 
-    if (lastInsets != null) {
+    /*if (lastInsets != null) {
       // Shift down any views which are not set to fit system windows
       final int insetTop = lastInsets.getSystemWindowInsetTop();
       for (int i = 0, z = getChildCount(); i < z; i++) {
@@ -344,7 +355,7 @@ public class CollapsingLayout extends FrameLayout {
           }
         }
       }
-    }
+    }*/
 
     // Update our child view offset helpers so that they track the correct layout coordinates
     for (int i = 0, z = getChildCount(); i < z; i++) {
@@ -356,6 +367,10 @@ public class CollapsingLayout extends FrameLayout {
     for (int i = 0, z = getChildCount(); i < z; i++) {
       getViewOffsetHelper(getChildAt(i)).applyOffsets();
     }
+
+    this.toolbarView = findViewById(layoutId);
+    int min = toolbarView.getMeasuredHeight();
+    setMinimumHeight(min);
   }
 
   private static int getHeightWithMargins(@NonNull final View view) {
@@ -655,6 +670,12 @@ public class CollapsingLayout extends FrameLayout {
     return getHeight() / 3;
   }
 
+  @Override
+  public int getMinimumHeight() {
+    int min = super.getMinimumHeight();
+    return min;
+  }
+
   /**
    * Set the duration used for scrim visibility animations.
    *
@@ -820,10 +841,7 @@ public class CollapsingLayout extends FrameLayout {
     @Override
     public void onOffsetChanged(AppBarLayout layout, int verticalOffset) {
       currentOffset = verticalOffset;
-      QDLogger.i("currentOffset="+currentOffset);
-      if(onOffsetChangedListener2!=null){
-        onOffsetChangedListener2.onOffsetChanged(layout,verticalOffset);
-      }
+
       final int insetTop = lastInsets != null ? lastInsets.getSystemWindowInsetTop() : 0;
 
       for (int i = 0, z = getChildCount(); i < z; i++) {
@@ -844,7 +862,9 @@ public class CollapsingLayout extends FrameLayout {
             break;
         }
       }
-
+      if(onOffsetChangedListener2!=null){
+        onOffsetChangedListener2.onOffsetChanged(layout,currentOffset);
+      }
       // Show or hide the scrims if needed
       updateScrimVisibility();
 

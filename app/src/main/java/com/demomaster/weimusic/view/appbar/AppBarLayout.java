@@ -624,10 +624,9 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
    * @return the scroll range in px
    */
   public final int getTotalScrollRange() {
-    if (totalScrollRange != INVALID_SCROLL_RANGE) {
+   /* if (totalScrollRange != INVALID_SCROLL_RANGE) {
       return totalScrollRange;
-    }
-
+    }*/
 
     int range = 0;
     for (int i = 0, z = getChildCount(); i < z; i++) {
@@ -649,7 +648,19 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
           // For a collapsing scroll, we to take the collapsed height into account.
           // We also break straight away since later views can't scroll beneath
           // us
-          range -= ViewCompat.getMinimumHeight(child);
+          if(child instanceof CollapsingLayout){
+            int h = ViewCompat.getMinimumHeight(child);;// ((CollapsingLayout)child).getToolbarView().getMeasuredHeight();
+            range -= h;//child.getMinimumHeight();
+            for (int j = 0; j<((CollapsingLayout)child).getChildCount();j++) {
+              View v =((CollapsingLayout)child).getChildAt(j);
+             // range = range+0;
+              if(v instanceof QuickAppBarLayout) {
+                //range -= ViewCompat.getMinimumHeight(v);
+              }
+            }
+          }else {
+            range -= ViewCompat.getMinimumHeight(child);
+          }
           break;
         }
       } else {

@@ -2,6 +2,7 @@ package com.demomaster.weimusic.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -53,7 +54,8 @@ public class AddSongSheetActivity extends QDActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_song_sheet);
-        getActionBarTool().setActionBarType(ACTIONBAR_TYPE.NO_ACTION_BAR);
+        getActionBarTool().setActionBarType(ACTIONBAR_TYPE.ACTION_STACK);
+        getActionBarTool().setHeaderBackgroundColor(Color.TRANSPARENT);
         iv_theme_color = findViewById(R.id.iv_theme_color);
         ll_theme_color = findViewById(R.id.ll_theme_color);
         ll_theme_color.setOnClickListener(this);
@@ -67,7 +69,8 @@ public class AddSongSheetActivity extends QDActivity implements View.OnClickList
             collapsingLayout.setOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
                 @Override
                 public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                    appBarLayout.getHeight();
+                    float h = appBarLayout.getHeight();
+                    QDLogger.i("verticalOffset="+verticalOffset/h);
                 }
             });
         Intent intent = getIntent();
