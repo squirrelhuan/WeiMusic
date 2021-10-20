@@ -76,7 +76,7 @@ public class RecyclerSheetAdapter extends RecyclerView.Adapter<RecyclerSheetAdap
         public void onBind(AudioSheet audioSheet) {
             title.setText(audioSheet.getName());
             //imageView.setImageResource();
-            Glide.with(mContext).load(audioSheet.getImgSrc()).into(imageView);
+            Glide.with(mContext).load(audioSheet.getImgSrc()).error(R.drawable.ic_launcher_pp).into(imageView);
         }
     }
 

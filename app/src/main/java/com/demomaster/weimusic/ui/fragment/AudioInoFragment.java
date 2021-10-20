@@ -46,6 +46,7 @@ public class AudioInoFragment extends QuickFragment {
 
     private int selectIndex;
     private ViewPager viewPager2;
+    AudioInfoAdapter audioInfoAdapter;
     Bitmap bitmap;
     @Override
     public void initView(View rootView) {
@@ -64,16 +65,15 @@ public class AudioInoFragment extends QuickFragment {
                 });
             }
         }).start();*/
-        /*Intent intent = getIntent();
+        Intent intent = getIntent();
         if(intent !=null)
         {
             Bundle bundle = intent.getExtras();
             selectIndex = bundle.getInt("selectIndex");
-            byte [] bis=intent.getByteArrayExtra("bitmap");
+            /*byte [] bis=intent.getByteArrayExtra("bitmap");
             Bitmap bitmap= BitmapFactory.decodeByteArray(bis, 0, bis.length);
-            rootView.setBackground(new BitmapDrawable(bitmap));
-        }*/
-
+            rootView.setBackground(new BitmapDrawable(bitmap));*/
+        }
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,10 +83,10 @@ public class AudioInoFragment extends QuickFragment {
         viewPager2 = findViewById(R.id.viewpager_audioinfo);
         viewPager2.setOffscreenPageLimit(3);
         viewPager2.setPageTransformer(true,new AudioInfoDialog.ScaleTransformer());
-        AudioInfoAdapter adater2 = new AudioInfoAdapter(getContext(), MusicDataManager.getInstance(mContext).getLocalSheet());
-        viewPager2.setAdapter(adater2);
+        audioInfoAdapter = new AudioInfoAdapter(getContext(), MusicDataManager.getInstance(mContext).getLocalSheet());
+        viewPager2.setAdapter(audioInfoAdapter);
         viewPager2.setCurrentItem(selectIndex);
-        adater2.setOnItemClickListener(new MusicRecycleViewAdapter.OnItemClickListener() {
+        audioInfoAdapter.setOnItemClickListener(new MusicRecycleViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 finish();
@@ -128,7 +128,6 @@ public class AudioInoFragment extends QuickFragment {
                 case audio_ready:
                     //adater2.notifyDataSetChanged();
                     break;
-
                 case sheet_create:
                 case sheet_changed:
                     break;

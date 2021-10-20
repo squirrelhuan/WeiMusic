@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
-    tools:context=".activity.AddSongSheetActivity">
+    tools:context=".activity.SongSheetEditActivity">
 
     <ImageView
         android:id="@+id/iv_sheet_img"
@@ -34,8 +34,8 @@
         android:layout_marginLeft="@dimen/dp_10"
         android:layout_marginRight="@dimen/dp_10"
         android:textSize="@dimen/sp_18"
-        app:qd_backgroundColor="@color/orange"
-        app:qd_borderColor="@color/orange"
-        android:textColor="@color/black"
-        android:text="修改"/>
+        app:qd_backgroundColor="@color/colorPrimary"
+        app:qd_borderColor="@color/colorPrimary"
+        android:textColor="@color/white"
+        android:text="保存"/>
 </LinearLayout>

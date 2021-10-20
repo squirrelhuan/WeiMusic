@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.activity.AddSongSheetActivity;
+import com.demomaster.weimusic.activity.SongSheetDetailActivity;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.model.Channel;
@@ -31,6 +31,7 @@ import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.ui.adapter.MusicChannelAdapter;
 import com.demomaster.weimusic.ui.adapter.RecyclerSheetAdapter;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
@@ -66,6 +67,7 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
     List<Channel> channelList;
     @Override
     public void initView(View view) {
+        EventBus.getDefault().register(this);
         ll_search = findViewById(R.id.ll_search);
         ll_search.setOnClickListener(this);
         et_audio_source = findViewById(R.id.et_audio_source);
@@ -136,7 +138,7 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Bundle bundle = new Bundle();
                 bundle.putLong("sheetId", audioSheets.get(position).getId());
-                Intent intent = new Intent(getContext(), AddSongSheetActivity.class);
+                Intent intent = new Intent(getContext(), SongSheetDetailActivity.class);
                 intent.putExtras(bundle);
                 getContext().startActivity(intent);
             }

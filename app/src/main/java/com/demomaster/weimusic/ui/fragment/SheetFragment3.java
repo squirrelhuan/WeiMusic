@@ -1,6 +1,5 @@
 package com.demomaster.weimusic.ui.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -14,14 +13,11 @@ import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.activity.AddSongSheetActivity;
 import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MusicDataManager;
-import com.demomaster.weimusic.ui.adapter.HorizontalAdapter;
 import com.demomaster.weimusic.ui.adapter.SheetBodyAdapter;
-import com.demomaster.weimusic.ui.adapter.SheetHeaderAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -34,9 +30,6 @@ import java.util.List;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.DisplayUtil;
 import cn.demomaster.huan.quickdeveloplibrary.view.banner.BannerCursorView;
-import cn.demomaster.huan.quickdeveloplibrary.widget.AutoCenterHorizontalScrollView;
-import cn.demomaster.huan.quickdeveloplibrary.widget.layout.VisibleLayout;
-import cn.demomaster.huan.quickdeveloplibrary.widget.slidingpanellayout.SlidingUpPanelLayout;
 import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 

@@ -1,9 +1,6 @@
 package com.demomaster.weimusic.ui.fragment;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -17,12 +14,11 @@ import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.activity.AddSongSheetActivity;
+import com.demomaster.weimusic.activity.SongSheetEditActivity;
 import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MusicDataManager;
-import com.demomaster.weimusic.ui.adapter.HorizontalAdapter;
 import com.demomaster.weimusic.ui.adapter.SheetBodyAdapter;
 import com.demomaster.weimusic.ui.adapter.SheetHeaderAdapter;
 
@@ -117,7 +113,7 @@ public class SheetFragment2 extends QuickFragment {
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putLong("sheetId", sheetId);
-                Intent intent = new Intent(getContext(), AddSongSheetActivity.class);
+                Intent intent = new Intent(getContext(), SongSheetEditActivity.class);
                 intent.putExtras(bundle);
                 getContext().startActivity(intent);
             }

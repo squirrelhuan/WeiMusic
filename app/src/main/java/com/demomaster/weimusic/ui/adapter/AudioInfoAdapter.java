@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.activity.AddSongSheetActivity;
+import com.demomaster.weimusic.activity.SongSheetEditActivity;
 import com.demomaster.weimusic.activity.SongEditActivity;
 import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.model.AudioSheet;
@@ -166,10 +166,10 @@ public class AudioInfoAdapter extends PagerAdapter {
                     case 2:
                         if (MC.getInstance(mContext).isFavorite(audioInfo.getAudioId())) {
                             MusicDataManager.getInstance(mContext).removeFavorite(mContext, audioInfo.getAudioId());
-                            ((ImageView)view.findViewById(R.id.iv_menu_icon)).setImageResource(R.drawable.ic_likefill);
+                            ((ImageView)view.findViewById(R.id.iv_menu_icon)).setImageResource(R.drawable.ic_like);
                         } else {
                             MusicDataManager.getInstance(mContext).addFavorite(mContext, audioInfo.getAudioId());
-                            ((ImageView)view.findViewById(R.id.iv_menu_icon)).setImageResource(R.drawable.ic_like);
+                            ((ImageView)view.findViewById(R.id.iv_menu_icon)).setImageResource(R.drawable.ic_likefill);
                         }
                         break;
                     case 3:
@@ -290,7 +290,7 @@ public class AudioInfoAdapter extends PagerAdapter {
                     public void onItemClick(QDSheetDialog dialog, int position, List<String> data) {
                         dialog.dismiss();
                         if (position == 0) {
-                            mContext.startActivity(new Intent(mContext, AddSongSheetActivity.class));
+                            mContext.startActivity(new Intent(mContext, SongSheetEditActivity.class));
                         }else {
                             MusicDataManager.getInstance(mContext).addToSheet(mContext, audioSheetList.get(position-1).getId(), audioInfo.getId());
                         }

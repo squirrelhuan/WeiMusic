@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.activity.AddSongSheetActivity;
+import com.demomaster.weimusic.activity.SongSheetEditActivity;
 import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
@@ -113,7 +113,7 @@ public class SheetFragment extends QuickFragment {
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putLong("sheetId", sheetId);
-                Intent intent = new Intent(getContext(), AddSongSheetActivity.class);
+                Intent intent = new Intent(getContext(), SongSheetEditActivity.class);
                 intent.putExtras(bundle);
                 getContext().startActivity(intent);
             }

@@ -59,7 +59,8 @@
         <activity android:name=".activity.SelectNetPictureActivity" />
         <activity android:name=".activity.SongEditActivity" />
         <activity android:name=".activity.SelectThemeColorActivity" />
-        <activity android:name=".activity.AddSongSheetActivity" />
+        <activity android:name=".activity.SongSheetEditActivity" />
+        <activity android:name=".activity.SongSheetDetailActivity" />
         <activity android:name=".activity.BrowerActivity" />
         <activity android:name=".activity.SearchActivity" />
         <activity android:name=".activity.SportActivity" />

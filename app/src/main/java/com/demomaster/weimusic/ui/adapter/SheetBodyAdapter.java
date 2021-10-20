@@ -21,7 +21,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.activity.AddSongSheetActivity;
+import com.demomaster.weimusic.activity.SongSheetDetailActivity;
 import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MC;
@@ -88,7 +88,7 @@ public class SheetBodyAdapter extends PagerAdapter {
             public boolean onLongClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putLong("sheetId", data.get(position).getId());
-                Intent intent = new Intent(mContext, AddSongSheetActivity.class);
+                Intent intent = new Intent(mContext, SongSheetDetailActivity.class);
                 intent.putExtras(bundle);
                 mContext.startActivity(intent);
                 return true;
@@ -97,11 +97,12 @@ public class SheetBodyAdapter extends PagerAdapter {
         viewHolder.iv_sheet_playall.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+
                 return false;
             }
         });
 
-        Glide.with(mContext).load(data.get(position).getImgSrc()).into(viewHolder.iv_sheet_cover);
+        Glide.with(mContext).load(data.get(position).getImgSrc()).error(R.drawable.ic_launcher_pp).into(viewHolder.iv_sheet_cover);
         MusicRecycleViewAdapter2 adapter;
         List<AudioInfo> musicList = new ArrayList<>();
         if (data != null && data.get(position) != null) {
@@ -156,7 +157,7 @@ public class SheetBodyAdapter extends PagerAdapter {
                                 public void onClick(View v) {
                                     Bundle bundle = new Bundle();
                                     bundle.putLong("sheetId", sheetId);
-                                    Intent intent = new Intent(mContext, AddSongSheetActivity.class);
+                                    Intent intent = new Intent(mContext, SongSheetDetailActivity.class);
                                     intent.putExtras(bundle);
                                     mContext.startActivity(intent);
                                 }

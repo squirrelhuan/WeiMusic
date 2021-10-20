@@ -1,7 +1,6 @@
 package com.demomaster.weimusic.ui.fragment;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
@@ -34,7 +33,7 @@ import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.activity.AddSongSheetActivity;
+import com.demomaster.weimusic.activity.SongSheetEditActivity;
 import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.activity.SearchActivity;
 import com.demomaster.weimusic.constant.AudioStation;
@@ -50,7 +49,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -358,7 +356,7 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
                     public void onItemClick(QDSheetDialog dialog, int position, List<String> data) {
                         dialog.dismiss();
                         if (position == 0) {
-                            startActivity(new Intent(getContext(), AddSongSheetActivity.class));
+                            startActivity(new Intent(getContext(), SongSheetEditActivity.class));
                         }else {
                             MusicDataManager.getInstance(getContext()).addToSheet(getContext(), audioSheetList.get(position-1).getId(), audioInfo.getId());
                         }

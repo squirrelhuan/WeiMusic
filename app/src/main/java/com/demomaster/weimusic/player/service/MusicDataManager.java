@@ -31,6 +31,9 @@ import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
 import cn.demomaster.qdlogger_library.QDLogger;
 
+import static com.demomaster.weimusic.constant.AudioStation.Pause;
+import static com.demomaster.weimusic.constant.AudioStation.sheet_changed;
+import static com.demomaster.weimusic.constant.AudioStation.sheet_create;
 import static com.demomaster.weimusic.constant.Constants.PLAYLIST_NAME_FAVORITES;
 
 public class MusicDataManager {
@@ -525,6 +528,7 @@ public class MusicDataManager {
             return audioSheet.getId();
         }
         ((WeiApplication) context.getApplicationContext()).getDbHelper().insert(audioSheet1);
+        EventBus.getDefault().post(new EventMessage(sheet_create.value()));
         return ((WeiApplication) context.getApplicationContext()).getDbHelper().getLastIndex();
     }
 
@@ -539,6 +543,7 @@ public class MusicDataManager {
             }
             audioSheet.setThemeColor(audioSheet1.getThemeColor());
             ((WeiApplication) context.getApplicationContext()).getDbHelper().modify(audioSheet);
+            EventBus.getDefault().post(new EventMessage(sheet_changed.value()));
         }
     }
 

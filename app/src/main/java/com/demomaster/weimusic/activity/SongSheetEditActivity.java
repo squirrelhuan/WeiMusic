@@ -2,26 +2,30 @@ package com.demomaster.weimusic.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MusicDataManager;
-import com.demomaster.weimusic.view.appbar.AppBarLayout;
-import com.demomaster.weimusic.view.appbar.CollapsingLayout;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,12 +39,11 @@ import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDSheetDialog;
 import cn.demomaster.qdlogger_library.QDLogger;
-import cn.demomaster.qdrouter_library.actionbar.ACTIONBAR_TYPE;
 
 /**
  * 创建歌单页面
  */
-public class AddSongSheetActivity extends QDActivity implements View.OnClickListener {
+public class SongSheetEditActivity extends QDActivity implements View.OnClickListener {
 
     Button btn_creat;
     TextView et_sheet_name;
@@ -48,42 +51,65 @@ public class AddSongSheetActivity extends QDActivity implements View.OnClickList
     ImageView iv_sheet_img;
     LinearLayout ll_theme_color;
     ImageView iv_theme_color;
-    CollapsingLayout collapsingLayout;
+    View toolbar_layout_01;
 
+    String sheetName;
+    boolean imgChanged;
+    boolean titleChanged;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_song_sheet);
-        getActionBarTool().setActionBarType(ACTIONBAR_TYPE.ACTION_STACK);
-        getActionBarTool().setHeaderBackgroundColor(Color.TRANSPARENT);
+        setContentView(R.layout.activity_song_sheet_edit);
+        //getActionBarTool().setActionBarType(ACTIONBAR_TYPE.NO_ACTION_BAR_NO_STATUS);
+        //getActionBarTool().setHeaderBackgroundColor(Color.TRANSPARENT);
         iv_theme_color = findViewById(R.id.iv_theme_color);
         ll_theme_color = findViewById(R.id.ll_theme_color);
         ll_theme_color.setOnClickListener(this);
+        setTitle("歌单编辑");
 
         iv_sheet_img = findViewById(R.id.iv_sheet_img);
         iv_sheet_img.setOnClickListener(this);
         et_sheet_name = findViewById(R.id.et_sheet_name);
         btn_creat = findViewById(R.id.btn_creat);
         btn_creat.setOnClickListener(this);
-        collapsingLayout = findViewById(R.id.collapsingLayout);
-            collapsingLayout.setOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-                @Override
-                public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                    float h = appBarLayout.getHeight();
-                    QDLogger.i("verticalOffset="+verticalOffset/h);
+        toolbar_layout_01 = findViewById(R.id.toolbar_layout_01);
+
+        et_sheet_name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                titleChanged = !s.toString().equals(sheetName);
+                if(imgChanged||titleChanged){
+                    btn_creat.setVisibility(View.VISIBLE);
+                }else {
+                    btn_creat.setVisibility(View.GONE);
                 }
-            });
+            }
+        });
+
         Intent intent = getIntent();
         if (intent != null) {
             Bundle bundle = intent.getExtras();
             if (bundle != null && bundle.containsKey("sheetId")) {
                 sheetId = bundle.getLong("sheetId");
-                btn_creat.setText("保存修改");
                 QDLogger.e("sheetId=" + sheetId);
                 AudioSheet audioSheet = MusicDataManager.getInstance(mContext).getSongSheetById(mContext, sheetId);
                 if (audioSheet != null) {
-                    et_sheet_name.setText(audioSheet.getName());
-                    Glide.with(mContext).load(audioSheet.getImgSrc()).into(iv_sheet_img);
+                    sheetName = audioSheet.getName();
+                    et_sheet_name.setText(sheetName);
+                    //Glide.with(mContext).load(audioSheet.getImgSrc()).into(iv_sheet_img);
+                    image = new Image(audioSheet.getImgSrc(), UrlType.file);
+                    updateHeader(image);
+                    //Glide.with(mContext).load(audioSheet.getImgSrc()).error(R.drawable.ic_launcher_pp).into(iv_sheet_img);
                     iv_theme_color.setBackgroundColor(audioSheet.getThemeColor());
                     mColor = audioSheet.getThemeColor();
                 }
@@ -92,7 +118,6 @@ public class AddSongSheetActivity extends QDActivity implements View.OnClickList
     }
 
     int mColor;
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -114,15 +139,13 @@ public class AddSongSheetActivity extends QDActivity implements View.OnClickList
         }
         if (sheetId == -1) {
             MusicDataManager.getInstance(mContext).createSheet(mContext, audioSheet);
-            finish();
         } else {
             MusicDataManager.getInstance(mContext).modifySheet(mContext, audioSheet);
-            finish();
         }
+        finish();
     }
 
     private Image image;
-
     private void showMenuDialog() {
         String[] menus = getResources().getStringArray(cn.demomaster.huan.quickdeveloplibrary.R.array.select_picture_items);
         new QDSheetDialog.MenuBuilder(mContext).setData(menus).setOnDialogActionListener(new QDSheetDialog.OnDialogActionListener() {
@@ -135,6 +158,7 @@ public class AddSongSheetActivity extends QDActivity implements View.OnClickList
                         public void onSuccess(Intent data, String path) {
                             if (data == null) {
                                 image = new Image(path, UrlType.file);
+                                imgChanged = true;
                                 updateHeader(image);
                             } else {
                                 Bundle extras = data.getExtras();
@@ -142,6 +166,7 @@ public class AddSongSheetActivity extends QDActivity implements View.OnClickList
                                     Bitmap bitmap = extras.getParcelable("data");
                                     String filePath = QDBitmapUtil.savePhoto(bitmap, mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "header");//String.valueOf(System.currentTimeMillis())
                                     image = new Image(filePath, UrlType.file);
+                                    imgChanged = true;
                                     updateHeader(image);
                                 }
                             }
@@ -158,6 +183,7 @@ public class AddSongSheetActivity extends QDActivity implements View.OnClickList
                         public void onSuccess(Intent data, ArrayList<Image> images) {
                             if (images != null && images.size() > 0) {
                                 image = images.get(0);
+                                imgChanged = true;
                                 updateHeader(image);
                             }
                         }
@@ -178,10 +204,31 @@ public class AddSongSheetActivity extends QDActivity implements View.OnClickList
     }
 
     private void updateHeader(Image image) {
+        if(imgChanged||titleChanged){
+            btn_creat.setVisibility(View.VISIBLE);
+        }else {
+            btn_creat.setVisibility(View.GONE);
+        }
+        Object imgObj = null;
         if (image.getUrlType() == UrlType.url) {
-            Glide.with(mContext).load(image.getPath()).into(iv_sheet_img);
+            imgObj = image.getPath();
+
         } else if (image.getUrlType() == UrlType.file) {
-            Glide.with(mContext).load(new File(image.getPath())).into(iv_sheet_img);
+            if (!TextUtils.isEmpty(image.getPath())) {
+                imgObj = new File(image.getPath());
+            }
+        }
+        if (imgObj != null) {
+            Glide.with(mContext).asBitmap()
+                    .load(imgObj)
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull @NotNull Bitmap resource, Transition<? super Bitmap> transition) {
+                            if (resource != null) {
+                                iv_sheet_img.setImageBitmap(resource);
+                            }
+                        }
+                    });
         }
     }
 
