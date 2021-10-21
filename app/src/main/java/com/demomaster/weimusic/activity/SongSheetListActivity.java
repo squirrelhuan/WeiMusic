@@ -1,13 +1,16 @@
 package com.demomaster.weimusic.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.webkit.ValueCallback;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -20,11 +23,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.constant.AudioStation;
+import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.ui.adapter.RecyclerSheetAdapter;
@@ -43,15 +48,18 @@ import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.Image;
 import cn.demomaster.huan.quickdeveloplibrary.helper.simplepicture.model.UrlType;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDBitmapUtil;
+import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
 import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDSheetDialog;
 import cn.demomaster.qdlogger_library.QDLogger;
+
+import static com.demomaster.weimusic.constant.Constants.APP_PATH_SHEET;
 
 /**
  * 歌单列表页面
  */
 public class SongSheetListActivity extends QDActivity implements View.OnClickListener {
 
-    Button btn_import;
+    Button btn_import_sheet,btn_creat_sheet,btn_save_sheet;
     RecyclerView recyclerView_song_sheet;
     public RecyclerSheetAdapter2 recyclerSheetAdapter;
     private List<AudioSheet> audioSheets = new ArrayList<>();
@@ -62,6 +70,13 @@ public class SongSheetListActivity extends QDActivity implements View.OnClickLis
         //getActionBarTool().setActionBarType(ACTIONBAR_TYPE.NO_ACTION_BAR_NO_STATUS);
         //getActionBarTool().setHeaderBackgroundColor(Color.TRANSPARENT);
         setTitle("自建歌单");
+        btn_creat_sheet = findViewById(R.id.btn_creat_sheet);
+        btn_creat_sheet.setOnClickListener(this);
+        btn_import_sheet = findViewById(R.id.btn_import_sheet);
+        btn_import_sheet.setOnClickListener(this);
+
+        btn_save_sheet = findViewById(R.id.btn_save_sheet);
+        btn_save_sheet.setOnClickListener(this);
 
         recyclerView_song_sheet = findViewById(R.id.recyclerView_song_sheet);
 
@@ -86,33 +101,14 @@ public class SongSheetListActivity extends QDActivity implements View.OnClickLis
         recyclerView_song_sheet.setAdapter(recyclerSheetAdapter);
     }
 
-    int mColor;
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            Bundle bundle = data.getExtras();
-            mColor = bundle.getInt("themeColor", mColor);
-        }
+    protected void onResume() {
+        super.onResume();
+        audioSheets.clear();
+        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(mContext));
     }
 
-    private void creatSheet() {
-       /* EventBus.getDefault().post(new EventMessage(AudioStation.sheet_changed.value()));//准备播放
-        AudioSheet audioSheet = new AudioSheet();
-        audioSheet.setName(et_sheet_name.getText().toString());
-        audioSheet.setThemeColor(mColor);
-        audioSheet.setId(sheetId);
-        if (image != null) {
-            audioSheet.setImgSrc(image.getPath());
-        }
-        if (sheetId == -1) {
-            MusicDataManager.getInstance(mContext).createSheet(mContext, audioSheet);
-        } else {
-            MusicDataManager.getInstance(mContext).modifySheet(mContext, audioSheet);
-        }
-        finish();*/
-    }
-
+    int mColor;
     private Image image;
     private void showMenuDialog() {
         String[] menus = getResources().getStringArray(cn.demomaster.huan.quickdeveloplibrary.R.array.select_picture_items);
@@ -192,6 +188,41 @@ public class SongSheetListActivity extends QDActivity implements View.OnClickLis
         }
     }
 
+    private ValueCallback<Uri> uploadFile;
+    private ValueCallback<Uri[]> uploadFiles;
+    private void openFileChooseProcess() {
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        //i.setType("*/*");
+        i.setType("*/sheet");
+        startActivityForResult(Intent.createChooser(i, "上传文件"), 0);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                if (null != uploadFile) {
+                    Uri result = data == null ? null
+                            : data.getData();
+                    uploadFile.onReceiveValue(result);
+                    uploadFile = null;
+                }
+                if (null != uploadFiles) {
+                    Uri result = data == null ? null
+                            : data.getData();
+                    uploadFiles.onReceiveValue(new Uri[]{result});
+                    uploadFiles = null;
+                }
+            } else if (resultCode == RESULT_CANCELED) {
+                if (null != uploadFile) {
+                    uploadFile.onReceiveValue(null);
+                    uploadFile = null;
+                }
+            }
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -205,9 +236,24 @@ public class SongSheetListActivity extends QDActivity implements View.OnClickLis
             case R.id.iv_sheet_img:
                 showMenuDialog();
                 break;
-            case R.id.btn_creat:
-                creatSheet();
+            case R.id.btn_creat_sheet:
+                mContext.startActivity(new Intent(mContext, SongSheetEditActivity.class));
                 break;
+            case R.id.btn_import_sheet:
+                openFileChooseProcess();
+                break;
+            case R.id.btn_save_sheet:
+                backSheet();
+                //QDFileUtil.writeFileSdcardFile(new File(APP_PATH_SHEET+"/"+System.currentTimeMillis()+".sheet"), JSON.toJSONString(audioSheets),false);
+                break;
+        }
+    }
+
+    private void backSheet() {
+        for(AudioSheet audioSheet : audioSheets) {
+            List<AudioInfo> audioInfoList = MusicDataManager.getInstance(mContext).getSongSheetListById(mContext, audioSheet.getId());
+            audioSheet.setAudioInfoList(audioInfoList);
+            QDFileUtil.writeFileSdcardFile(new File(APP_PATH_SHEET+"/"+audioSheet.getName()+"-"+audioSheet.getId()+".sheet"), JSON.toJSONString(audioSheet),false);
         }
     }
 }

@@ -17,6 +17,7 @@ public class Constants {
     public final static String APP_PATH_PICTURE_CAVER = BASE_FILE_PATH + "/picture/caver";
     public final static String APP_PATH_PICTURE_WELCOME = BASE_FILE_PATH + "/picture/welcome";
     public final static String APP_PATH_PICTURE_WALLPAGER = BASE_FILE_PATH + "/picture/wallpager";
+    public final static String APP_PATH_SHEET = BASE_FILE_PATH + "/sheet";
 
 	public final static String APP_PATH_VIDEO = BASE_FILE_PATH + "/video";
 

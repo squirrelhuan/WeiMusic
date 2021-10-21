@@ -27,6 +27,14 @@ public class AudioSheet implements Serializable {
     private String imgSrc;
     private List<AudioInfo> audioInfoList;
 
+    public List<AudioInfo> getAudioInfoList() {
+        return audioInfoList;
+    }
+
+    public void setAudioInfoList(List<AudioInfo> audioInfoList) {
+        this.audioInfoList = audioInfoList;
+    }
+
     public long getId() {
         return id;
     }
@@ -49,14 +57,6 @@ public class AudioSheet implements Serializable {
 
     public void setCount(int count) {
         this.count = count;
-    }
-
-    public List<AudioInfo> getMusicInfoList() {
-        return audioInfoList;
-    }
-
-    public void setMusicInfoList(List<AudioInfo> audioInfoList) {
-        this.audioInfoList = audioInfoList;
     }
 
     public String getImgSrc() {

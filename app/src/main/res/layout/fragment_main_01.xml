@@ -124,7 +124,6 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <LinearLayout
-        android:id="@+id/ll_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -139,8 +138,10 @@
             android:textColor="@color/white"
             android:text="我的歌单"/>
         <ImageView
-            android:layout_width="@dimen/dp_24"
-            android:layout_height="@dimen/dp_24"
+            android:id="@+id/iv_sheet_menu"
+            android:layout_width="@dimen/dp_32"
+            android:layout_height="@dimen/dp_32"
+            android:padding="@dimen/dp_4"
             android:tint="@color/white"
             android:src="@drawable/apollo_holo_dark_overflow2"/>
     </LinearLayout>

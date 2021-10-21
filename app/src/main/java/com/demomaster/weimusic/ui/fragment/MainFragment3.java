@@ -110,8 +110,6 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
     private final int REMOVE = 10;
     private boolean mEditMode = false;
     //private RecentlyAddedAdapter mRecentlyAddedAdapter;
-
-
     @Override
     public boolean isUseActionBarLayout() {
         return false;

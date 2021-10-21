@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -49,12 +50,13 @@ import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 public class MainFragment1 extends QuickFragment implements OnClickListener,
         OnItemClickListener  {
 
-    LinearLayout ll_search,ll_sheet;
+    LinearLayout ll_search;
     RecyclerView recyclerView_song_sheet;
     public MusicChannelAdapter adapter;
     public RecyclerSheetAdapter recyclerSheetAdapter;
     EditText et_audio_source;
     Button btn_play_online;
+    ImageView iv_sheet_menu;
     
     @Override
     public boolean isUseActionBarLayout() {
@@ -71,8 +73,8 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
         EventBus.getDefault().register(this);
         ll_search = findViewById(R.id.ll_search);
         ll_search.setOnClickListener(this);
-        ll_sheet = findViewById(R.id.ll_sheet);
-        ll_sheet.setOnClickListener(this);
+        iv_sheet_menu = findViewById(R.id.iv_sheet_menu);
+        iv_sheet_menu.setOnClickListener(this);
 
         et_audio_source = findViewById(R.id.et_audio_source);
         btn_play_online = findViewById(R.id.btn_play_online);
@@ -164,7 +166,7 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
             case R.id.ll_search:
                 //IntentUtil.jump(getActivity(), SearchActivity.class, null);
                 break;
-            case R.id.ll_sheet:
+            case R.id.iv_sheet_menu:
                 startActivity(new Intent(mContext, SongSheetListActivity.class));
                 break;
             default:

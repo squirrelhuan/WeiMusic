@@ -10,20 +10,32 @@
     android:fitsSystemWindows="true">
 
     <cn.demomaster.huan.quickdeveloplibrary.widget.button.QDButton
+        android:id="@+id/btn_creat_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:qd_backgroundColor="@color/transparent"
-        app:qd_borderColor="@color/colorPrimary"
-        android:textColor="@color/colorPrimary"
+        app:qd_backgroundColor="@color/red"
+        app:qd_borderColor="@color/red"
+        android:textColor="@color/white"
         app:qd_radius="@dimen/dp_5"
         android:layout_margin="@dimen/dp_10"
         android:text="创建歌单"/>
     <cn.demomaster.huan.quickdeveloplibrary.widget.button.QDButton
+        android:id="@+id/btn_save_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:qd_backgroundColor="@color/transparent"
-        app:qd_borderColor="@color/colorPrimary"
-        android:textColor="@color/colorPrimary"
+        app:qd_backgroundColor="@color/orange"
+        app:qd_borderColor="@color/orange"
+        android:textColor="@color/white"
+        app:qd_radius="@dimen/dp_5"
+        android:layout_margin="@dimen/dp_10"
+        android:text="保存歌单"/>
+    <cn.demomaster.huan.quickdeveloplibrary.widget.button.QDButton
+        android:id="@+id/btn_import_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:qd_backgroundColor="@color/orange"
+        app:qd_borderColor="@color/orange"
+        android:textColor="@color/white"
         app:qd_radius="@dimen/dp_5"
         android:layout_margin="@dimen/dp_10"
         android:text="导入歌单"/>
