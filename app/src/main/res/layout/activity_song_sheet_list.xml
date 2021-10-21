@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_bg"
+    android:paddingTop="@dimen/dp_10"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
+
+    <cn.demomaster.huan.quickdeveloplibrary.widget.button.QDButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:qd_backgroundColor="@color/transparent"
+        app:qd_borderColor="@color/colorPrimary"
+        android:textColor="@color/colorPrimary"
+        app:qd_radius="@dimen/dp_5"
+        android:layout_margin="@dimen/dp_10"
+        android:text="创建歌单"/>
+    <cn.demomaster.huan.quickdeveloplibrary.widget.button.QDButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:qd_backgroundColor="@color/transparent"
+        app:qd_borderColor="@color/colorPrimary"
+        android:textColor="@color/colorPrimary"
+        app:qd_radius="@dimen/dp_5"
+        android:layout_margin="@dimen/dp_10"
+        android:text="导入歌单"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_song_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray_bg"
+        android:overScrollMode="never"/>
+
+</LinearLayout>

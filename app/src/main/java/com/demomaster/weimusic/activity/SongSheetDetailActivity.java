@@ -29,7 +29,9 @@ import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.player.service.MusicDataManager;
+import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter;
 import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter2;
+import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter3;
 import com.demomaster.weimusic.ui.adapter.SheetBodyAdapter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -67,13 +69,14 @@ public class SongSheetDetailActivity extends QDActivity implements View.OnClickL
     CollapsingLayout collapsingLayout;
     View toolbar_layout_01;
     RecyclerView recyclerView;
-    MusicRecycleViewAdapter2 adapter;
+    MusicRecycleViewAdapter3 musicRecycleViewAdapter3;
     List<AudioInfo> musicList;
     Button btn_play;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         setContentView(R.layout.activity_song_sheet_detail);
         getActionBarTool().setActionBarType(ACTIONBAR_TYPE.NO_ACTION_BAR_NO_STATUS);
         getActionBarTool().setHeaderBackgroundColor(Color.TRANSPARENT);
@@ -128,7 +131,19 @@ public class SongSheetDetailActivity extends QDActivity implements View.OnClickL
         }
 
         musicList = new ArrayList<>();
-        adapter = new MusicRecycleViewAdapter2(mContext, musicList);
+        musicRecycleViewAdapter3 = new MusicRecycleViewAdapter3(mContext, musicList);
+        musicRecycleViewAdapter3.setOnItemClickListener(new MusicRecycleViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                MC.getInstance(mContext).playAudio(musicList.get(position));
+            }
+
+            @Override
+            public void showContextMenu(View view, int position) {
+                //showSongMenu(viewHolder,sheetId,musicList,adapter,position);
+            }
+        });
+
         //这里使用线性布局像listview那样展示列表,第二个参数可以改为 HORIZONTAL实现水平展示
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false);
         //使用网格布局展示
@@ -137,13 +152,13 @@ public class SongSheetDetailActivity extends QDActivity implements View.OnClickL
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL);
         //设置分割线使用的divider
         //rv_songs.addItemDecoration(dividerItemDecoration);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(musicRecycleViewAdapter3);
         List<AudioInfo> audioInfoList = MusicDataManager.getInstance(mContext).getSongSheetListById(mContext, sheetId);
         //QDLogger.i("musicInfoList:" + audioInfoList.size());
         musicList.clear();
         if (audioInfoList != null && audioInfoList.size() > 0) {
             musicList.addAll(audioInfoList);
-            adapter.notifyDataSetChanged();
+            musicRecycleViewAdapter3.notifyDataSetChanged();
         }
     }
 
@@ -299,21 +314,12 @@ public class SongSheetDetailActivity extends QDActivity implements View.OnClickL
         }
         switch (station) {
             case song_changed:
-                adapter.notifyDataSetChanged();
-                break;
             case PLAYSTATE_CHANGED:
-                adapter.notifyDataSetChanged();
-                break;
             case service_ready:
-                break;
             case Play:
-                adapter.notifyDataSetChanged();
-                break;
             case Pause:
-                adapter.notifyDataSetChanged();
-                break;
             case QUEUE_CHANGED:
-                adapter.notifyDataSetChanged();
+                musicRecycleViewAdapter3.notifyDataSetChanged();
                 break;
             case CURSOR_CHANGED:
                 break;

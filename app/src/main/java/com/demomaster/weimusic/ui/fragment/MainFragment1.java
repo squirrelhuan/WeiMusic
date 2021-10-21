@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.SongSheetDetailActivity;
+import com.demomaster.weimusic.activity.SongSheetListActivity;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.model.Channel;
@@ -48,7 +49,7 @@ import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 public class MainFragment1 extends QuickFragment implements OnClickListener,
         OnItemClickListener  {
 
-    LinearLayout ll_search;
+    LinearLayout ll_search,ll_sheet;
     RecyclerView recyclerView_song_sheet;
     public MusicChannelAdapter adapter;
     public RecyclerSheetAdapter recyclerSheetAdapter;
@@ -70,6 +71,9 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
         EventBus.getDefault().register(this);
         ll_search = findViewById(R.id.ll_search);
         ll_search.setOnClickListener(this);
+        ll_sheet = findViewById(R.id.ll_sheet);
+        ll_sheet.setOnClickListener(this);
+
         et_audio_source = findViewById(R.id.et_audio_source);
         btn_play_online = findViewById(R.id.btn_play_online);
         btn_play_online.setOnClickListener(new OnClickListener() {
@@ -160,7 +164,9 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
             case R.id.ll_search:
                 //IntentUtil.jump(getActivity(), SearchActivity.class, null);
                 break;
-
+            case R.id.ll_sheet:
+                startActivity(new Intent(mContext, SongSheetListActivity.class));
+                break;
             default:
                 break;
         }
