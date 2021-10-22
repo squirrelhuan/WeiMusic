@@ -30,11 +30,21 @@ public class AudioInfo /*implements Parcelable*/{
 	@SQLObj(name = "sheetId")
 	public long sheetId=-1;
 	private int resourceType=0;//资源类型 0 file 1url网络资源
+	@SQLObj(name = "md5")
+	private String md5;
 	
 	public AudioInfo(){
 		
 	}
-	
+
+	public String getMd5() {
+		return md5;
+	}
+
+	public void setMd5(String md5) {
+		this.md5 = md5;
+	}
+
 	public AudioInfo(long pId){
 		id = pId;
 	}

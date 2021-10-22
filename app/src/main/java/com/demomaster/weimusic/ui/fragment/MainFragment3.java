@@ -94,7 +94,6 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
     Toolbar toolbar;
     private TransitionSet mSet;
 
-    // Adapter
     //private TrackAdapter mTrackAdapter;
     //private MusicAdapter adapter;
     private MusicRecycleViewAdapter adapter;

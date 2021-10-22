@@ -49,17 +49,12 @@ public class MusicDataManager {
 
     public MusicDataManager(Context context) {
         AudioRecord record = getPlayRecord();
-        AudioInfo audioInfo = null;
-        int seek = 0;
         if (record != null) {
             setSheetId(context, record.getSheetId());
-        }else {
-
         }
     }
 
     public static String playRecord = "playRecord";
-
     public void savePlayRecord(AudioRecord record) {
         QDSharedPreferences.getInstance().putObject(playRecord, record);
     }
@@ -99,8 +94,7 @@ public class MusicDataManager {
 
     }
 
-    long currentSheetId = -1;
-
+    long currentSheetId = -1;//当前播放歌单id
     public long getCurrentSheetId() {
         return currentSheetId;
     }
@@ -117,10 +111,9 @@ public class MusicDataManager {
     // 写一个异步查询类
     private final class QueryHandler extends AsyncQueryHandler {
         OnQueryListener mOnQueryListener;
-
         public QueryHandler(ContentResolver cr, OnQueryListener onQueryListener) {
             super(cr);
-            mOnQueryListener = onQueryListener;
+            this.mOnQueryListener = onQueryListener;
         }
 
         @Override
@@ -233,7 +226,7 @@ public class MusicDataManager {
                 return audioInfo;
             }
         } else {
-            QDLogger.e("未找到歌曲 cursor=null");
+            QDLogger.e("未找到歌曲");
         }
         return null;
     }
@@ -475,7 +468,7 @@ public class MusicDataManager {
                     QDLogger.i("添加到收藏列表：audioId=" + audioId);
             }
     }
-
+    //添加到歌单
     public void addToSheet(Context context, long sheetId, long audioId) {
         //判断音频文件是否存在
         AudioInfo audioInfo = getMusicInfoById(context,audioId);
