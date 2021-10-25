@@ -50,9 +50,12 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cn.demomaster.huan.quickdeveloplibrary.bamboo.Bamboo;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
+import cn.demomaster.huan.quickdeveloplibrary.operatguid.GuiderView;
 import cn.demomaster.huan.quickdeveloplibrary.util.AnimationUtil;
 import cn.demomaster.huan.quickdeveloplibrary.util.DisplayUtil;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
+import cn.demomaster.huan.quickdeveloplibrary.widget.popup.QDTipPopup;
+import cn.demomaster.huan.quickdeveloplibrary.widget.popup.QuickMessage;
 import cn.demomaster.qdlogger_library.QDLogger;
 
 import static com.demomaster.weimusic.constant.AudioStation.preToPlayNext;
@@ -304,12 +307,13 @@ public class MainFragment2 extends Fragment implements OnClickListener {
         switch (v.getId()) {
             case R.id.iv_music_model:
                 MC.getInstance(getContext()).doRepeat();
-                /*AnimationUtil.addScaleAnimition(mRepeat, new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                    }
-                });*/
+                QuickMessage qdTipPopup = new QuickMessage.Builder(getContext())
+                        .setBackgroundRadius(10)
+                        .setBackgroundColor(getResources().getColor(R.color.transparent_dark_99))
+                        .setPadding(DisplayUtil.dip2px(getContext(),20))
+                        .setMessage(MC.getInstance(getContext()).getRepeatMode().getName())
+                        .create();
+                qdTipPopup.showTip(v, GuiderView.Gravity.CENTER,2000);
                 break;
         }
     }
