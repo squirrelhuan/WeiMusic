@@ -22,7 +22,9 @@ import com.demomaster.weimusic.model.AudioRecord;
 import com.demomaster.weimusic.model.AudioSheet;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jaudiotagger.audio.mp3.MP3File;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import cn.demomaster.huan.quickdeveloplibrary.helper.QDSharedPreferences;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.QDFileUtil;
 import cn.demomaster.qdlogger_library.QDLogger;
+import cn.demomaster.qdrouter_library.base.activity.QuickActivity;
 
 import static com.demomaster.weimusic.constant.AudioStation.Pause;
 import static com.demomaster.weimusic.constant.AudioStation.sheet_changed;
@@ -55,6 +58,7 @@ public class MusicDataManager {
     }
 
     public static String playRecord = "playRecord";
+
     public void savePlayRecord(AudioRecord record) {
         QDSharedPreferences.getInstance().putObject(playRecord, record);
     }
@@ -95,6 +99,7 @@ public class MusicDataManager {
     }
 
     long currentSheetId = -1;//当前播放歌单id
+
     public long getCurrentSheetId() {
         return currentSheetId;
     }
@@ -111,6 +116,7 @@ public class MusicDataManager {
     // 写一个异步查询类
     private final class QueryHandler extends AsyncQueryHandler {
         OnQueryListener mOnQueryListener;
+
         public QueryHandler(ContentResolver cr, OnQueryListener onQueryListener) {
             super(cr);
             this.mOnQueryListener = onQueryListener;
@@ -187,6 +193,9 @@ public class MusicDataManager {
                 if (list != null) {
                     localSonglist.addAll(list);
                 }
+                // String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
+                //                        audioInfo.setMd5(md5);
+                //                        QDLogger.println("文件路径:"+audioInfo.data+",md5:"+md5);
                 if (loadDataListener != null) {
                     loadDataListener.loadComplete(1, list);
                 }
@@ -221,6 +230,9 @@ public class MusicDataManager {
                 audioInfo.size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
                 //文件路径
                 audioInfo.data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                /*String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
+                audioInfo.setMd5(md5);
+                QDLogger.println("文件路径:"+audioInfo.data+",md5:"+md5);*/
                 //专辑id
                 audioInfo.albumId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
                 return audioInfo;
@@ -244,7 +256,7 @@ public class MusicDataManager {
             String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
             String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); // 播放时长单位为毫秒
-            QDLogger.println( "title:" + title+",album:" + album+",artist:" + artist+",duration:"+duration);
+            QDLogger.println("title:" + title + ",album:" + album + ",artist:" + artist + ",duration:" + duration);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -332,12 +344,13 @@ public class MusicDataManager {
 
     /**
      * 获取在列表中的索引位置，默认列表顺序
+     *
      * @param id
      * @return
      */
     public int indexOfArray(long id) {
-        if(currentSheetList==null){
-            if(localSonglist!=null){
+        if (currentSheetList == null) {
+            if (localSonglist != null) {
                 currentSheetList = localSonglist;
             }
         }
@@ -351,7 +364,7 @@ public class MusicDataManager {
      * @return
      */
     public int indexOfArray(List<AudioInfo> list, long id) {
-        if(list!=null) {
+        if (list != null) {
             for (int i = 0; i < list.size(); i++) {
                 if (list.get(i).id == id) {
                     return i;
@@ -392,11 +405,12 @@ public class MusicDataManager {
      */
     public AudioInfo getMusicInfoByData(Context context, String data) {
         String str = MediaStore.Audio.Media.DATA + "='" + data + "'";
-       return queryMusicInfo(context,MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,str);
+        return queryMusicInfo(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, str);
     }
+
     public AudioInfo getMusicInfoById(Context context, long audioId) {
         String str = MediaStore.Audio.Media._ID + "='" + audioId + "'";
-        return queryMusicInfo(context,MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,str);
+        return queryMusicInfo(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, str);
     }
 
     public AudioInfo queryMusicInfo(Context context, Uri uri, String selection) {
@@ -419,6 +433,9 @@ public class MusicDataManager {
                 audioInfo.size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
                 //文件路径
                 audioInfo.data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                /*String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
+                audioInfo.setMd5(md5);
+                QDLogger.println("文件路径:"+audioInfo.data+",md5:"+md5);*/
                 //专辑id
                 audioInfo.albumId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
                 break;
@@ -452,8 +469,8 @@ public class MusicDataManager {
         audioSheet.setName(PLAYLIST_NAME_FAVORITES);
         audioSheet.setSystem(true);
         long favorites_id = createSheet(context, audioSheet);
-        AudioInfo audioInfo = ((WeiApplication) context.getApplicationContext()).getDbHelper().findOne("select * from AudioInfo where sheetId='" + favorites_id+"' and audioId="+audioId, AudioInfo.class);
-        return audioInfo!=null;
+        AudioInfo audioInfo = ((WeiApplication) context.getApplicationContext()).getDbHelper().findOne("select * from AudioInfo where sheetId='" + favorites_id + "' and audioId=" + audioId, AudioInfo.class);
+        return audioInfo != null;
     }
 
     public void addFavorite(Context context, Long audioId) {
@@ -462,42 +479,43 @@ public class MusicDataManager {
         long table_favorites_id = createSheet(context, audioSheet);
         if (table_favorites_id != -1) {
             AudioInfo audioInfo = new AudioInfo();
-                    audioInfo.setAudioId(audioId);
-                    audioInfo.setSheetId(table_favorites_id);
-                    ((WeiApplication) context.getApplicationContext()).getDbHelper().insert(audioInfo);
-                    QDLogger.i("添加到收藏列表：audioId=" + audioId);
-            }
+            audioInfo.setAudioId(audioId);
+            audioInfo.setSheetId(table_favorites_id);
+            ((WeiApplication) context.getApplicationContext()).getDbHelper().insert(audioInfo);
+            QDLogger.i("添加到收藏列表：audioId=" + audioId);
+        }
     }
+
     //添加到歌单
     public void addToSheet(Context context, long sheetId, long audioId) {
         //判断音频文件是否存在
-        AudioInfo audioInfo = getMusicInfoById(context,audioId);
-        if(audioInfo!=null){
+        AudioInfo audioInfo = getMusicInfoById(context, audioId);
+        if (audioInfo != null) {
             //判断歌单是否存在
             audioInfo = ((WeiApplication) context.getApplicationContext()).getDbHelper()
-                    .findOne("select * from AudioInfo where sheetId='" + sheetId+"' and audioId="+audioId, AudioInfo.class);
-            if(audioInfo==null) {
+                    .findOne("select * from AudioInfo where sheetId='" + sheetId + "' and audioId=" + audioId, AudioInfo.class);
+            if (audioInfo == null) {
                 audioInfo = new AudioInfo();
                 audioInfo.setAudioId(audioId);
                 audioInfo.setSheetId(sheetId);
                 ((WeiApplication) context.getApplicationContext()).getDbHelper().insert(audioInfo);
                 QDLogger.i("添加到歌单：" + sheetId + ",audioId=" + audioId);
-            }else {
+            } else {
                 QDLogger.e("已经添加到歌单");
             }
-        }else {
+        } else {
             QDLogger.e("要添加的音频文件不存在");
         }
     }
 
-    public void removeFromSheet(Context context,long sheetId, long audioId) {
+    public void removeFromSheet(Context context, long sheetId, long audioId) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put("audioId",audioId);
-        contentValues.put("sheetId",sheetId);
-        QDLogger.e("从歌单移除"+sheetId+",audioId="+audioId);
+        contentValues.put("audioId", audioId);
+        contentValues.put("sheetId", sheetId);
+        QDLogger.e("从歌单移除" + sheetId + ",audioId=" + audioId);
         //((WeiApplication) context.getApplicationContext()).getDbHelper().getDb().delete("AudioInfo",
         //        "audioId=? and sheetId=?", new String[]{String.valueOf(audioId),String.valueOf(sheetId)});
-        ((WeiApplication) context.getApplicationContext()).getDbHelper().delete("AudioInfo",contentValues);
+        ((WeiApplication) context.getApplicationContext()).getDbHelper().delete("AudioInfo", contentValues);
         //((WeiApplication) context.getApplicationContext()).getDbHelper().execDeleteSQL("delete from AudioInfo where audioId='"+audioId+"' and sheetId='"+sheetId+"'");
     }
 
@@ -505,7 +523,55 @@ public class MusicDataManager {
         AudioSheet audioSheet = new AudioSheet();
         audioSheet.setName(PLAYLIST_NAME_FAVORITES);
         long favorites_id = createSheet(context, audioSheet);
-        ((WeiApplication) context.getApplicationContext()).getDbHelper().execDeleteSQL("delete from AudioInfo where sheetId='" + favorites_id+"' and audioId="+audioId);
+        ((WeiApplication) context.getApplicationContext()).getDbHelper().execDeleteSQL("delete from AudioInfo where sheetId='" + favorites_id + "' and audioId=" + audioId);
+    }
+
+    /**
+     * 导入歌单
+     *
+     * @param mContext
+     * @param audioSheetList
+     */
+    public void importSheet(QuickActivity mContext, List<AudioSheet> audioSheetList) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int count = localSonglist.size();
+                for (int i = 0; i < count; i++) {
+                    AudioInfo audioInfo = localSonglist.get(i);
+                    String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
+                    audioInfo.setMd5(md5);
+                    localSonglist.set(i, audioInfo);
+                }
+        /*String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
+        audioInfo.setMd5(md5);
+        QDLogger.println("文件路径:"+audioInfo.data+",md5:"+md5);*/
+                for (AudioSheet audioSheet : audioSheetList) {
+                    //创建同名歌单，如果存在择返回歌单id
+                    long sheetId = createSheet(mContext, audioSheet);
+                    if (audioSheet.getAudioInfoList() != null) {
+                        //遍历要插入的歌曲
+                        for (AudioInfo audioInfo : audioSheet.getAudioInfoList()) {
+                            QDLogger.i("歌曲getMd5：" + audioInfo.getMd5());
+
+                            //根据歌曲md5值匹配歌曲
+                            AudioInfo audioInfo2 = null;
+                            for (int i = 0; i < count; i++) {
+                                if (localSonglist.get(i).getMd5().equals(audioInfo.getMd5())) {
+                                    audioInfo2 = localSonglist.get(i);
+                                }
+                            }
+                            //将匹配到的歌曲添加到歌单
+                            if (audioInfo2 != null) {
+                                QDLogger.i("准备导入歌曲：" + audioInfo2.getTitle() + ",到歌单：" + audioSheet.getName());
+                                addToSheet(mContext, sheetId, audioInfo2.getId());
+                            }
+                        }
+                    }
+                }
+            }
+        }).start();
+
     }
 
     /**
@@ -516,7 +582,7 @@ public class MusicDataManager {
      */
     public static long createSheet(Context context, AudioSheet audioSheet1) {
         String name = audioSheet1.getName();
-        AudioSheet audioSheet = ((WeiApplication) context.getApplicationContext()).getDbHelper().findOne("select * from AudioSheet where name='" + name+"'", AudioSheet.class);
+        AudioSheet audioSheet = ((WeiApplication) context.getApplicationContext()).getDbHelper().findOne("select * from AudioSheet where name='" + name + "'", AudioSheet.class);
         if (audioSheet != null) {
             return audioSheet.getId();
         }
@@ -525,10 +591,16 @@ public class MusicDataManager {
         return ((WeiApplication) context.getApplicationContext()).getDbHelper().getLastIndex();
     }
 
-    public void modifySheet(Context context,AudioSheet audioSheet1) {
+    /**
+     * 修改歌单
+     *
+     * @param context
+     * @param audioSheet1
+     */
+    public void modifySheet(Context context, AudioSheet audioSheet1) {
         AudioSheet audioSheet = ((WeiApplication) context.getApplicationContext()).getDbHelper().findOne("select * from AudioSheet where id=" + audioSheet1.getId(), AudioSheet.class);
         if (audioSheet != null) {
-            if(!audioSheet.isSystem()){//系统歌单不允许改名
+            if (!audioSheet.isSystem()) {//系统歌单不允许改名
                 audioSheet.setName(audioSheet1.getName());
             }
             if (!TextUtils.isEmpty(audioSheet1.getImgSrc())) {
@@ -554,10 +626,10 @@ public class MusicDataManager {
      * @return
      */
     public static List<AudioInfo> getSongSheetListById(Context context, long sheetId) {
-        List<AudioInfo> audioInfoList = ((WeiApplication) context.getApplicationContext()).getDbHelper().findArray("select * from AudioInfo where sheetId='"+sheetId+"'", AudioInfo.class);
-        if(audioInfoList!=null){
+        List<AudioInfo> audioInfoList = ((WeiApplication) context.getApplicationContext()).getDbHelper().findArray("select * from AudioInfo where sheetId='" + sheetId + "'", AudioInfo.class);
+        if (audioInfoList != null) {
             List<Long> ids = new ArrayList<>();
-            for(int i=0;i<audioInfoList.size();i++){
+            for (int i = 0; i < audioInfoList.size(); i++) {
                 ids.add(audioInfoList.get(i).getAudioId());
             }
             if (ids.size() > 0) {
@@ -591,7 +663,7 @@ public class MusicDataManager {
                         //歌名
                         audioInfo.title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
 
-                        QDLogger.i(sheetId+","+audioInfo.title+","+ audioInfo.id);
+                        QDLogger.i(sheetId + "," + audioInfo.title + "," + audioInfo.id);
                         //歌手
                         audioInfo.artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
                         //audioInfo.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));

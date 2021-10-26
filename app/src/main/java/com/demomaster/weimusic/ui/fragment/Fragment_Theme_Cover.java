@@ -155,7 +155,7 @@ public class Fragment_Theme_Cover extends QuickFragment implements onSelcetPictu
                 switch (position){
                     case 0://拍照
                         QDFileUtil.createFile(file);
-                        getThemeActivity().takePicture(QDFileUtil.getUrifromFile(getContext(),file));
+                        getThemeActivity().takePicture(QDFileUtil.getUrifromFile(getContext(),mContext.getPackageName()+".fileprovider",file));
                         break;
                     case 1://从相册中选取
                        QDFileUtil.createFile(file);

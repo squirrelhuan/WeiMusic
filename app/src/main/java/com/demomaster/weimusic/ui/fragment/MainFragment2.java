@@ -309,7 +309,7 @@ public class MainFragment2 extends Fragment implements OnClickListener {
                 MC.getInstance(getContext()).doRepeat();
                 QuickMessage qdTipPopup = new QuickMessage.Builder(getContext())
                         .setBackgroundRadius(10)
-                        .setBackgroundColor(getResources().getColor(R.color.transparent_dark_99))
+                        .setBackgroundColor(getResources().getColor(R.color.transparent_dark_77))
                         .setPadding(DisplayUtil.dip2px(getContext(),20))
                         .setMessage(MC.getInstance(getContext()).getRepeatMode().getName())
                         .create();

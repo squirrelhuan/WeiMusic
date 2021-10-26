@@ -126,12 +126,11 @@ public class Fragment_Theme_Welcome extends QuickFragment implements onSelcetPic
                         switch (position){
                             case 0://拍照
                                 QDFileUtil.createFile(file);
-                                getThemeActivity().takePicture(QDFileUtil.getUrifromFile(getContext(),file));
+                                getThemeActivity().takePicture(QDFileUtil.getUrifromFile(getContext(),mContext.getPackageName()+".fileprovider",file));
                                 break;
                             case 1://从相册中选取
                                 // fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
                                 // getPictureByGallery(SettingActivity.this);
-
                                 QDFileUtil.createFile(file);
                                 getThemeActivity().getImageFromPhoto(Uri.fromFile(file));
                                 break;
