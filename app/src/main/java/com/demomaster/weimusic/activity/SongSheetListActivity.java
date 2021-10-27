@@ -58,7 +58,7 @@ import static com.demomaster.weimusic.constant.Constants.APP_PATH_SHEET;
 /**
  * 歌单列表页面
  */
-public class SongSheetListActivity extends QDActivity implements View.OnClickListener {
+public class SongSheetListActivity extends BaseActivity implements View.OnClickListener {
 
     Button btn_import_sheet, btn_creat_sheet, btn_save_sheet;
     RecyclerView recyclerView_song_sheet;
@@ -214,7 +214,13 @@ public class SongSheetListActivity extends QDActivity implements View.OnClickLis
                 String str = QDFileUtil.readFileSdcardFile(QDFileUtil.uriToFile(uri, mContext));
                 QDLogger.i(TAG, "导入：" + str);
                 List<AudioSheet> audioSheetList = JSON.parseArray(str, AudioSheet.class);
-                MusicDataManager.getInstance(mContext).importSheet(mContext, audioSheetList);
+                showLoading();
+                MusicDataManager.getInstance(mContext).importSheet(mContext, audioSheetList, new MusicDataManager.OnLoadingListener() {
+                    @Override
+                    public void onFinish(int result, String msg, Object data) {
+                        hideLoading();
+                    }
+                });
             } else if (resultCode == RESULT_CANCELED) {
 
             }
@@ -242,35 +248,15 @@ public class SongSheetListActivity extends QDActivity implements View.OnClickLis
                 openFileChooseProcess();
                 break;
             case R.id.btn_save_sheet:
-                backSheet();
-                //QDFileUtil.writeFileSdcardFile(new File(APP_PATH_SHEET+"/"+System.currentTimeMillis()+".sheet"), JSON.toJSONString(audioSheets),false);
+                showLoading();
+                MusicDataManager.getInstance(mContext).backUpSheet(mContext, new MusicDataManager.OnLoadingListener() {
+                    @Override
+                    public void onFinish(int result, String msg, Object data) {
+                        hideLoading();
+                    }
+                });
                 break;
         }
-    }
-
-    /**
-     * 备份歌单
-     */
-    private void backSheet() {
-        List<AudioSheet> audioInfoList = MusicDataManager.getInstance(mContext).getSongSheet(mContext);
-        int count = audioInfoList.size();
-        for (int i = 0; i < count; i++) {
-            AudioSheet audioSheet = audioInfoList.get(i);
-
-            List<AudioInfo> audioInfoList1 = MusicDataManager.getInstance(mContext).getSongSheetListById(mContext, audioSheet.getId());
-            if(audioInfoList1!=null) {
-                int count2 = audioInfoList1.size();
-                for (int i2 = 0; i2 < count2; i2++) {
-                    AudioInfo audioInfo = audioInfoList1.get(i2);
-                    String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
-                    audioInfo.setMd5(md5);
-                    audioInfoList1.set(i, audioInfo);
-                }
-                audioSheet.setAudioInfoList(audioInfoList1);
-            }
-            audioInfoList.set(i, audioSheet);
-        }
-        QDFileUtil.writeFileSdcardFile(new File(APP_PATH_SHEET + "/歌单备份.sheet"), JSON.toJSONString(audioInfoList), false);
     }
 
 }

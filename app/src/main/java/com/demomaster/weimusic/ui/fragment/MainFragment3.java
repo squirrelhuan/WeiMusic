@@ -37,6 +37,8 @@ import com.demomaster.weimusic.activity.SongSheetEditActivity;
 import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.activity.SearchActivity;
 import com.demomaster.weimusic.constant.AudioStation;
+import com.demomaster.weimusic.dialog.AudioDetailDialog;
+import com.demomaster.weimusic.dialog.AudioInfoDialog;
 import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MC;
@@ -306,9 +308,8 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
 
     QDDialog musicInfoDialog = null;
     private void showSongMenu(View view,final int position) {
-        //AudioInfoDialog audioInfoDialog = new AudioInfoDialog(getContext(),musicList.get(position),position);
-        //audioInfoDialog.show();
-
+        AudioDetailDialog audioInfoDialog = new AudioDetailDialog(getContext(),musicList.get(position),position);
+        audioInfoDialog.show();
         Intent intent =new Intent();
         Bundle bundle = new Bundle();
         bundle.putInt("selectIndex",position);
@@ -322,8 +323,7 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte [] bitmapByte =baos.toByteArray();
         intent.putExtra("bitmap", bitmapByte);*/
-
-        ((MainActivity)getActivity()).startFragment(new AudioInoFragment(),R.id.main_layout,intent);
+        //((MainActivity)getActivity()).startFragment(new AudioInoFragment2(),R.id.main_layout,intent);
 
         /*musicInfoDialog = new QDDialog.Builder(getContext())
                 .setBackgroundRadius(50)

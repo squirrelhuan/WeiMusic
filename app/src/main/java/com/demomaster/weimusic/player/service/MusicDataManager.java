@@ -14,6 +14,7 @@ import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.demomaster.weimusic.WeiApplication;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.constant.SequenceType;
@@ -25,8 +26,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.jaudiotagger.audio.mp3.MP3File;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import cn.demomaster.huan.quickdeveloplibrary.helper.QDSharedPreferences;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
@@ -37,6 +43,7 @@ import cn.demomaster.qdrouter_library.base.activity.QuickActivity;
 import static com.demomaster.weimusic.constant.AudioStation.Pause;
 import static com.demomaster.weimusic.constant.AudioStation.sheet_changed;
 import static com.demomaster.weimusic.constant.AudioStation.sheet_create;
+import static com.demomaster.weimusic.constant.Constants.APP_PATH_SHEET;
 import static com.demomaster.weimusic.constant.Constants.PLAYLIST_NAME_FAVORITES;
 
 public class MusicDataManager {
@@ -50,7 +57,10 @@ public class MusicDataManager {
         return instance;
     }
 
+    Context context;
+
     public MusicDataManager(Context context) {
+        this.context = context.getApplicationContext();
         AudioRecord record = getPlayRecord();
         if (record != null) {
             setSheetId(context, record.getSheetId());
@@ -113,6 +123,7 @@ public class MusicDataManager {
         currentSheetList = getSongSheetListById(context, sheetId);
     }
 
+
     // 写一个异步查询类
     private final class QueryHandler extends AsyncQueryHandler {
         OnQueryListener mOnQueryListener;
@@ -134,6 +145,10 @@ public class MusicDataManager {
 
     public static interface OnQueryListener {
         void onQueryComplete(int token, Object cookie, Cursor cursor);
+    }
+
+    public static interface OnLoadingListener {
+        void onFinish(int result, String msg, Object data);
     }
 
     public void loadData(Context context, OnLoadDataListener loadDataListener) {
@@ -526,13 +541,86 @@ public class MusicDataManager {
         ((WeiApplication) context.getApplicationContext()).getDbHelper().execDeleteSQL("delete from AudioInfo where sheetId='" + favorites_id + "' and audioId=" + audioId);
     }
 
+    public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);// HH:mm:ss "yyyy年MM月dd日 HH:mm:ss:SSS"
+
+    /**
+     * 备份歌单
+     */
+    public void backUpSheet(Context context, OnLoadingListener onLoadingListener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<AudioSheet> audioInfoList = getSongSheet(context);
+                int count = audioInfoList.size();
+                for (int i = 0; i < count; i++) {
+                    AudioSheet audioSheet = audioInfoList.get(i);
+                    List<AudioInfo> audioInfoList1 = getSongSheetListById(context, audioSheet.getId());
+                    if (audioInfoList1 != null) {
+                        int count2 = audioInfoList1.size();
+                        for (int i2 = 0; i2 < count2; i2++) {
+                            AudioInfo audioInfo = audioInfoList1.get(i2);
+                            String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
+                            audioInfo.setMd5(md5);
+                            audioInfoList1.set(i, audioInfo);
+                        }
+                        audioSheet.setAudioInfoList(audioInfoList1);
+                    }
+                    audioInfoList.set(i, audioSheet);
+                }
+                QDFileUtil.writeFileSdcardFile(new File(APP_PATH_SHEET + "/" + System.currentTimeMillis() + ".sheet"), JSON.toJSONString(audioInfoList), false);
+                if (onLoadingListener != null) {
+                    onLoadingListener.onFinish(1, "success", null);
+                }
+            }
+        }).start();
+    }
+
+    public void autoImportSheet(QuickActivity mContext) {
+        String fileParentPath = APP_PATH_SHEET;
+        File parentFile = new File(fileParentPath);
+        if (parentFile.exists() && parentFile.isDirectory()) {
+            QDLogger.i("找到歌单备份");
+            File recentFile = null;//最新的备份文件
+            for (File childFile : parentFile.listFiles()) {
+                if(childFile.getName().endsWith(".sheet")) {
+                    if (recentFile == null) {
+                        recentFile = childFile;
+                    } else {
+                        String name1 = recentFile.getName().replace(".sheet","");
+                        String name2 = childFile.getName().replace(".sheet","");
+                        try {
+                            long t1 = Long.parseLong(name1);
+                            long t2 = Long.parseLong(name2);
+                            if (t1<t2) {
+                                recentFile = childFile;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+            if (recentFile != null) {
+                String str = QDFileUtil.readFileSdcardFile(recentFile.getAbsoluteFile());
+                QDLogger.i("从"+recentFile.getAbsoluteFile()+"导入歌单");
+                try {
+                    List<AudioSheet> audioSheetList = JSON.parseArray(str, AudioSheet.class);
+                    importSheet(mContext, audioSheetList, null);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     /**
      * 导入歌单
      *
      * @param mContext
      * @param audioSheetList
      */
-    public void importSheet(QuickActivity mContext, List<AudioSheet> audioSheetList) {
+    public void importSheet(QuickActivity mContext, List<AudioSheet> audioSheetList, OnLoadingListener onLoadingListener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -543,9 +631,9 @@ public class MusicDataManager {
                     audioInfo.setMd5(md5);
                     localSonglist.set(i, audioInfo);
                 }
-        /*String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
-        audioInfo.setMd5(md5);
-        QDLogger.println("文件路径:"+audioInfo.data+",md5:"+md5);*/
+                /*String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
+                audioInfo.setMd5(md5);
+                QDLogger.println("文件路径:"+audioInfo.data+",md5:"+md5);*/
                 for (AudioSheet audioSheet : audioSheetList) {
                     //创建同名歌单，如果存在择返回歌单id
                     long sheetId = createSheet(mContext, audioSheet);
@@ -568,6 +656,11 @@ public class MusicDataManager {
                             }
                         }
                     }
+                }
+                EventBus.getDefault().post(new EventMessage(AudioStation.sheet_changed.value()));
+
+                if (onLoadingListener != null) {
+                    onLoadingListener.onFinish(1, "success", null);
                 }
             }
         }).start();

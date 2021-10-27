@@ -18,6 +18,7 @@
     <string name="load_succeed">加载成功</string>
     <string name="load_fail">加载失败</string>
     <string name="next">下一步</string>
+    <string name="please_wait_a_moment">请稍后...</string>
 
     <string name="SHUFFLE">随机播放</string>
     <string name="REPEAT_CURRENT">单曲播放</string>

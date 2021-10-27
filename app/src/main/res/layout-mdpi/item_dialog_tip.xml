@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent_dark_cc"
+    android:padding="@dimen/dp_6"
+    android:gravity="center"
+    tools:ignore="MissingDefaultResource">
+
+    <cn.demomaster.huan.quickdeveloplibrary.view.loading.EmoticonView
+        android:id="@+id/ev_emtion"
+        android:layout_width="@dimen/dp_72"
+        android:layout_height="@dimen/dp_72"
+        android:layout_marginTop="@dimen/dp_6"
+        android:layout_marginBottom="@dimen/dp_3"/>
+    <TextView
+        android:id="@+id/tv_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/dp_12"
+        android:padding="@dimen/dp_3"
+        android:layout_margin="@dimen/dp_6"
+        android:textColor="@color/white"
+        android:text="loading"
+        android:gravity="center"/>
+</LinearLayout>

@@ -5,12 +5,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.view.View;
+import android.widget.TextView;
 
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.util.ThemeUtil;
 
 import cn.demomaster.huan.quickdeveloplibrary.base.activity.QDActivity;
+import cn.demomaster.huan.quickdeveloplibrary.view.loading.EmoticonView;
+import cn.demomaster.huan.quickdeveloplibrary.view.loading.LoadStateType;
+import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDActionDialog;
 
 import static com.demomaster.weimusic.constant.Constants.Action_Theme_Change;
 
@@ -67,6 +72,51 @@ public abstract class BaseActivity extends QDActivity {
             unregisterReceiver(broadcastReceiver);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+
+
+    public QDActionDialog qdActionDialog;
+    public void showLoading(int time) {
+        showTip(getString(R.string.please_wait_a_moment), LoadStateType.LOADING, time);//"请稍后..."
+    }
+
+    public void showLoading() {
+        showTip(getString(R.string.please_wait_a_moment), LoadStateType.LOADING, 3000);//"请稍后..."
+    }
+
+    public void showLoading(String message) {
+        //getString(R.string.please_wait_a_moment)
+        showTip(message, LoadStateType.LOADING, 3000);//"请稍后..."
+    }
+
+    public void showTip(String message, LoadStateType stateType) {
+        showTip(message, stateType, 3000);
+    }
+
+    public void showTip(String message, LoadStateType stateType, Long time) {
+        showTip(message, stateType, time);
+    }
+
+    /**
+     * 显示加载中
+     *
+     * @param message
+     */
+    public void showTip(String message, LoadStateType stateType, int time) {
+        hideLoading();
+        qdActionDialog = new QDActionDialog.Builder(mContext).setBackgroundRadius(50).setContentbackgroundColor(Color.TRANSPARENT).setContentViewLayout(R.layout.item_dialog_tip).setDelayMillis(time).create();
+        EmoticonView emoticonView = qdActionDialog.getContentView().findViewById(R.id.ev_emtion);
+        emoticonView.setStateType(stateType);
+        TextView tv_tip = qdActionDialog.getContentView().findViewById(R.id.tv_tip);
+        tv_tip.setText(message);
+        qdActionDialog.show();
+    }
+
+    public void hideLoading() {
+        if (qdActionDialog != null && qdActionDialog.isShowing()) {
+            qdActionDialog.dismiss();
         }
     }
 

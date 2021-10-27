@@ -42,7 +42,7 @@ public class WeiApplication extends QDApplication implements
         creatTable();
         updatDb();
         registerReceiver();
-        QDLogger.init(this, "/PPMusic/log/");
+        QDLogger.init(this, "/WeiMusic/log/");
         QDLogger.d("WeiApplication onCreate");
         MC.getInstance(this).init();
         MusicHelper.getInstance().bindToService(this);

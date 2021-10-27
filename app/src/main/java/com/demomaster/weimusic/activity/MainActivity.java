@@ -24,6 +24,7 @@ import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.dialog.SheetDialog;
 import com.demomaster.weimusic.player.service.MC;
+import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.ui.adapter.MyChildAdapter;
 import com.demomaster.weimusic.ui.fragment.SheetFragment2;
 import com.demomaster.weimusic.ui.fragment.SheetFragment3;
@@ -150,6 +151,7 @@ public class MainActivity extends BaseActivity {
     private MyChildAdapter fragmentAdapter;
 
     void initView() {
+        MusicDataManager.getInstance(mContext).autoImportSheet(mContext);
         ll_bottom.setBackgroundColor(Color.TRANSPARENT);
         fl_main = findViewById(R.id.fl_main);
         rl_docker_panel = findViewById(R.id.rl_docker_panel);

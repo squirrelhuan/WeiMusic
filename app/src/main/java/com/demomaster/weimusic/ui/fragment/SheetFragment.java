@@ -48,10 +48,8 @@ public class SheetFragment extends QuickFragment {
         return mView;
     }
 
-    //ImageView iv_icon;
     ImageView iv_edit;
     TextView tv_name;
-    ViewGroup rl_content;
     private ViewPager sheetHeaderViewPager;
     private ViewPager viewPager2;
     private SheetBodyAdapter adater2;

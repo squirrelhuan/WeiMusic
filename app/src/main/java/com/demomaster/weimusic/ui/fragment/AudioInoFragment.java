@@ -40,7 +40,7 @@ public class AudioInoFragment extends QuickFragment {
     }
     @Override
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        View mView = inflater.inflate(R.layout.fragment_music_info, null);
+        View mView = inflater.inflate(R.layout.dialog_audio_detail, null);
         return mView;
     }
 
