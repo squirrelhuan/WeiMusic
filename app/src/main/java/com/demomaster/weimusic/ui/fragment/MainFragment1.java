@@ -137,7 +137,7 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
 
         recyclerView_song_sheet.setLayoutManager(new GridLayoutManager(getContext(), 3));
         audioSheets = new ArrayList<>();
-        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(getContext()));
+        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet());
         recyclerSheetAdapter = new RecyclerSheetAdapter(getActivity(),audioSheets);
         recyclerSheetAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -285,7 +285,7 @@ public class MainFragment1 extends QuickFragment implements OnClickListener,
                 case sheet_create:
                 case sheet_changed:
                     audioSheets.clear();
-                    audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(getContext()));
+                    audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet());
                     recyclerSheetAdapter.notifyDataSetChanged();
                     break;
             }

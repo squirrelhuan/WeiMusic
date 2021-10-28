@@ -84,7 +84,7 @@ public class SongSheetListActivity extends BaseActivity implements View.OnClickL
 
         recyclerView_song_sheet.setLayoutManager(new LinearLayoutManager(mContext));
         audioSheets = new ArrayList<>();
-        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(mContext));
+        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet());
         recyclerSheetAdapter = new RecyclerSheetAdapter2(mContext, audioSheets);
         recyclerSheetAdapter.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -107,7 +107,7 @@ public class SongSheetListActivity extends BaseActivity implements View.OnClickL
     protected void onResume() {
         super.onResume();
         audioSheets.clear();
-        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(mContext));
+        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet());
     }
 
     int mColor;

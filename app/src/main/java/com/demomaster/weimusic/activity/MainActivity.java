@@ -8,7 +8,6 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -26,16 +25,13 @@ import com.demomaster.weimusic.dialog.SheetDialog;
 import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.ui.adapter.MyChildAdapter;
-import com.demomaster.weimusic.ui.fragment.SheetFragment2;
-import com.demomaster.weimusic.ui.fragment.SheetFragment3;
+import com.demomaster.weimusic.ui.fragment.SheetListFragment;
 import com.demomaster.weimusic.view.MainLayout;
 import com.demomaster.weimusic.view.Wallpaper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.io.ByteArrayOutputStream;
 
 import cn.demomaster.huan.quickdeveloplibrary.helper.toast.QdToast;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
@@ -151,7 +147,7 @@ public class MainActivity extends BaseActivity {
     private MyChildAdapter fragmentAdapter;
 
     void initView() {
-        MusicDataManager.getInstance(mContext).autoImportSheet(mContext);
+        MusicDataManager.getInstance(mContext).autoImportSheet();
         ll_bottom.setBackgroundColor(Color.TRANSPARENT);
         fl_main = findViewById(R.id.fl_main);
         rl_docker_panel = findViewById(R.id.rl_docker_panel);
@@ -361,11 +357,11 @@ public class MainActivity extends BaseActivity {
     }
 
     SheetDialog sheetDialog;
-    SheetFragment3 sheetFragment;
+    SheetListFragment sheetListFragment;
 
     public void showSheetFragment() {
         fl_main.setVisibility(View.VISIBLE);
-        if (sheetFragment != null) {
+        if (sheetListFragment != null) {
             hideSheetFragment();
         } else {
             // ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bottom_bg);
@@ -374,13 +370,13 @@ public class MainActivity extends BaseActivity {
             //rl_docker_panel.setBackground(new BitmapDrawable(copyBitmap));
             //rl_docker_panel.setBackgroundColor(getResources().getColor(R.color.white));
             //ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bg);
-            sheetFragment = new SheetFragment3();
+            sheetListFragment = new SheetListFragment();
             Intent intent = new Intent();
-             /*ByteArrayOutputStream baos=new ByteArrayOutputStream();
+            /*ByteArrayOutputStream baos=new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
             byte [] bitmapByte =baos.toByteArray();
             intent.putExtra("bitmap", bitmapByte);*/
-            startFragment(sheetFragment, R.id.fl_main, intent);
+            startFragment(sheetListFragment, R.id.fl_main, intent);
         }
         //Bitmap bitmap = ScreenShotUitl.getCacheBitmapFromView(findViewById(R.id.main_layout));
         //GroundGlassUtil glassUtil = new GroundGlassUtil(mContext);
@@ -421,11 +417,11 @@ public class MainActivity extends BaseActivity {
     }
 
     public void hideSheetFragment() {
-        if (sheetFragment != null) {
+        if (sheetListFragment != null) {
             // ll_bottom.setBackgroundColor(Color.TRANSPARENT);
             rl_docker_panel.setBackgroundColor(Color.TRANSPARENT);
-            sheetFragment.finish();
-            sheetFragment = null;
+            sheetListFragment.finish();
+            sheetListFragment = null;
         }
     }
 

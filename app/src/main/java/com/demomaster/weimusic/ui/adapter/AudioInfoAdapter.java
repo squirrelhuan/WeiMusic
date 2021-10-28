@@ -274,7 +274,7 @@ public class AudioInfoAdapter extends PagerAdapter {
     List<AudioSheet> audioSheetList;
     private void showMenuDialog(AudioInfo audioInfo) {
         String[] menus = {"创建歌单"};
-        audioSheetList = MusicDataManager.getInstance(mContext).getSongSheet(mContext);
+        audioSheetList = MusicDataManager.getInstance(mContext).getSongSheet();
         if(audioSheetList != null){
             menus=new String[audioSheetList.size()+1];
             menus[0] = "创建歌单";

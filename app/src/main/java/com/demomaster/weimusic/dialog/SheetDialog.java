@@ -97,7 +97,7 @@ public class SheetDialog extends QDDialog2 {
         tv_count = findViewById(R.id.tv_count);
 
         audioSheets = new ArrayList<>();
-        audioSheets.addAll(MusicDataManager.getInstance(getContext()).getSongSheet(getContext()));
+        audioSheets.addAll(MusicDataManager.getInstance(getContext()).getSongSheet());
         cursorView.setIndicatorCount(audioSheets.size());
 
         viewPager2 = findViewById(R.id.viewpager2);
@@ -161,7 +161,7 @@ public class SheetDialog extends QDDialog2 {
 
     public void updateUI() {
         audioSheets.clear();
-        audioSheets.addAll(MusicDataManager.getInstance(getContext()).getSongSheet(getContext()));
+        audioSheets.addAll(MusicDataManager.getInstance(getContext()).getSongSheet());
         for (int i = 0; i < audioSheets.size(); i++) {
             if (audioSheets.get(i).getId() == sheetId) {
                 //viewPager.setCurrentItem(i);

@@ -1,5 +1,9 @@
 package com.demomaster.weimusic.ui.fragment;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -10,13 +14,22 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.demomaster.weimusic.R;
 import com.demomaster.weimusic.activity.MainActivity;
+import com.demomaster.weimusic.activity.SongSheetDetailActivity;
 import com.demomaster.weimusic.constant.AudioStation;
+import com.demomaster.weimusic.model.AudioInfo;
 import com.demomaster.weimusic.model.AudioSheet;
+import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.player.service.MusicDataManager;
+import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter;
+import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter2;
 import com.demomaster.weimusic.ui.adapter.SheetBodyAdapter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -27,13 +40,25 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.demomaster.huan.quickdeveloplibrary.helper.QdThreadHelper;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.DisplayUtil;
 import cn.demomaster.huan.quickdeveloplibrary.view.banner.BannerCursorView;
+import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.OnClickActionListener;
+import cn.demomaster.huan.quickdeveloplibrary.widget.dialog.QDDialog;
+import cn.demomaster.huan.quickdeveloplibrary.widget.layout.LoadLayout;
 import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 
 public class SheetFragment3 extends QuickFragment {
+
+    RecyclerView recyclerView;
+    ImageView iv_sheet_cover;
+    ImageView iv_sheet_playall;
+    TextView tv_sheet_name;
+    LoadLayout loadlayout_sheet;
+    AudioSheet audioSheet;
+    MusicRecycleViewAdapter2 adapter;
 
     @Override
     public boolean isUseActionBarLayout() {
@@ -42,166 +67,156 @@ public class SheetFragment3 extends QuickFragment {
 
     @Override
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        View mView = inflater.inflate(R.layout.fragment_layout_sheet3, null);
+        View mView = inflater.inflate(R.layout.item_cd_song_list, null);
         return mView;
     }
 
-    //ImageView iv_icon;
-    ImageView iv_edit;
-    TextView tv_name;
-    ViewGroup rl_content;
-    private ViewPager sheetBodyViewPager;
-    private SheetBodyAdapter sheetAdapter;
-    //SheetHeaderAdapter adater;
-    List<AudioSheet> audioSheets;
-    BannerCursorView cursorView;
-    long sheetId;
+    List<AudioInfo> musicList = new ArrayList<>();
 
     @Override
     public void initView(View rootView) {
         /*getActionBarTool().setActionBarType(ACTIONBAR_TYPE.NO_ACTION_BAR);*/
-       /* Intent intent = getIntent();
-        if (intent != null) {
-            byte[] bis = intent.getByteArrayExtra("bitmap");
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
-            rootView.setBackground(new BitmapDrawable(bitmap));
-        }*/
-        rl_content = findViewById(R.id.rl_content);
-        iv_edit = findViewById(R.id.iv_edit);
-        sheetBodyViewPager = findViewById(R.id.viewpager_sheet_body);
-        cursorView = findViewById(R.id.cursorView);
-        cursorView.setRadius(DisplayUtil.dip2px(getContext(), 3), DisplayUtil.dip2px(getContext(), 4));
-        cursorView.setCursorPointColor(getResources().getColor(R.color.transparent_light_77), getResources().getColor(R.color.white));
-   /*     iv_edit.setOnClickListener(new View.OnClickListener() {
+        Bundle bundle = getArguments();
+        EventBus.getDefault().register(this);
+        audioSheet = (AudioSheet) bundle.getSerializable("audioSheets");
+        recyclerView = findViewById(R.id.rv_songs);
+        tv_sheet_name = findViewById(R.id.tv_sheet_name);
+        iv_sheet_cover = findViewById(R.id.iv_sheet_cover);
+        iv_sheet_playall = findViewById(R.id.iv_sheet_playall);
+        loadlayout_sheet = findViewById(R.id.loadlayout_sheet);
+        tv_sheet_name.setText(audioSheet.getName());
+        iv_sheet_cover.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onLongClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putLong("sheetId", sheetId);
-                Intent intent = new Intent(getContext(), AddSongSheetActivity.class);
+                bundle.putLong("sheetId", audioSheet.getId());
+                Intent intent = new Intent(mContext, SongSheetDetailActivity.class);
                 intent.putExtras(bundle);
-                getContext().startActivity(intent);
+                mContext.startActivity(intent);
+                return true;
             }
-        });*/
-
-        audioSheets = new ArrayList<>();
-        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(getContext()));
-
-        //vl_layout = rootView.findViewById(R.id.vl_layout);
-        //vl_layout.setGravity(Gravity.TOP);
-        //iv_icon = rootView.findViewById(R.id.iv_icon);
-        tv_name = rootView.findViewById(R.id.tv_name);
-        cursorView.setIndicatorCount(audioSheets.size());
-       /* sheetHeaderViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        });
+        iv_sheet_playall.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-               //Bitmap bitmap = QDBitmapUtil.getBitmapFromPath(audioSheets.get(position).getImgSrc());
-               //bitmap = QDBitmapUtil.zoomImage(bitmap, bitmap.getWidth() / 4, bitmap.getHeight() / 4);
-                //bitmap = BlurUtil.doBlur(bitmap,30,0.2f);
-                //rl_header_bg.setBackground(new BitmapDrawable(bitmap));
-                if(viewPager2.getCurrentItem()!=position) {
-                    viewPager2.setCurrentItem(position);
-                }
-                tv_name.setText(audioSheets.get(position).getName());
-                sheetHeaderAdapter.setCurrent(sheetHeaderViewPager,position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });*/
-
-        sheetBodyViewPager.setOffscreenPageLimit(3);
-        sheetAdapter = new SheetBodyAdapter(this, audioSheets);
-        sheetBodyViewPager.setAdapter(sheetAdapter);
-
-        sheetBodyViewPager.addOnPageChangeListener(new BaseLinkPageChangeListener(sheetBodyViewPager, null) {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                cursorView.selecte(position);
-                //tv_name.setText(audioSheets.get(position).getName());
+            public void onClick(View v) {
+                MC.getInstance(mContext).playSheet(audioSheet.getId());
             }
         });
 
-        /*viewPager2.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        Glide.with(mContext).load(audioSheet.getImgSrc()).error(R.drawable.ic_launcher_pp).into(iv_sheet_cover);
+        adapter = new MusicRecycleViewAdapter2(mContext, musicList);
+        //这里使用线性布局像listview那样展示列表,第二个参数可以改为 HORIZONTAL实现水平展示
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false);
+        //使用网格布局展示
+        recyclerView.setLayoutManager(linearLayoutManager);
+        //recy_drag.setLayoutManager(linearLayoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL);
+        //设置分割线使用的divider
+        //rv_songs.addItemDecoration(dividerItemDecoration);
+        recyclerView.setAdapter(adapter);
+        updata();
+        adapter.setOnItemClickListener(new MusicRecycleViewAdapter.OnItemClickListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                if(positionOffsetPixels!=0){
-                    if(positionOffset>0.5) {
-                        positionOffset = (positionOffset-0.5f);
-                    }else {
-                        positionOffset = 0.5f-positionOffset;
-                    }
-                    //vl_layout.setProgress(positionOffset*2);
-                }
-                tabLayout.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            public void onItemClick(View view, int position) {
+                playMusic(musicList, adapter, position);
+                //fragment.finish();
             }
 
             @Override
-            public void onPageSelected(int position) {
-                sheetId = audioSheets.get(position).getId();
-                //cursorView.selecte(position);
-                if(sheetHeaderViewPager.getCurrentItem()!=position) {
-                    sheetHeaderViewPager.setCurrentItem(position);
-                }
-                View view = adater2.getCurrentView(viewPager2,position);
-                if(view!=null) {
-                    View scrollView = view.findViewById(R.id.rv_songs);
-                    sliding_layout.setScrollableView(scrollView);
-                }
-                //QDLogger.e("getImgSrc="+audioSheets.get(position).getImgSrc());
-                //Glide.with(mContext).load(audioSheets.get(position).getImgSrc()).into(iv_icon);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });*/
-
-        /*tv_play_sheet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MC.getInstance(mContext).playSheet(sheetId);
-            }
-        });*/
-        sheetId = MusicDataManager.getInstance(mContext).getCurrentSheetId();
-        if (sheetId == -1 && audioSheets != null && audioSheets.size() > 0) {
-            sheetId = audioSheets.get(0).getId();
-        }
-        rootView.setBackgroundColor(getResources().getColor(R.color.transparent_dark_99));
-        rootView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
+            public void showContextMenu(View view, int position) {
+                showSongMenu(position);
             }
         });
-        sheetBodyViewPager.post(new Runnable() {
+    }
+
+    private void updata() {
+        QdThreadHelper.runOnSubThread(new Runnable() {
             @Override
             public void run() {
-                if (audioSheets != null) {
-                    for (int i = 0; i < audioSheets.size(); i++) {
-                        if (audioSheets.get(i).getId() == sheetId) {
-                            if (i > 0) {
-                                sheetBodyViewPager.setCurrentItem(i);
-                            }
-                            break;
-                        }
-                    }
-                } else {
-                    sheetBodyViewPager.setCurrentItem(0);
+                List<AudioInfo> audioInfoList = MusicDataManager.getInstance(mContext).getSongSheetListById(mContext, audioSheet.getId());
+                //QDLogger.i("musicInfoList:" + musicInfoList.size());
+                musicList.clear();
+                if (audioInfoList != null && audioInfoList.size() > 0) {
+                    musicList.addAll(audioInfoList);
                 }
-                //tv_name.setText(audioSheets.get(sheetBodyViewPager.getCurrentItem()).getName());
-                //sheetHeaderAdapter.setCurrent(sheetHeaderViewPager, sheetBodyViewPager.getCurrentItem());
+                QdThreadHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (musicList.size() == 0) {
+                            loadlayout_sheet.setRetryText("添加歌曲");
+                            loadlayout_sheet.loadFailWithRetry("添加歌曲", "歌单空空如也，快添加歌曲吧", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Bundle bundle = new Bundle();
+                                    bundle.putLong("sheetId",  audioSheet.getId());
+                                    Intent intent = new Intent(mContext, SongSheetDetailActivity.class);
+                                    intent.putExtras(bundle);
+                                    mContext.startActivity(intent);
+                                }
+                            });
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                });
             }
         });
+    }
 
-        EventBus.getDefault().register(this);
+    private void playMusic(List<AudioInfo> musicList, MusicRecycleViewAdapter2 adapter, int i) {
+        if (i < musicList.size()) {
+            MC.getInstance(mContext).playAudio(musicList.get(i));
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    QDDialog musicInfoDialog = null;
+
+    private void showSongMenu(int position) {
+        View layout = ((Activity) mContext).getLayoutInflater().inflate(R.layout.dialog_music_item2,
+                null);
+        ImageView imageView = layout.findViewById(R.id.iv_cover);
+        Bitmap bitmap = MusicDataManager.getInstance(mContext).getAlbumPicture(mContext, musicList.get(position));
+        imageView.setImageBitmap(bitmap);
+        TextView artist = layout.findViewById(R.id.artist);
+        artist.setText(musicList.get(position).getArtist());
+        TextView title = layout.findViewById(R.id.title);
+        title.setText(musicList.get(position).getTitle());
+        TextView tv_add_blacklist = layout.findViewById(R.id.tv_add_blacklist);
+        tv_add_blacklist.setVisibility(View.INVISIBLE);
+        TextView tv_remove_from_sheet = layout.findViewById(R.id.tv_remove_from_sheet);
+        tv_remove_from_sheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                musicInfoDialog.dismiss();
+                showMenuDialog(musicList.get(position));
+            }
+        });
+        musicInfoDialog = new QDDialog.Builder(mContext)
+                .setBackgroundRadius(50)
+                .setContentView(layout)
+                .setBackgroundColor(mContext.getResources().getColor(R.color.transparent_light_33))
+                .setAnimationStyleID(R.style.qd_dialog_animation_center_scale)
+                .create();
+        musicInfoDialog.show();
+    }
+
+    QDDialog qdDialog;
+
+    private void showMenuDialog(AudioInfo audioInfo) {
+        qdDialog = new QDDialog.Builder(mContext)
+                .setMessage("确定要从歌单移除" + audioInfo.getTitle() + "-" + audioInfo.getArtist() + "吗？")
+                .addAction("取消")
+                .addAction("确定", new OnClickActionListener() {
+                    @Override
+                    public void onClick(Dialog dialog, View view, Object tag) {
+                        dialog.dismiss();
+                        MusicDataManager.getInstance(mContext).removeFromSheet(mContext, audioSheet.getId(), audioInfo.getId());
+                        //updateRecycleView(viewPager.getCurrentItem());
+                        updata();
+                    }
+                })
+                .create();
+        qdDialog.show();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -213,8 +228,7 @@ public class SheetFragment3 extends QuickFragment {
                 case Play:
                 case PLAYSTATE_CHANGED:
                 case audio_ready:
-                    //adater.notifyDataSetChanged();
-                    sheetAdapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
                     break;
                 case sheet_create:
                 case sheet_changed:
@@ -230,241 +244,6 @@ public class SheetFragment3 extends QuickFragment {
             return true;//当返回true时，表示已经完整地处理了这个事件，并不希望其他的回调方法再次进行处理，而当返回false时，表示并没有完全处理完该事件，更希望其他回调方法继续对其进行处理
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    public static class ScaleTransformer implements ViewPager.PageTransformer {
-        private static final float MIN_SCALE = 0.30f;
-
-        @Override
-        public void transformPage(View page, float position) {
-            //重新计算偏移量,因为ViewPager的margin导致计算误差所以重新计算
-            ViewPager viewPager = ((ViewPager) page.getParent());
-            int margin = -((ViewGroup.MarginLayoutParams) viewPager.getLayoutParams()).leftMargin;
-            int clientWidth = viewPager.getMeasuredWidth() - viewPager.getPaddingLeft() - viewPager.getPaddingRight() + margin;
-            position = (float) (page.getLeft() - viewPager.getScrollX()) / clientWidth;
-
-/*（1）当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：
-            view2的posion由1 -> 0;
-            view1的posion由0 -> -1;
-            （2）当View2右滑到View1时，由transformPage函数的日志获得以下数据(注意顺序)：
-            view2的posion有0 -> 1;
-            view1的posion由-1 -> 0;
-            view3的posion有1 -> 2;
-（2）当View2右滑到View3时，由transformPage函数的日志获得以下数据(注意顺序)：
-            view2的posion有0 -> -1;
-            view3的posion有1 -> 0;
-            view1的posion有-1 -> -2;
-
-            作者：墨源为水
-            链接：https://www.jianshu.com/p/50f59a6a87e8
-            来源：简书*/
-
-            float progress = 0;
-            if (position < -1) {
-                //progress = position+2;
-                progress = 0;
-            } else if (position < 0) {
-                progress = 1 + position;
-            } else if (position < 1) {//当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：view2的posion由1 -> 0;view1的posion由0 -> -1;
-                progress = 1 - position;
-            } else if (position < 2) {
-                //progress = position-1;
-                progress = 0;
-            }
-            //ViewGroup.LayoutParams layoutParams = page.getLayoutParams();
-            //QDLogger.e("transformPage: "+page.hashCode()+",position="+position+",progress:" +progress +",y="+page.getY()+",getTranslationY()="+page.getTranslationY());
-            page.setScaleX(progress * (1 - MIN_SCALE) + MIN_SCALE);
-            page.setScaleY(progress * (1 - MIN_SCALE) + MIN_SCALE);
-            //QDLogger.e("getScaleX: "+page.getScaleX()+",position="+position+",progress="+progress+",a="+(progress*(1-MIN_SCALE)+MIN_SCALE));
-
-            page.setY(page.getHeight() * (1 - page.getScaleX()) / 2);
-            //Log.d("google_lenve_fb", "transformPage: scaleX:" + scaleX);
-            //  page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
-        }
-    }
-
-    public class BaseLinkPageChangeListener implements ViewPager.OnPageChangeListener {
-
-        private ViewPager linkViewPager;
-        private ViewPager selfViewPager;
-
-        private int pos;
-
-        public BaseLinkPageChangeListener(ViewPager selfViewPager, ViewPager linkViewPager) {
-            this.linkViewPager = linkViewPager;
-            this.selfViewPager = selfViewPager;
-        }
-
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            if(linkViewPager!=null) {
-                int marginX = ((selfViewPager.getWidth() + selfViewPager.getPageMargin()) * position
-                        + positionOffsetPixels) * (linkViewPager.getWidth() + linkViewPager.getPageMargin()) / (
-                        selfViewPager.getWidth()
-                                + selfViewPager.getPageMargin());
-
-                if (linkViewPager.getScrollX() != marginX) {
-                    linkViewPager.scrollTo(marginX, 0);
-                }
-            }
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            this.pos = position;
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-            if (linkViewPager!=null&&state == ViewPager.SCROLL_STATE_IDLE) {
-                linkViewPager.setCurrentItem(pos);
-            }
-        }
-    }
-
-    public static class ScaleTransformer2 implements ViewPager.PageTransformer {
-        private static final float MIN_SCALE = 0.30f;
-
-        @Override
-        public void transformPage(View page, float position) {
-            //重新计算偏移量,因为ViewPager的margin导致计算误差所以重新计算
-            ViewPager viewPager = ((ViewPager) page.getParent());
-            int margin = -((ViewGroup.MarginLayoutParams) viewPager.getLayoutParams()).leftMargin;
-            int clientWidth = viewPager.getMeasuredWidth() - viewPager.getPaddingLeft() - viewPager.getPaddingRight() + margin;
-            position = (float) (page.getLeft() - viewPager.getScrollX()) / clientWidth;
-
-/*（1）当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：
-            view2的posion由1 -> 0;
-            view1的posion由0 -> -1;
-            （2）当View2右滑到View1时，由transformPage函数的日志获得以下数据(注意顺序)：
-            view2的posion有0 -> 1;
-            view1的posion由-1 -> 0;
-            view3的posion有1 -> 2;
-（2）当View2右滑到View3时，由transformPage函数的日志获得以下数据(注意顺序)：
-            view2的posion有0 -> -1;
-            view3的posion有1 -> 0;
-            view1的posion有-1 -> -2;
-
-            作者：墨源为水
-            链接：https://www.jianshu.com/p/50f59a6a87e8
-            来源：简书*/
-
-            float progress = 0;
-            if (position < -1) {
-                //progress = position+2;
-                progress = 0;
-            } else if (position < 0) {
-                progress = 1 + position;
-            } else if (position < 1) {//当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：view2的posion由1 -> 0;view1的posion由0 -> -1;
-                progress = 1 - position;
-            } else if (position < 2) {
-                //progress = position-1;
-                progress = 0;
-            }
-            //ViewGroup.LayoutParams layoutParams = page.getLayoutParams();
-            //QDLogger.e("transformPage: "+page.hashCode()+",position="+position+",progress:" +progress +",y="+page.getY()+",getTranslationY()="+page.getTranslationY());
-            page.setScaleX(progress * (1 - MIN_SCALE) + MIN_SCALE);
-            page.setScaleY(progress * (1 - MIN_SCALE) + MIN_SCALE);
-            QDLogger.e("getScaleX: " + page.getScaleX() + ",position=" + position + ",progress=" + progress + ",a=" + (progress * (1 - MIN_SCALE) + MIN_SCALE));
-
-            int y = (int) (page.getHeight() * (1 - page.getScaleX()) / 2);
-            page.setY(-y + 100 * page.getScaleX());
-            //Log.d("google_lenve_fb", "transformPage: scaleX:" + scaleX);
-            //  page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
-        }
-    }
-
-    public static class ScaleTransformer3 implements ViewPager.PageTransformer {
-        private static final float MIN_SCALE = 0.50f;
-
-        @Override
-        public void transformPage(View page, float position) {
-            //重新计算偏移量,因为ViewPager的margin导致计算误差所以重新计算
-            ViewPager viewPager = ((ViewPager) page.getParent());
-            int margin = -((ViewGroup.MarginLayoutParams) viewPager.getLayoutParams()).leftMargin;
-            int clientWidth = viewPager.getMeasuredWidth() - viewPager.getPaddingLeft() - viewPager.getPaddingRight() + margin;
-            position = (float) (page.getLeft() - viewPager.getScrollX()) / clientWidth;
-
-/*（1）当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：
-            view2的posion由1 -> 0;
-            view1的posion由0 -> -1;
-            （2）当View2右滑到View1时，由transformPage函数的日志获得以下数据(注意顺序)：
-            view2的posion有0 -> 1;
-            view1的posion由-1 -> 0;
-            view3的posion有1 -> 2;
-（2）当View2右滑到View3时，由transformPage函数的日志获得以下数据(注意顺序)：
-            view2的posion有0 -> -1;
-            view3的posion有1 -> 0;
-            view1的posion有-1 -> -2;
-
-            作者：墨源为水
-            链接：https://www.jianshu.com/p/50f59a6a87e8
-            来源：简书*/
-
-            float progress = 0;
-            if (position < -1) {
-                //progress = position+2;
-                progress = 0;
-            } else if (position < 0) {
-                progress = 1 + position;
-            } else if (position < 1) {//当有View1左滑到View2时，由transformPage函数的日志获得以下数据(注意顺序)：view2的posion由1 -> 0;view1的posion由0 -> -1;
-                progress = 1 - position;
-            } else if (position < 2) {
-                //progress = position-1;
-                progress = 0;
-            }
-            page.setAlpha(progress + .45f);
-            //ViewGroup.LayoutParams layoutParams = page.getLayoutParams();
-            QDLogger.e("transformPage: " + page.hashCode() + ",position=" + position + ",progress:" + progress + ",y=" + page.getY() + ",getTranslationY()=" + page.getTranslationY());
-            page.setScaleX(progress * (1 - MIN_SCALE) + MIN_SCALE);
-            page.setScaleY(progress * (1 - MIN_SCALE) + MIN_SCALE);
-            /*page.setTranslationX((1-progress)*viewPager.getMeasuredWidth());
-            page.setTranslationX(20);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                if(progress==1) {
-                    page.setZ(1);
-                }else {
-                    page.setZ(0);
-                }
-            }*/
-            //QDLogger.e("getScaleX: "+page.getScaleX()+",position="+position+",progress="+progress+",a="+(progress*(1-MIN_SCALE)+MIN_SCALE));
-
-            //page.setY(page.getHeight()*(1-page.getScaleX())/2);
-            //Log.d("google_lenve_fb", "transformPage: scaleX:" + scaleX);
-            //  page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
-
-
-           /* int pageWidth = page.getWidth();
-
-            if (position < -1) { // [-Infinity,-1)
-                // This page is way off-screen to the left.
-                page.setAlpha(0);
-
-            } else if (position <= 0) { // [-1,0]
-                // Use the default slide transition when moving to the left page
-                page.setAlpha(1);
-                page.setTranslationX(0);
-                page.setScaleX(1);
-                page.setScaleY(1);
-
-            } else if (position <= 1) { // (0,1]
-                // Fade the page out.
-                page.setAlpha(1 - position);
-
-                // Counteract the default slide transition
-                page.setTranslationX(pageWidth * -position);
-
-                // Scale the page down (between MIN_SCALE and 1)
-                float scaleFactor = MIN_SCALE
-                        + (1 - MIN_SCALE) * (1 - Math.abs(position));
-                page.setScaleX(scaleFactor);
-                page.setScaleY(scaleFactor);
-
-            } else { // (1,+Infinity]
-                // This page is way off-screen to the right.
-                page.setAlpha(0);
-            }*/
-        }
     }
 
     @Override

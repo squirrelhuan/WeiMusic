@@ -31,6 +31,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="不扫描100k以下的歌曲"/>
+        <CheckBox
+            android:id="@+id/cb_scan_repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="重复歌曲"/>
 
     </LinearLayout>
     <cn.demomaster.huan.quickdeveloplibrary.widget.button.QDButton

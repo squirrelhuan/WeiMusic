@@ -337,7 +337,7 @@ public class MainFragment3 extends QuickFragment implements AppBarLayout.OnOffse
     List<AudioSheet> audioSheetList;
     private void showMenuDialog(AudioInfo audioInfo) {
         String[] menus = {"创建歌单"};
-        audioSheetList = MusicDataManager.getInstance(getContext()).getSongSheet(getContext());
+        audioSheetList = MusicDataManager.getInstance(getContext()).getSongSheet();
         if(audioSheetList != null){
             menus=new String[audioSheetList.size()+1];
             menus[0] = "创建歌单";

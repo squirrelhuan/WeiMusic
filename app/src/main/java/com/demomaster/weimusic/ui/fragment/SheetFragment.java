@@ -123,7 +123,7 @@ public class SheetFragment extends QuickFragment {
         tv_name = rootView.findViewById(R.id.tv_name);
 
         audioSheets = new ArrayList<>();
-        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet(getContext()));
+        audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet());
        // cursorView.setIndicatorCount(audioSheets.size());
         sheetHeaderViewPager = findViewById(R.id.viewpager);
         sheetHeaderViewPager.setOffscreenPageLimit(3);

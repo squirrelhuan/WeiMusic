@@ -215,7 +215,7 @@ public class AudioDetailDialog extends QDDialog2 {
     List<AudioSheet> audioSheetList;
     private void selectSongSheetDialog(AudioInfo audioInfo) {
         String[] menus = {"创建歌单"};
-        audioSheetList = MusicDataManager.getInstance(getContext()).getSongSheet(getContext());
+        audioSheetList = MusicDataManager.getInstance(getContext()).getSongSheet();
         if(audioSheetList != null){
             menus=new String[audioSheetList.size()+1];
             menus[0] = "创建歌单";

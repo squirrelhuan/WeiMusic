@@ -94,11 +94,10 @@ public class SheetBodyAdapter extends PagerAdapter {
                 return true;
             }
         });
-        viewHolder.iv_sheet_playall.setOnLongClickListener(new View.OnLongClickListener() {
+        viewHolder.iv_sheet_playall.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View v) {
-
-                return false;
+            public void onClick(View v) {
+                MC.getInstance(mContext).playSheet(data.get(position).getId());
             }
         });
 

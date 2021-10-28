@@ -56,9 +56,7 @@ public class MusicDataManager {
         }
         return instance;
     }
-
-    Context context;
-
+    static Context context;
     public MusicDataManager(Context context) {
         this.context = context.getApplicationContext();
         AudioRecord record = getPlayRecord();
@@ -550,7 +548,7 @@ public class MusicDataManager {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                List<AudioSheet> audioInfoList = getSongSheet(context);
+                List<AudioSheet> audioInfoList = getSongSheet();
                 int count = audioInfoList.size();
                 for (int i = 0; i < count; i++) {
                     AudioSheet audioSheet = audioInfoList.get(i);
@@ -575,23 +573,23 @@ public class MusicDataManager {
         }).start();
     }
 
-    public void autoImportSheet(QuickActivity mContext) {
+    public void autoImportSheet() {
         String fileParentPath = APP_PATH_SHEET;
         File parentFile = new File(fileParentPath);
         if (parentFile.exists() && parentFile.isDirectory()) {
             QDLogger.i("找到歌单备份");
             File recentFile = null;//最新的备份文件
             for (File childFile : parentFile.listFiles()) {
-                if(childFile.getName().endsWith(".sheet")) {
+                if (childFile.getName().endsWith(".sheet")) {
                     if (recentFile == null) {
                         recentFile = childFile;
                     } else {
-                        String name1 = recentFile.getName().replace(".sheet","");
-                        String name2 = childFile.getName().replace(".sheet","");
+                        String name1 = recentFile.getName().replace(".sheet", "");
+                        String name2 = childFile.getName().replace(".sheet", "");
                         try {
                             long t1 = Long.parseLong(name1);
                             long t2 = Long.parseLong(name2);
-                            if (t1<t2) {
+                            if (t1 < t2) {
                                 recentFile = childFile;
                             }
                         } catch (Exception e) {
@@ -603,11 +601,11 @@ public class MusicDataManager {
 
             if (recentFile != null) {
                 String str = QDFileUtil.readFileSdcardFile(recentFile.getAbsoluteFile());
-                QDLogger.i("从"+recentFile.getAbsoluteFile()+"导入歌单");
+                QDLogger.i("从" + recentFile.getAbsoluteFile() + "导入歌单");
                 try {
                     List<AudioSheet> audioSheetList = JSON.parseArray(str, AudioSheet.class);
-                    importSheet(mContext, audioSheetList, null);
-                }catch (Exception e){
+                    importSheet(context, audioSheetList, null);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -620,48 +618,55 @@ public class MusicDataManager {
      * @param mContext
      * @param audioSheetList
      */
-    public void importSheet(QuickActivity mContext, List<AudioSheet> audioSheetList, OnLoadingListener onLoadingListener) {
+    public void importSheet(Context mContext, List<AudioSheet> audioSheetList, OnLoadingListener onLoadingListener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                int count = localSonglist.size();
-                for (int i = 0; i < count; i++) {
-                    AudioInfo audioInfo = localSonglist.get(i);
-                    String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
-                    audioInfo.setMd5(md5);
-                    localSonglist.set(i, audioInfo);
-                }
+                loadData(mContext, 30 * 1000, new OnLoadDataListener() {
+                    @Override
+                    public void loadComplete(int ret, List<AudioInfo> audioInfoList) {
+                        if (audioInfoList != null && audioInfoList.size() > 0) {
+                            int count = audioInfoList.size();
+                            for (int i = 0; i < count; i++) {
+                                AudioInfo audioInfo = audioInfoList.get(i);
+                                String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
+                                audioInfo.setMd5(md5);
+                                audioInfoList.set(i, audioInfo);
+                            }
                 /*String md5 = QDFileUtil.getFileMD5(new File(audioInfo.data));
                 audioInfo.setMd5(md5);
                 QDLogger.println("文件路径:"+audioInfo.data+",md5:"+md5);*/
-                for (AudioSheet audioSheet : audioSheetList) {
-                    //创建同名歌单，如果存在择返回歌单id
-                    long sheetId = createSheet(mContext, audioSheet);
-                    if (audioSheet.getAudioInfoList() != null) {
-                        //遍历要插入的歌曲
-                        for (AudioInfo audioInfo : audioSheet.getAudioInfoList()) {
-                            QDLogger.i("歌曲getMd5：" + audioInfo.getMd5());
+                            for (AudioSheet audioSheet : audioSheetList) {
+                                //创建同名歌单，如果存在择返回歌单id
+                                long sheetId = createSheet(mContext, audioSheet);
+                                if (audioSheet.getAudioInfoList() != null) {
+                                    //遍历要插入的歌曲
+                                    for (AudioInfo audioInfo : audioSheet.getAudioInfoList()) {
+                                        QDLogger.i("歌曲getMd5：" + audioInfo.getMd5());
 
-                            //根据歌曲md5值匹配歌曲
-                            AudioInfo audioInfo2 = null;
-                            for (int i = 0; i < count; i++) {
-                                if (localSonglist.get(i).getMd5().equals(audioInfo.getMd5())) {
-                                    audioInfo2 = localSonglist.get(i);
+                                        //根据歌曲md5值匹配歌曲
+                                        AudioInfo audioInfo2 = null;
+                                        for (int i = 0; i < count; i++) {
+                                            if (audioInfoList.get(i).getMd5().equals(audioInfo.getMd5())) {
+                                                audioInfo2 = audioInfoList.get(i);
+                                            }
+                                        }
+                                        //将匹配到的歌曲添加到歌单
+                                        if (audioInfo2 != null) {
+                                            QDLogger.i("准备导入歌曲：" + audioInfo2.getTitle() + ",到歌单：" + audioSheet.getName());
+                                            addToSheet(mContext, sheetId, audioInfo2.getId());
+                                        }
+                                    }
                                 }
                             }
-                            //将匹配到的歌曲添加到歌单
-                            if (audioInfo2 != null) {
-                                QDLogger.i("准备导入歌曲：" + audioInfo2.getTitle() + ",到歌单：" + audioSheet.getName());
-                                addToSheet(mContext, sheetId, audioInfo2.getId());
+                            EventBus.getDefault().post(new EventMessage(AudioStation.sheet_changed.value()));
+                            if (onLoadingListener != null) {
+                                onLoadingListener.onFinish(1, "success", null);
                             }
                         }
                     }
-                }
-                EventBus.getDefault().post(new EventMessage(AudioStation.sheet_changed.value()));
+                });
 
-                if (onLoadingListener != null) {
-                    onLoadingListener.onFinish(1, "success", null);
-                }
             }
         }).start();
 
@@ -705,7 +710,7 @@ public class MusicDataManager {
         }
     }
 
-    public static List<AudioSheet> getSongSheet(Context context) {
+    public static List<AudioSheet> getSongSheet() {
         return ((WeiApplication) context.getApplicationContext()).getDbHelper().findArray("select * from AudioSheet", AudioSheet.class);
     }
 

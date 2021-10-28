@@ -1,6 +1,5 @@
 package com.demomaster.weimusic.ui.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -14,13 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
 import com.demomaster.weimusic.R;
-import com.demomaster.weimusic.activity.SongSheetEditActivity;
 import com.demomaster.weimusic.activity.MainActivity;
 import com.demomaster.weimusic.constant.AudioStation;
 import com.demomaster.weimusic.model.AudioSheet;
 import com.demomaster.weimusic.player.service.MusicDataManager;
+import com.demomaster.weimusic.ui.adapter.MyChildAdapter;
 import com.demomaster.weimusic.ui.adapter.SheetBodyAdapter;
-import com.demomaster.weimusic.ui.adapter.SheetHeaderAdapter;
+import com.demomaster.weimusic.ui.adapter.SheetFragmentAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,14 +32,10 @@ import java.util.List;
 import cn.demomaster.huan.quickdeveloplibrary.model.EventMessage;
 import cn.demomaster.huan.quickdeveloplibrary.util.DisplayUtil;
 import cn.demomaster.huan.quickdeveloplibrary.view.banner.BannerCursorView;
-import cn.demomaster.huan.quickdeveloplibrary.widget.AutoCenterHorizontalScrollView;
-import cn.demomaster.huan.quickdeveloplibrary.widget.layout.VisibleLayout;
-import cn.demomaster.huan.quickdeveloplibrary.widget.slidingpanellayout.SlidingUpPanelLayout;
 import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 
-public class SheetFragment2 extends QuickFragment {
-
+public class SheetListFragment extends QuickFragment {
 
     @Override
     public boolean isUseActionBarLayout() {
@@ -57,17 +52,12 @@ public class SheetFragment2 extends QuickFragment {
     ImageView iv_edit;
     TextView tv_name;
     ViewGroup rl_content;
-    private ViewPager sheetHeaderViewPager;
     private ViewPager sheetBodyViewPager;
-    private SheetBodyAdapter sheetAdapter;
-    private ViewGroup rl_header_bg;
-    SlidingUpPanelLayout sliding_layout;
+    SheetFragmentAdapter sheetFragmentAdapter;
+    //private SheetBodyAdapter sheetAdapter;
     //SheetHeaderAdapter adater;
     List<AudioSheet> audioSheets;
-    VisibleLayout vl_layout;
     BannerCursorView cursorView;
-    SheetHeaderAdapter sheetHeaderAdapter;
-    AutoCenterHorizontalScrollView horizontal_sheet;
     long sheetId;
 
     @Override
@@ -79,82 +69,31 @@ public class SheetFragment2 extends QuickFragment {
             Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
             rootView.setBackground(new BitmapDrawable(bitmap));
         }*/
-        rl_header_bg = findViewById(R.id.rl_header_bg);
         rl_content = findViewById(R.id.rl_content);
         iv_edit = findViewById(R.id.iv_edit);
         sheetBodyViewPager = findViewById(R.id.viewpager_sheet_body);
-        sliding_layout = findViewById(R.id.sliding_layout);
-        sliding_layout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-            @Override
-            public void onPanelSlide(View panel, float slideOffset) {
-
-            }
-
-            @Override
-            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-                    finish();
-                }
-            }
-        });
-
         cursorView = findViewById(R.id.cursorView);
         cursorView.setRadius(DisplayUtil.dip2px(getContext(), 3), DisplayUtil.dip2px(getContext(), 4));
         cursorView.setCursorPointColor(getResources().getColor(R.color.transparent_light_77), getResources().getColor(R.color.white));
-        rl_content.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        iv_edit.setOnClickListener(new View.OnClickListener() {
+   /*     iv_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putLong("sheetId", sheetId);
-                Intent intent = new Intent(getContext(), SongSheetEditActivity.class);
+                Intent intent = new Intent(getContext(), AddSongSheetActivity.class);
                 intent.putExtras(bundle);
                 getContext().startActivity(intent);
             }
-        });
+        });*/
 
         audioSheets = new ArrayList<>();
         audioSheets.addAll(MusicDataManager.getInstance(mContext).getSongSheet());
-
-        /*horizontal_sheet = findViewById(R.id.horizontal_sheet);
-        horizontal_sheet.setOnSelectChangeListener(new AutoCenterHorizontalScrollView.OnSelectChangeListener() {
-            @Override
-            public void onSelectChange(int position) {
-                if (sheetBodyViewPager.getCurrentItem() != position) {
-                    sheetBodyViewPager.setCurrentItem(position);
-                }
-            }
-        });
-        horizontal_sheet.setAdapter(new HorizontalAdapter(mContext, audioSheets));*/
 
         //vl_layout = rootView.findViewById(R.id.vl_layout);
         //vl_layout.setGravity(Gravity.TOP);
         //iv_icon = rootView.findViewById(R.id.iv_icon);
         tv_name = rootView.findViewById(R.id.tv_name);
-
         cursorView.setIndicatorCount(audioSheets.size());
-        //sheetHeaderViewPager = findViewById(R.id.viewpager_sheet_header);
-        sheetHeaderViewPager.setOffscreenPageLimit(3);
-        sheetHeaderAdapter = new SheetHeaderAdapter(getContext(), audioSheets);
-        sheetHeaderViewPager.setAdapter(sheetHeaderAdapter);
-        sheetHeaderViewPager.setPageTransformer(false, new ScaleTransformer3());
-        sheetHeaderViewPager.post(new Runnable() {
-            @Override
-            public void run() {
-                int margin = -((ViewGroup.MarginLayoutParams) sheetHeaderViewPager.getLayoutParams()).leftMargin;
-                int paddingLeft = sheetHeaderViewPager.getPaddingLeft();
-                QDLogger.i("setPageMargin=" + margin + "," + sheetHeaderViewPager.getPageMargin() + ",paddingLeft=" + paddingLeft);
-                sheetHeaderViewPager.setPageMargin(margin);
-                ViewGroup.LayoutParams layoutParams = sheetHeaderViewPager.getLayoutParams();
-                //layoutParams.height = sheetHeaderViewPager.getMeasuredWidth();
-            }
-        });
        /* sheetHeaderViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -179,24 +118,16 @@ public class SheetFragment2 extends QuickFragment {
             }
         });*/
 
-        sheetHeaderViewPager.addOnPageChangeListener(new BaseLinkPageChangeListener(sheetHeaderViewPager, sheetBodyViewPager) {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-            }
-        });
-
-        sheetBodyViewPager.setOffscreenPageLimit(3);
-        sheetAdapter = new SheetBodyAdapter(this, audioSheets);
-        sheetBodyViewPager.setAdapter(sheetAdapter);
-
-        sheetBodyViewPager.addOnPageChangeListener(new BaseLinkPageChangeListener(sheetBodyViewPager, sheetHeaderViewPager) {
+       // sheetBodyViewPager.setOffscreenPageLimit(3);
+       // sheetAdapter = new SheetBodyAdapter(this, audioSheets);
+        sheetFragmentAdapter = new SheetFragmentAdapter(getChildFragmentManager());
+        sheetBodyViewPager.setAdapter(sheetFragmentAdapter);
+        sheetBodyViewPager.addOnPageChangeListener(new BaseLinkPageChangeListener(sheetBodyViewPager, null) {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 cursorView.selecte(position);
-                horizontal_sheet.setCurrentIndex(position);
-                tv_name.setText(audioSheets.get(position).getName());
+                //tv_name.setText(audioSheets.get(position).getName());
             }
         });
 
@@ -246,6 +177,13 @@ public class SheetFragment2 extends QuickFragment {
         if (sheetId == -1 && audioSheets != null && audioSheets.size() > 0) {
             sheetId = audioSheets.get(0).getId();
         }
+        rootView.setBackgroundColor(getResources().getColor(R.color.transparent_dark_99));
+        rootView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         sheetBodyViewPager.post(new Runnable() {
             @Override
             public void run() {
@@ -261,12 +199,7 @@ public class SheetFragment2 extends QuickFragment {
                 } else {
                     sheetBodyViewPager.setCurrentItem(0);
                 }
-                View view = sheetAdapter.getCurrentView(sheetBodyViewPager, sheetBodyViewPager.getCurrentItem());
-                if (view != null) {
-                    View scrollView = view.findViewById(R.id.rv_songs);
-                    sliding_layout.setScrollableView(scrollView);
-                }
-                tv_name.setText(audioSheets.get(sheetBodyViewPager.getCurrentItem()).getName());
+                //tv_name.setText(audioSheets.get(sheetBodyViewPager.getCurrentItem()).getName());
                 //sheetHeaderAdapter.setCurrent(sheetHeaderViewPager, sheetBodyViewPager.getCurrentItem());
             }
         });
@@ -284,7 +217,8 @@ public class SheetFragment2 extends QuickFragment {
                 case PLAYSTATE_CHANGED:
                 case audio_ready:
                     //adater.notifyDataSetChanged();
-                    sheetAdapter.notifyDataSetChanged();
+                    //sheetAdapter.notifyDataSetChanged();
+                    sheetFragmentAdapter.notifyDataSetChanged();
                     break;
                 case sheet_create:
                 case sheet_changed:
@@ -367,14 +301,15 @@ public class SheetFragment2 extends QuickFragment {
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            if(linkViewPager!=null) {
+                int marginX = ((selfViewPager.getWidth() + selfViewPager.getPageMargin()) * position
+                        + positionOffsetPixels) * (linkViewPager.getWidth() + linkViewPager.getPageMargin()) / (
+                        selfViewPager.getWidth()
+                                + selfViewPager.getPageMargin());
 
-            int marginX = ((selfViewPager.getWidth() + selfViewPager.getPageMargin()) * position
-                    + positionOffsetPixels) * (linkViewPager.getWidth() + linkViewPager.getPageMargin()) / (
-                    selfViewPager.getWidth()
-                            + selfViewPager.getPageMargin());
-
-            if (linkViewPager.getScrollX() != marginX) {
-                linkViewPager.scrollTo(marginX, 0);
+                if (linkViewPager.getScrollX() != marginX) {
+                    linkViewPager.scrollTo(marginX, 0);
+                }
             }
         }
 
@@ -385,7 +320,7 @@ public class SheetFragment2 extends QuickFragment {
 
         @Override
         public void onPageScrollStateChanged(int state) {
-            if (state == ViewPager.SCROLL_STATE_IDLE) {
+            if (linkViewPager!=null&&state == ViewPager.SCROLL_STATE_IDLE) {
                 linkViewPager.setCurrentItem(pos);
             }
         }
