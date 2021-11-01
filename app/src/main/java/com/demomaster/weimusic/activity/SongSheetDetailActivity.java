@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -68,6 +70,7 @@ public class SongSheetDetailActivity extends QDActivity implements View.OnClickL
     ImageView iv_sheet_img;
     CollapsingLayout collapsingLayout;
     View toolbar_layout_01;
+    //FrameLayout framelayout_header;
     RecyclerView recyclerView;
     MusicRecycleViewAdapter3 musicRecycleViewAdapter3;
     List<AudioInfo> musicList;
@@ -82,6 +85,7 @@ public class SongSheetDetailActivity extends QDActivity implements View.OnClickL
         getActionBarTool().setHeaderBackgroundColor(Color.TRANSPARENT);
 
         findViewById(R.id.it_actionbar_common_right).setOnClickListener(this);
+        //framelayout_header = findViewById(R.id.framelayout_header);
         iv_sheet_img = findViewById(R.id.iv_sheet_img);
         iv_sheet_img.setOnClickListener(this);
         tv_sheet_name = findViewById(R.id.tv_sheet_name);
@@ -98,8 +102,17 @@ public class SongSheetDetailActivity extends QDActivity implements View.OnClickL
                 //toolbar_layout_01.setAlpha(Math.abs(verticalOffset/h));
                 int a = (int) ((1 - (Math.abs(MathUtils.clamp(1 - top / h, -1, 1)))) * 0xff);
                 int color = a << 24 | 0xffffff;
-                QDLogger.println("verticalOffset=" + top / h + "," + toolbar_layout_01.getMeasuredHeight() + ",a=" + a + ",color=" + color);
-                toolbar_layout_01.setBackgroundColor(color);
+                //toolbar_layout_01.setBackgroundColor(color);
+                //toolbar_layout_01.setAlpha(top < 2*h?(2*h-top)/h*1f:0f);
+                Drawable drawable = toolbar_layout_01.getBackground();
+
+                //Drawable drawable = findViewById(R.id.headerView).getBackground();
+                if (drawable != null) {
+                    int alpha = (int) (255f * ((top < 2 * h ? (2 * h - top) / h * 1f : 0f)));
+                    QDLogger.println("verticalOffset=" + top / h + "," + toolbar_layout_01.getMeasuredHeight() + ",a=" + a + ",color=" + color + ",alpha=" + alpha);
+                    drawable.mutate().setAlpha(alpha);
+                }
+                // toolbar_layout_01.setBackground(drawable);
             }
         });
         Intent intent = getIntent();
@@ -163,6 +176,7 @@ public class SongSheetDetailActivity extends QDActivity implements View.OnClickL
     }
 
     int mColor;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -253,13 +267,14 @@ public class SongSheetDetailActivity extends QDActivity implements View.OnClickL
         } else if (image.getUrlType() == UrlType.file) {
             if (!TextUtils.isEmpty(image.getPath())) {
                 imgObj = new File(image.getPath());
-            }else {
-                imgObj = R.drawable.ic_launcher_pp;
+            } else {
+                imgObj = R.mipmap.ic_favorite;
             }
         }
         if (imgObj != null) {
             Glide.with(mContext).asBitmap()
                     .load(imgObj)
+                    .error(R.mipmap.ic_favorite)
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(@NonNull @NotNull Bitmap resource, Transition<? super Bitmap> transition) {
@@ -269,7 +284,12 @@ public class SongSheetDetailActivity extends QDActivity implements View.OnClickL
                                 Bitmap bitmap = BlurUtil.doBlur(heightBitmap, 20, 0.2f);
                                 Bitmap colorBitmap = generateColorBitmap(bitmap.getWidth(), bitmap.getHeight(), getResources().getColor(R.color.transparent_dark_33));
                                 heightBitmap = QDBitmapUtil.mergeBitmap(bitmap, colorBitmap);
-                                findViewById(R.id.headerView).setBackground(new BitmapDrawable(heightBitmap));
+                                Drawable drawable = new BitmapDrawable(heightBitmap);
+                                findViewById(R.id.headerView).setBackground(drawable);
+                                if (findViewById(R.id.headerView).getBackground() != null) {
+                                    Drawable drawable2 = new BitmapDrawable(heightBitmap);
+                                    toolbar_layout_01.setBackground(drawable2);
+                                }
                             }
                         }
                     });

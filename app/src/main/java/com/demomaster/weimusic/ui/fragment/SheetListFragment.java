@@ -474,6 +474,8 @@ public class SheetListFragment extends QuickFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ((MainActivity) getActivity()).hideSheetFragment();
+        if(getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).hideSheetFragment();
+        }
     }
 }

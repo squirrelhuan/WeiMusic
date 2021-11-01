@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/framelayout_header"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="6dp"
@@ -15,7 +16,7 @@
         android:textColor="@color/black"
         android:textSize="@dimen/quickdev_title_text_size"
         android:gravity="center_vertical"
-        app:tint="?attr/textNight"
+        app:tint="@color/white"
         app:srcCompat="@drawable/ic_arrow_back_black_24dp"/>
 
     <cn.demomaster.qdrouter_library.view.ImageTextView
@@ -28,7 +29,7 @@
         android:layout_gravity="center"
         android:singleLine="true"
         android:text=""
-        android:textColor="@color/black"
+        app:tint="@color/white"
         android:textSize="@dimen/quickdev_title_text_size"
         android:textStyle="bold" />
 
@@ -39,7 +40,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_gravity="right"
         android:padding="10dp"
-        app:tint="?attr/textNight"
+        app:tint="@color/white"
         android:textSize="@dimen/quickdev_title_text_size"
         android:gravity="center_vertical"
         app:srcCompat="@drawable/apollo_holo_dark_overflow2" />

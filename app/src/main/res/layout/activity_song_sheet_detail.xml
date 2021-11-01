@@ -88,5 +88,14 @@
         android:layout_height="match_parent"
         app:layout_behavior="cn.demomaster.qdrouter_library.view.appbar.AppBarLayout$ScrollingViewBehavior"
         android:background="@color/gray_bg"
-        android:overScrollMode="never"/>
+        android:overScrollMode="never"
+        android:layout_marginBottom="@dimen/dp_60"/>
+    <fragment
+        android:id="@+id/fragment_01"
+        android:name="com.demomaster.weimusic.ui.fragment.QuickBottomActionBarFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_weight="1"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

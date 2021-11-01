@@ -30,7 +30,7 @@ import com.demomaster.weimusic.player.service.MC;
 import com.demomaster.weimusic.player.service.MusicDataManager;
 import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter;
 import com.demomaster.weimusic.ui.adapter.MusicRecycleViewAdapter2;
-import com.demomaster.weimusic.ui.adapter.SheetBodyAdapter;
+import com.demomaster.weimusic.ui.adapter.SheetFragmentAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -50,7 +50,7 @@ import cn.demomaster.huan.quickdeveloplibrary.widget.layout.LoadLayout;
 import cn.demomaster.qdlogger_library.QDLogger;
 import cn.demomaster.qdrouter_library.base.fragment.QuickFragment;
 
-public class SheetFragment3 extends QuickFragment {
+public class SheetRecentFragment extends QuickFragment {
 
     RecyclerView recyclerView;
     ImageView iv_sheet_cover;
@@ -67,7 +67,7 @@ public class SheetFragment3 extends QuickFragment {
 
     @Override
     public View onGenerateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        View mView = inflater.inflate(R.layout.item_cd_song_list, null);
+        View mView = inflater.inflate(R.layout.item_cd_song_list_recent, null);
         return mView;
     }
 
@@ -78,55 +78,58 @@ public class SheetFragment3 extends QuickFragment {
         /*getActionBarTool().setActionBarType(ACTIONBAR_TYPE.NO_ACTION_BAR);*/
         Bundle bundle = getArguments();
         EventBus.getDefault().register(this);
-        audioSheet = (AudioSheet) bundle.getSerializable("audioSheets");
-        recyclerView = findViewById(R.id.rv_songs);
-        tv_sheet_name = findViewById(R.id.tv_sheet_name);
-        iv_sheet_cover = findViewById(R.id.iv_sheet_cover);
-        iv_sheet_playall = findViewById(R.id.iv_sheet_playall);
-        loadlayout_sheet = findViewById(R.id.loadlayout_sheet);
-        tv_sheet_name.setText(audioSheet.getName());
-        iv_sheet_cover.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putLong("sheetId", audioSheet.getId());
-                Intent intent = new Intent(mContext, SongSheetDetailActivity.class);
-                intent.putExtras(bundle);
-                mContext.startActivity(intent);
-                return true;
-            }
-        });
-        iv_sheet_playall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MC.getInstance(mContext).playSheet(audioSheet.getId());
-            }
-        });
 
-        Glide.with(mContext).load(audioSheet.getImgSrc()).error(R.mipmap.ic_favorite).into(iv_sheet_cover);
-        adapter = new MusicRecycleViewAdapter2(mContext, musicList);
-        //这里使用线性布局像listview那样展示列表,第二个参数可以改为 HORIZONTAL实现水平展示
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false);
-        //使用网格布局展示
-        recyclerView.setLayoutManager(linearLayoutManager);
-        //recy_drag.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL);
-        //设置分割线使用的divider
-        //rv_songs.addItemDecoration(dividerItemDecoration);
-        recyclerView.setAdapter(adapter);
-        updata();
-        adapter.setOnItemClickListener(new MusicRecycleViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                playMusic(musicList, adapter, position);
-                //fragment.finish();
-            }
+        if(bundle!=null&&bundle.containsKey("audioSheets")&&audioSheet!=null) {
+            audioSheet = (AudioSheet) bundle.getSerializable("audioSheets");
+            recyclerView = findViewById(R.id.rv_songs);
+            tv_sheet_name = findViewById(R.id.tv_sheet_name);
+            iv_sheet_cover = findViewById(R.id.iv_sheet_cover);
+            iv_sheet_playall = findViewById(R.id.iv_sheet_playall);
+            loadlayout_sheet = findViewById(R.id.loadlayout_sheet);
+            tv_sheet_name.setText(audioSheet.getName());
+            iv_sheet_cover.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    Bundle bundle = new Bundle();
+                    bundle.putLong("sheetId", audioSheet.getId());
+                    Intent intent = new Intent(mContext, SongSheetDetailActivity.class);
+                    intent.putExtras(bundle);
+                    mContext.startActivity(intent);
+                    return true;
+                }
+            });
+            iv_sheet_playall.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MC.getInstance(mContext).playSheet(audioSheet.getId());
+                }
+            });
 
-            @Override
-            public void showContextMenu(View view, int position) {
-                showSongMenu(position);
-            }
-        });
+            Glide.with(mContext).load(audioSheet.getImgSrc()).error(R.drawable.ic_launcher_pp).into(iv_sheet_cover);
+            adapter = new MusicRecycleViewAdapter2(mContext, musicList);
+            //这里使用线性布局像listview那样展示列表,第二个参数可以改为 HORIZONTAL实现水平展示
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false);
+            //使用网格布局展示
+            recyclerView.setLayoutManager(linearLayoutManager);
+            //recy_drag.setLayoutManager(linearLayoutManager);
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL);
+            //设置分割线使用的divider
+            //rv_songs.addItemDecoration(dividerItemDecoration);
+            recyclerView.setAdapter(adapter);
+            updata();
+            adapter.setOnItemClickListener(new MusicRecycleViewAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    playMusic(musicList, adapter, position);
+                    //fragment.finish();
+                }
+
+                @Override
+                public void showContextMenu(View view, int position) {
+                    showSongMenu(position);
+                }
+            });
+        }
     }
 
     private void updata() {
@@ -172,7 +175,7 @@ public class SheetFragment3 extends QuickFragment {
     QDDialog musicInfoDialog = null;
 
     private void showSongMenu(int position) {
-        View layout = ((Activity) mContext).getLayoutInflater().inflate(R.layout.dialog_music_item2,
+        View layout = (mContext).getLayoutInflater().inflate(R.layout.dialog_music_item2,
                 null);
         ImageView imageView = layout.findViewById(R.id.iv_cover);
         Bitmap bitmap = MusicDataManager.getInstance(mContext).getAlbumPicture(mContext, musicList.get(position));
@@ -249,8 +252,5 @@ public class SheetFragment3 extends QuickFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(getActivity() instanceof MainActivity) {
-            ((MainActivity) getActivity()).hideSheetFragment();
-        }
     }
 }

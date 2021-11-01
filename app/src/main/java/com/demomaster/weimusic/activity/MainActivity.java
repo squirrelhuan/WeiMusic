@@ -366,7 +366,7 @@ public class MainActivity extends BaseActivity {
         } else {
             // ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bottom_bg);
             //ll_bottom.setBackgroundResource(R.color.transparent_light_33);
-            Bitmap bitmap = getBackagroundBitmap(200);
+            //Bitmap bitmap = getBackagroundBitmap(200);
             //rl_docker_panel.setBackground(new BitmapDrawable(copyBitmap));
             //rl_docker_panel.setBackgroundColor(getResources().getColor(R.color.white));
             //ll_bottom.setBackgroundResource(R.drawable.rect_round_docker_bg);
